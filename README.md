@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Comcast/ip4s.svg?branch=master)](https://travis-ci.org/Comcast/ip4s)
+
 ip4s: IP Addresses for Scala & Scala.js
 =======================================
 
