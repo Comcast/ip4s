@@ -1,0 +1,25 @@
+language: scala
+
+scala:
+  - 2.11.12
+  - 2.12.6
+
+jdk:
+  - oraclejdk8
+
+sudo: required
+dist: trusty
+
+cache:
+  directories:
+    - $HOME/.ivy2
+    - $HOME/.coursier
+    - $HOME/.sbt
+
+env:
+  global:
+    - COURSIER_PROGRESS=0
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION test doc mimaReportBinaryIssues
+
