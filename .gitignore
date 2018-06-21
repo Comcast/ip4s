@@ -1,2 +1,12 @@
-*.class
-*.log
+target
+.classpath
+.project
+.settings/
+.worksheet/
+.cache
+.tags
+.idea
+.idea_modules/
+.DS_Store
+*.swp
+.metaserver
