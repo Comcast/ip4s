@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Comcast/ip4s.svg?branch=master)](https://travis-ci.org/Comcast/ip4s)
+![Published Artifact](https://img.shields.io/nexus/r/https/oss.sonatype.org/com.comcast/ip4s_2.12.svg) [![Build Status](https://travis-ci.org/Comcast/ip4s.svg?branch=master)](https://travis-ci.org/Comcast/ip4s)
 
 ip4s: IP Addresses for Scala & Scala.js
 =======================================
@@ -10,6 +10,14 @@ There are two defining characteristics of this project that make it different fr
 - published for both Scala and Scala.js
 
 See the [guide](docs/guide.md) for more details.
+
+## Getting Binaries
+
+This library is published on Maven Central under group id `com.comcast` and artifact id `ip4s_${scalaBinaryVersion}`. Add the following to your SBT build:
+
+```scala
+libraryDependencies += "com.comcast" %% "ip4s" % "version"
+```
 
 ## Copyright and License
 
