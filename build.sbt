@@ -22,9 +22,16 @@ lazy val core = crossProject(JVMPlatform, JSPlatform).
     name := "ip4s",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
-      "org.scalatest" %%% "scalatest" % "3.0.5" % "test",
-      "org.scalacheck" %%% "scalacheck" % "1.13.5" % "test"
+      "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
     ),
+    libraryDependencies += {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, v)) if v >= 13 =>
+          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP1" % "test"
+        case _ =>
+          "org.scalatest" %%% "scalatest" % "3.0.5-M1" % "test"
+      }
+    },
     scalacOptions ++= Seq(
       "-deprecation",
       "-encoding", "utf-8",
@@ -35,8 +42,6 @@ lazy val core = crossProject(JVMPlatform, JSPlatform).
       "-Xfatal-warnings",
       "-Xfuture",
       "-Xlint",
-      "-Yno-adapted-args",
-      "-Ypartial-unification",
       "-Ywarn-dead-code",
       "-Ywarn-extra-implicit",
       "-Ywarn-inaccessible",
@@ -74,6 +79,14 @@ lazy val core = crossProject(JVMPlatform, JSPlatform).
   ).
   jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "23.6.1-jre" % "test",
+    libraryDependencies := {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, v)) if v >= 13 =>
+          libraryDependencies.value.filterNot(_.toString.contains("tut-core"))
+        case _ =>
+          libraryDependencies.value
+      }
+    },
     scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt => !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
     tutTargetDirectory := baseDirectory.value / "../docs",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
@@ -105,7 +118,7 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
   scalaVersion := "2.12.6",
-  crossScalaVersions := Seq("2.12.6")
+  crossScalaVersions := Seq("2.12.6", "2.13.0-M4")
 )
 
 lazy val publishingSettings = Seq(
