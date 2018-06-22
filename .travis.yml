@@ -1,7 +1,9 @@
 language: scala
 
 scala:
+  - 2.11.12
   - 2.12.6
+  - 2.13.0-M4
 
 jdk:
   - oraclejdk8
@@ -21,4 +23,9 @@ env:
 
 script:
   - sbt ++$TRAVIS_SCALA_VERSION test doc mimaReportBinaryIssues
+
+before_cache:
+  # Tricks to avoid unnecessary cache updates
+  - find $HOME/.sbt -name "*.lock" -exec rm {} +
+  - find $HOME/.ivy2 -name "ivydata-*.properties" -exec rm {} +
 

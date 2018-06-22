@@ -17,12 +17,22 @@
 package com.comcast.ip4s
 
 import scala.util.Try
+import scala.util.hashing.MurmurHash3
 
 /** TCP or UDP port number. */
-final case class Port private (value: Int) extends Ordered[Port] {
+final class Port private (val value: Int) extends Product with Serializable with Ordered[Port] {
   def copy(value: Int): Option[Port] = Port(value)
   def compare(that: Port): Int = value.compare(that.value)
   override def toString: String = value.toString
+  override def hashCode: Int = MurmurHash3.productHash(this, productPrefix.hashCode)
+  override def equals(other: Any): Boolean = other match {
+    case that: Port => value == that.value
+    case _          => false
+  }
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Port]
+  override def productArity: Int = 1
+  override def productElement(n: Int): Any =
+    if (n == 0) value else throw new IndexOutOfBoundsException
 }
 
 object Port {
@@ -34,4 +44,6 @@ object Port {
 
   def fromString(value: String): Option[Port] =
     Try(value.toInt).toOption.flatMap(apply)
+
+  def unapply(p: Port): Option[Int] = Some(p.value)
 }

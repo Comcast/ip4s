@@ -43,20 +43,28 @@ lazy val core = crossProject(JVMPlatform, JSPlatform).
       "-Xfuture",
       "-Xlint",
       "-Ywarn-dead-code",
-      "-Ywarn-extra-implicit",
       "-Ywarn-inaccessible",
       "-Ywarn-infer-any",
       "-Ywarn-nullary-override",
       "-Ywarn-nullary-unit",
       "-Ywarn-numeric-widen",
-      "-Ywarn-unused:implicits",
-      "-Ywarn-unused:imports",
-      "-Ywarn-unused:locals",
-      // "-Ywarn-unused:params", disabled until https://github.com/tkawachi/sbt-doctest/issues/102
-      "-Ywarn-unused:patvars",
-      "-Ywarn-unused:privates",
       "-Ywarn-value-discard"
     ),
+    scalacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, v)) if v >= 12 =>
+          Seq(
+            "-Ywarn-extra-implicit",
+            "-Ywarn-unused:implicits",
+            "-Ywarn-unused:imports",
+            "-Ywarn-unused:locals",
+            // "-Ywarn-unused:params", disabled until https://github.com/tkawachi/sbt-doctest/issues/102
+            "-Ywarn-unused:patvars",
+            "-Ywarn-unused:privates"
+          )
+        case _ => Nil
+      }
+    },
     scalacOptions in (Compile, console) := (scalacOptions in (Compile, console)).value.filter(opt => !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
     scalacOptions in (Test, console) := (scalacOptions in (Compile, console)).value,
     scalacOptions in (Compile, doc) ++= {
@@ -118,7 +126,7 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
   scalaVersion := "2.12.6",
-  crossScalaVersions := Seq("2.12.6", "2.13.0-M4")
+  crossScalaVersions := Seq("2.11.12", "2.12.6", "2.13.0-M4")
 )
 
 lazy val publishingSettings = Seq(

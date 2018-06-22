@@ -18,6 +18,7 @@ package com.comcast.ip4s
 
 import scala.math.Ordering.Implicits._
 import scala.util.Try
+import scala.util.hashing.MurmurHash3
 
 /**
   * Classless Inter-Domain Routing address, which represents an IP address and its routing prefix.
@@ -25,7 +26,8 @@ import scala.util.Try
   * @param address IP address for which this CIDR refers to
   * @param prefixBits number of leading 1s in the routing mask
   */
-final case class Cidr[+A <: IpAddress] private (address: A, prefixBits: Int) {
+final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) extends Product with Serializable {
+
   def copy[AA >: A <: IpAddress](address: AA = this.address, prefixBits: Int = this.prefixBits): Cidr[AA] =
     Cidr[AA](address, prefixBits)
 
@@ -96,6 +98,18 @@ final case class Cidr[+A <: IpAddress] private (address: A, prefixBits: Int) {
   }
 
   override def toString: String = s"$address/$prefixBits"
+  override def hashCode: Int = MurmurHash3.productHash(this, productPrefix.hashCode)
+  override def equals(other: Any): Boolean = other match {
+    case that: Cidr[_] => address == that.address && prefixBits == that.prefixBits
+    case _             => false
+  }
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Cidr[_]]
+  override def productArity: Int = 2
+  override def productElement(n: Int): Any = n match {
+    case 0 => address
+    case 1 => prefixBits
+    case _ => throw new IndexOutOfBoundsException
+  }
 }
 
 object Cidr {
@@ -132,4 +146,6 @@ object Cidr {
     }
 
   implicit def ordering[A <: IpAddress]: Ordering[Cidr[A]] = Ordering.by(x => (x.address, x.prefixBits))
+
+  def unapply[A <: IpAddress](c: Cidr[A]): Option[(A, Int)] = Some((c.address, c.prefixBits))
 }
