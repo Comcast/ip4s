@@ -1,4 +1,4 @@
-![Published Artifact](https://img.shields.io/nexus/r/https/oss.sonatype.org/com.comcast/ip4s_2.12.svg) [![Build Status](https://travis-ci.org/Comcast/ip4s.svg?branch=master)](https://travis-ci.org/Comcast/ip4s)
+[![Published Artifact](https://img.shields.io/maven-central/v/com.comcast/ip4s_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Cip4s) [![Build Status](https://travis-ci.org/Comcast/ip4s.svg?branch=master)](https://travis-ci.org/Comcast/ip4s)
 
 ip4s: IP Addresses for Scala & Scala.js
 =======================================
@@ -9,7 +9,7 @@ There are two defining characteristics of this project that make it different fr
 - all data types are immutable and every function/method is referentially transparent (e.g., no accidental DNS lookups by calling `InetAddress.getByName(...)`)
 - published for both Scala and Scala.js
 
-See the [guide](docs/guide.md) for more details.
+See the [guide](docs/guide.md) and [ScalaDoc](https://oss.sonatype.org/service/local/repositories/releases/archive/com/comcast/ip4s_2.12/1.0.0/ip4s_2.12-1.0.0-javadoc.jar/!/com/comcast/ip4s/index.html) for more details.
 
 ## Getting Binaries
 
