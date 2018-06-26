@@ -35,6 +35,9 @@ sealed abstract class MulticastJoin[+A <: IpAddress] extends Product with Serial
       case a: SourceSpecificMulticastJoin[A] => ssm(a)
     }
 
+  def asAsm: Option[AnySourceMulticastJoin[A]] = fold(Some(_), _ => None)
+  def asSsm: Option[SourceSpecificMulticastJoin[A]] = fold(_ => None, Some(_))
+
   /**
     * Returns the source address and group address. If this join is an any-source join, `None` is
     * returned for the source. Otherwise, this join is a source specific join and `Some(src)` is
@@ -67,7 +70,8 @@ object MulticastJoin {
     fromStringGeneric(value, Ipv6Address(_))
 
   private val Pattern = """(?:([^@]+)@)?(.+)""".r
-  private def fromStringGeneric[A <: IpAddress](value: String, parse: String => Option[A]): Option[MulticastJoin[A]] =
+  private[ip4s] def fromStringGeneric[A <: IpAddress](value: String,
+                                                      parse: String => Option[A]): Option[MulticastJoin[A]] =
     value match {
       case Pattern(sourceStr, groupStr) =>
         Option(sourceStr) match {
@@ -91,6 +95,28 @@ object MulticastJoin {
 /** Multicast join to a group without a source filter. */
 final case class AnySourceMulticastJoin[+A <: IpAddress](group: Multicast[A]) extends MulticastJoin[A]
 
+object AnySourceMulticastJoin {
+  def fromString(value: String): Option[AnySourceMulticastJoin[IpAddress]] =
+    MulticastJoin.fromStringGeneric(value, IpAddress(_)).flatMap(_.asAsm)
+
+  def fromString4(value: String): Option[AnySourceMulticastJoin[Ipv4Address]] =
+    MulticastJoin.fromStringGeneric(value, Ipv4Address(_)).flatMap(_.asAsm)
+
+  def fromString6(value: String): Option[AnySourceMulticastJoin[Ipv6Address]] =
+    MulticastJoin.fromStringGeneric(value, Ipv6Address(_)).flatMap(_.asAsm)
+}
+
 /** Multicast join to a group from the specified source. */
 final case class SourceSpecificMulticastJoin[+A <: IpAddress](source: A, group: SourceSpecificMulticast[A])
     extends MulticastJoin[A]
+
+object SourceSpecificMulticastJoin {
+  def fromString(value: String): Option[SourceSpecificMulticastJoin[IpAddress]] =
+    MulticastJoin.fromStringGeneric(value, IpAddress(_)).flatMap(_.asSsm)
+
+  def fromString4(value: String): Option[SourceSpecificMulticastJoin[Ipv4Address]] =
+    MulticastJoin.fromStringGeneric(value, Ipv4Address(_)).flatMap(_.asSsm)
+
+  def fromString6(value: String): Option[SourceSpecificMulticastJoin[Ipv6Address]] =
+    MulticastJoin.fromStringGeneric(value, Ipv6Address(_)).flatMap(_.asSsm)
+}
