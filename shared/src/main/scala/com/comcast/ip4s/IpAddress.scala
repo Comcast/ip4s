@@ -65,6 +65,12 @@ sealed abstract class IpAddress extends IpAddressPlatform with Serializable {
   def asSourceSpecificMulticast: Option[SourceSpecificMulticast[this.type]] =
     SourceSpecificMulticast(this)
 
+  /** Narrows this address to an Ipv4Address if that is the underlying type. */
+  def asIpv4: Option[Ipv4Address] = fold(Some(_), _ => None)
+
+  /** Narrows this address to an Ipv6Address if that is the underlying type. */
+  def asIpv6: Option[Ipv6Address] = fold(_ => None, Some(_))
+
   /** Constructs a [[Cidr]] address from this address. */
   def /(prefixBits: Int): Cidr[this.type] = Cidr(this, prefixBits)
 

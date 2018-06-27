@@ -23,6 +23,15 @@ import scala.language.higherKinds
   */
 final case class MulticastSocketAddress[J[+x <: IpAddress] <: MulticastJoin[x], +A <: IpAddress](join: J[A],
                                                                                                  port: Port) {
+
+  /** Narrows join to an `AnySourceMulticastJoin`. */
+  def asAsm: Option[MulticastSocketAddress[AnySourceMulticastJoin, A]] =
+    join.asAsm.map(j => MulticastSocketAddress(j, port))
+
+  /** Narrows join to a `SourceSpecificMulticastJoin`. */
+  def asSsm: Option[MulticastSocketAddress[SourceSpecificMulticastJoin, A]] =
+    join.asSsm.map(j => MulticastSocketAddress(j, port))
+
   override def toString: String = {
     val (source, group) = join.sourceAndGroup
     group.address match {
@@ -47,6 +56,22 @@ object MulticastSocketAddress {
   private val V6Pattern = """(?:\[([^\]]+)\]@)?\[([^\]]+)\]:(\d+)""".r
   def fromString6(value: String): Option[MulticastSocketAddress[MulticastJoin, Ipv6Address]] =
     fromStringGeneric(value, V6Pattern, Ipv6Address(_))
+
+  def anySourceFromString(value: String): Option[MulticastSocketAddress[AnySourceMulticastJoin, IpAddress]] =
+    anySourceFromString4(value) orElse anySourceFromString6(value)
+  def anySourceFromString6(value: String): Option[MulticastSocketAddress[AnySourceMulticastJoin, Ipv6Address]] =
+    fromString6(value).flatMap(_.asAsm)
+  def anySourceFromString4(value: String): Option[MulticastSocketAddress[AnySourceMulticastJoin, Ipv4Address]] =
+    fromString4(value).flatMap(_.asAsm)
+
+  def sourceSpecificFromString(value: String): Option[MulticastSocketAddress[SourceSpecificMulticastJoin, IpAddress]] =
+    sourceSpecificFromString4(value) orElse sourceSpecificFromString6(value)
+  def sourceSpecificFromString6(
+      value: String): Option[MulticastSocketAddress[SourceSpecificMulticastJoin, Ipv6Address]] =
+    fromString6(value).flatMap(_.asSsm)
+  def sourceSpecificFromString4(
+      value: String): Option[MulticastSocketAddress[SourceSpecificMulticastJoin, Ipv4Address]] =
+    fromString4(value).flatMap(_.asSsm)
 
   private def fromStringGeneric[A <: IpAddress](
       value: String,
