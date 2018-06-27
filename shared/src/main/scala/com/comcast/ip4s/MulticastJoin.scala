@@ -35,7 +35,10 @@ sealed abstract class MulticastJoin[+A <: IpAddress] extends Product with Serial
       case a: SourceSpecificMulticastJoin[A] => ssm(a)
     }
 
+  /** Narrows to an `AnySourceMulticastJoin`. */
   def asAsm: Option[AnySourceMulticastJoin[A]] = fold(Some(_), _ => None)
+
+  /** Narrows to a `SourceSpecificMulticastJoin`. */
   def asSsm: Option[SourceSpecificMulticastJoin[A]] = fold(_ => None, Some(_))
 
   /**
