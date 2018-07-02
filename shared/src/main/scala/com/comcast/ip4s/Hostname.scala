@@ -67,7 +67,7 @@ object Hostname {
   }
 
   private val Pattern =
-    """[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}?[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}?[a-zA-Z0-9])?)*""".r
+    """[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*""".r
 
   /** Constructs a `Hostname` from a string. */
   def apply(value: String): Option[Hostname] = value.size match {

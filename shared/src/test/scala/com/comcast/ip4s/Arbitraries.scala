@@ -105,7 +105,7 @@ object Arbitraries {
     for {
       numLabels <- Gen.chooseNum(1, 5)
       labels <- Gen.listOfN(numLabels, genLabel)
-      if labels.foldLeft(0)(_ + _.size) < (253 - numLabels)
+      if labels.foldLeft(0)(_ + _.size) < (253 - (numLabels - 1))
     } yield Hostname(labels.mkString(".")).get
   }
 

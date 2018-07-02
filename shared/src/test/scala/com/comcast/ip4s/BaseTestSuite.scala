@@ -21,5 +21,5 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 abstract class BaseTestSuite extends WordSpec with GeneratorDrivenPropertyChecks with Matchers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
-    PropertyCheckConfiguration(minSuccessful = 10000)
+    PropertyCheckConfiguration(minSuccessful = 5000)
 }
