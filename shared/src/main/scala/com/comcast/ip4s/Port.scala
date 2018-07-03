@@ -49,6 +49,6 @@ object Port {
   def unapply(p: Port): Option[Int] = Some(p.value)
 
   implicit val eq: Eq[Port] = Eq.fromUniversalEquals[Port]
-  implicit val order: Order[Port] = Order.fromOrdering[Port]
+  implicit val order: Order[Port] = Order.fromComparable[Port]
   implicit val show: Show[Port] = Show.fromToString[Port]
 }

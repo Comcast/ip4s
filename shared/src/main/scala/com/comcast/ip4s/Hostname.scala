@@ -31,6 +31,10 @@ final class Hostname private (val labels: NonEmptyList[Hostname.Label], override
     extends HostnamePlatform
     with Ordered[Hostname] {
 
+  /** Converts this hostname to lower case. */
+  def normalized: Hostname =
+    new Hostname(labels.map(l => new Hostname.Label(l.toString.toLowerCase)), toString.toLowerCase)
+
   def compare(that: Hostname): Int = toString.compare(that.toString)
   override def hashCode: Int = MurmurHash3.stringHash(toString, "Hostname".hashCode)
   override def equals(other: Any): Boolean = other match {
@@ -47,18 +51,13 @@ object Hostname {
     * A label consists of letters A-Z, a-z, digits 0-9, or a dash. A label may not start or end in a
     * dash and may not exceed 63 characters in length.
     */
-  final class Label private[Hostname] (val value: String) extends Product with Serializable with Ordered[Label] {
-    def compare(that: Label): Int = value.compare(that.value)
-    override def toString: String = value
-    override def hashCode: Int = MurmurHash3.productHash(this, productPrefix.hashCode)
+  final class Label private[Hostname] (override val toString: String) extends Serializable with Ordered[Label] {
+    def compare(that: Label): Int = toString.compare(that.toString)
+    override def hashCode: Int = MurmurHash3.stringHash(toString, "Label".hashCode)
     override def equals(other: Any): Boolean = other match {
-      case that: Label => value == that.value
+      case that: Label => toString == that.toString
       case _           => false
     }
-    override def canEqual(other: Any): Boolean = other.isInstanceOf[Label]
-    override def productArity: Int = 1
-    override def productElement(n: Int): Any =
-      if (n == 0) value else throw new IndexOutOfBoundsException
   }
 
   private val Pattern =
@@ -82,6 +81,6 @@ object Hostname {
   }
 
   implicit val eq: Eq[Hostname] = Eq.fromUniversalEquals[Hostname]
-  implicit val order: Order[Hostname] = Order.fromOrdering[Hostname]
+  implicit val order: Order[Hostname] = Order.fromComparable[Hostname]
   implicit val show: Show[Hostname] = Show.fromToString[Hostname]
 }

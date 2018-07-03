@@ -108,10 +108,13 @@ lazy val core = crossProject(JVMPlatform, JSPlatform).
     osgiSettings
   ).
   jvmSettings(mimaSettings).
+  jsSettings(
+    npmDependencies in Compile += "punycode" -> "2.1.1"
+  ).
   settings(publishingSettings)
 
 lazy val coreJVM = core.jvm.enablePlugins(TutPlugin, SbtOsgi)
-lazy val coreJS = core.js.disablePlugins(DoctestPlugin)
+lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val commonSettings = Seq(
   organization := "com.comcast",
