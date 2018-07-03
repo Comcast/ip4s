@@ -16,6 +16,7 @@
 
 package com.comcast.ip4s
 
+import cats.data.NonEmptyList
 import scala.util.hashing.MurmurHash3
 
 /**
@@ -25,16 +26,9 @@ import scala.util.hashing.MurmurHash3
   * A label may not start or end in a dash and may not exceed 63 characters in length. Labels are separated by
   * periods and the overall hostname must not exceed 253 characters in length.
   */
-final class Hostname private (private val head: Hostname.Label,
-                              private val tail: List[Hostname.Label],
-                              override val toString: String)
-    extends Ordered[Hostname] {
-
-  /** Gets the labels of this hostname. */
-  def labels: (Hostname.Label, List[Hostname.Label]) = (head, tail)
-
-  /** Gets the labels of this hostname as a list, guaranteed to have at least one element. */
-  def labelsList: List[Hostname.Label] = head :: tail
+final class Hostname private (val labels: NonEmptyList[Hostname.Label], override val toString: String)
+    extends HostnamePlatform
+    with Ordered[Hostname] {
 
   def compare(that: Hostname): Int = toString.compare(that.toString)
   override def hashCode: Int = MurmurHash3.stringHash(toString, "Hostname".hashCode)
@@ -81,7 +75,7 @@ object Hostname {
             .iterator
             .map(new Label(_))
             .toList
-          Some(new Hostname(labels.head, labels.tail, value))
+          NonEmptyList.fromList(labels).map(new Hostname(_, value))
         case _ => None
       }
   }

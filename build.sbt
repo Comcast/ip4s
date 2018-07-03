@@ -21,6 +21,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform).
   settings(
     name := "ip4s",
     libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-effect" % "1.0.0-RC2-93ac33d",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
       "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
     ),
@@ -126,7 +127,9 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
   scalaVersion := "2.12.6",
-  crossScalaVersions := Seq("2.11.12", "2.12.6", "2.13.0-M4")
+  crossScalaVersions := Seq("2.11.12", "2.12.6")
+  // 2.13 support is disabled until there's a cats-effect build available
+  // crossScalaVersions := Seq("2.11.12", "2.12.6", "2.13.0-M4")
 )
 
 lazy val publishingSettings = Seq(
