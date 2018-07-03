@@ -94,4 +94,20 @@ object Arbitraries {
 
   implicit def multicastSocketAddressArbitrary[A <: IpAddress](implicit arbJoin: Arbitrary[MulticastJoin[A]], arbPort: Arbitrary[Port]): Arbitrary[MulticastSocketAddress[MulticastJoin, A]] =
     Arbitrary(multicastSocketAddressGenerator(arbJoin.arbitrary, arbPort.arbitrary))
+
+  val hostnameGenerator: Gen[Hostname] = {
+    val genLabel: Gen[String] = for {
+      first <- Gen.alphaNumChar
+      middleLen <- Gen.chooseNum(0, 61)
+      middle <- Gen.listOfN(middleLen, Gen.oneOf(Gen.alphaNumChar, Gen.const('-'))).map(_.mkString)
+      last <- if (middleLen > 0) Gen.alphaNumChar.map(Some(_)) else Gen.option(Gen.alphaNumChar)
+    } yield first.toString + middle + last.fold("")(_.toString)
+    for {
+      numLabels <- Gen.chooseNum(1, 5)
+      labels <- Gen.listOfN(numLabels, genLabel)
+      if labels.foldLeft(0)(_ + _.size) < (253 - (numLabels - 1))
+    } yield Hostname(labels.mkString(".")).get
+  }
+
+  implicit val hostnameArbitrary: Arbitrary[Hostname] = Arbitrary(hostnameGenerator)
 }
