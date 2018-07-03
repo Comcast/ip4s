@@ -16,6 +16,7 @@
 
 package com.comcast.ip4s
 
+import cats.{Eq, Order, Show}
 import scala.language.higherKinds
 
 /**
@@ -99,4 +100,11 @@ object MulticastSocketAddress {
 
   implicit def ordering[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
     : Ordering[MulticastSocketAddress[J, A]] = Ordering.by(x => (x.join, x.port))
+
+  implicit def eq[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Eq[MulticastSocketAddress[J, A]] =
+    Eq.fromUniversalEquals[MulticastSocketAddress[J, A]]
+  implicit def order[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Order[MulticastSocketAddress[J, A]] =
+    Order.fromOrdering(ordering[J, A])
+  implicit def show[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Show[MulticastSocketAddress[J, A]] =
+    Show.fromToString[MulticastSocketAddress[J, A]]
 }

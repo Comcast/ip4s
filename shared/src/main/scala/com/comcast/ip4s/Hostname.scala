@@ -16,6 +16,7 @@
 
 package com.comcast.ip4s
 
+import cats.{Eq, Order, Show}
 import cats.data.NonEmptyList
 import scala.util.hashing.MurmurHash3
 
@@ -79,4 +80,8 @@ object Hostname {
         case _ => None
       }
   }
+
+  implicit val eq: Eq[Hostname] = Eq.fromUniversalEquals[Hostname]
+  implicit val order: Order[Hostname] = Order.fromOrdering[Hostname]
+  implicit val show: Show[Hostname] = Show.fromToString[Hostname]
 }

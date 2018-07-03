@@ -16,6 +16,7 @@
 
 package com.comcast.ip4s
 
+import cats.{Eq, Order, Show}
 import scala.math.Ordering.Implicits._
 import scala.util.Try
 import scala.util.hashing.MurmurHash3
@@ -146,6 +147,10 @@ object Cidr {
     }
 
   implicit def ordering[A <: IpAddress]: Ordering[Cidr[A]] = Ordering.by(x => (x.address, x.prefixBits))
+
+  implicit def eq[A <: IpAddress]: Eq[Cidr[A]] = Eq.fromUniversalEquals[Cidr[A]]
+  implicit def order[A <: IpAddress]: Order[Cidr[A]] = Order.fromOrdering(ordering[A])
+  implicit def show[A <: IpAddress]: Show[Cidr[A]] = Show.fromToString[Cidr[A]]
 
   def unapply[A <: IpAddress](c: Cidr[A]): Option[(A, Int)] = Some((c.address, c.prefixBits))
 }

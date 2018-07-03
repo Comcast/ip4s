@@ -42,5 +42,7 @@ package object ip4s {
 
     def port(args: Any*): Port =
       macro LiteralSyntaxMacros.portInterpolator
+    def host(args: Any*): Hostname =
+      macro LiteralSyntaxMacros.hostnameInterpolator
   }
 }

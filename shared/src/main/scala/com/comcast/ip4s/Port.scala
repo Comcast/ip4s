@@ -16,6 +16,7 @@
 
 package com.comcast.ip4s
 
+import cats.{Eq, Order, Show}
 import scala.util.Try
 import scala.util.hashing.MurmurHash3
 
@@ -46,4 +47,8 @@ object Port {
     Try(value.toInt).toOption.flatMap(apply)
 
   def unapply(p: Port): Option[Int] = Some(p.value)
+
+  implicit val eq: Eq[Port] = Eq.fromUniversalEquals[Port]
+  implicit val order: Order[Port] = Order.fromOrdering[Port]
+  implicit val show: Show[Port] = Show.fromToString[Port]
 }
