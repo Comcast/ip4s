@@ -29,9 +29,7 @@ class HostnameTest extends BaseTestSuite {
 
     "allow access to labels" in {
       forAll { (h: Hostname) =>
-        Hostname(h.labelsList.mkString(".")) shouldBe Some(h)
-        val t = h.labels
-        Hostname((t._1 :: t._2).mkString(".")) shouldBe Some(h)
+        Hostname(h.labels.toList.mkString(".")) shouldBe Some(h)
       }
     }
 
