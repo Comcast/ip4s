@@ -110,4 +110,25 @@ object Arbitraries {
   }
 
   implicit val hostnameArbitrary: Arbitrary[Hostname] = Arbitrary(hostnameGenerator)
+
+  val idnGenerator: Gen[IDN] = {
+    val genChar: Gen[Char] = Gen.oneOf(Gen.alphaNumChar, Gen.const('δ'), Gen.const('π'), Gen.const('θ'))
+    val genLabel: Gen[String] = for {
+      first <- genChar
+      middleLen <- Gen.chooseNum(0, 61)
+      middle <- Gen.listOfN(middleLen, Gen.oneOf(genChar, Gen.const('-'))).map(_.mkString)
+      last <- if (middleLen > 0) genChar.map(Some(_)) else Gen.option(genChar)
+      str = first.toString + middle + last.fold("")(_.toString)
+      if IDN.toAscii(str).size < 64
+    } yield str
+    for {
+      numLabels <- Gen.chooseNum(1, 5)
+      labels <- Gen.listOfN(numLabels, genLabel)
+      dot <- Gen.oneOf('.', '\u002e', '\u3002', '\uff0e', '\uff61')
+      if labels.foldLeft(0)(_ + _.size) < (253 - (numLabels - 1))
+      idn = IDN(labels.mkString(dot.toString)) if idn.isDefined
+    } yield idn.get
+  }
+
+  implicit val idnArbitrary: Arbitrary[IDN] = Arbitrary(idnGenerator)
 }
