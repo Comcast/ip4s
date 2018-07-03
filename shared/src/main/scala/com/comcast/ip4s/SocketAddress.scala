@@ -16,6 +16,8 @@
 
 package com.comcast.ip4s
 
+import cats.{Eq, Order, Show}
+
 /**
   * An IP address of the specified type and a port number. Used to describe the source or destination of a socket.
   */
@@ -52,4 +54,8 @@ object SocketAddress {
     }
 
   implicit def ordering[A <: IpAddress]: Ordering[SocketAddress[A]] = Ordering.by(x => (x.ip, x.port))
+
+  implicit def eq[A <: IpAddress]: Eq[SocketAddress[A]] = Eq.fromUniversalEquals[SocketAddress[A]]
+  implicit def order[A <: IpAddress]: Order[SocketAddress[A]] = Order.fromOrdering(ordering[A])
+  implicit def show[A <: IpAddress]: Show[SocketAddress[A]] = Show.fromToString[SocketAddress[A]]
 }

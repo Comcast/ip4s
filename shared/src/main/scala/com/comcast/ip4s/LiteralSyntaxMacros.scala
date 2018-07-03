@@ -89,6 +89,12 @@ object LiteralSyntaxMacros {
                               s => Try(s.toInt).toOption.flatMap(Port(_)).isDefined,
                               s => c.universe.reify(Port(s.splice.toInt).get))
 
+  def hostnameInterpolator(c: Context)(args: c.Expr[Any]*): c.Expr[Hostname] =
+    singlePartInterpolator(c)(args,
+                              "hostname",
+                              s => Hostname(s).isDefined,
+                              s => c.universe.reify(Hostname(s.splice).get))
+
   private def singlePartInterpolator[A](c: Context)(args: Seq[c.Expr[Any]],
                                                     typeName: String,
                                                     validate: String => Boolean,

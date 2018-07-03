@@ -16,7 +16,8 @@
 
 package com.comcast.ip4s
 
-import math.Ordering.Implicits._
+import cats.{Eq, Order, Show}
+import scala.math.Ordering.Implicits._
 
 /**
   * Immutable and safe representation of an IP address, either V4 or V6.
@@ -130,8 +131,11 @@ object IpAddress {
             case y: Ipv6Address => IpAddress.compareBytes(x, y)
           }
       }
-
   }
+
+  implicit def eq[A <: IpAddress]: Eq[A] = Eq.fromUniversalEquals[A]
+  implicit def order[A <: IpAddress]: Order[A] = Order.fromOrdering(ordering[A])
+  implicit def show[A <: IpAddress]: Show[A] = Show.fromToString[A]
 }
 
 /** Representation of an IPv4 address that works on both the JVM and Scala.js. */
