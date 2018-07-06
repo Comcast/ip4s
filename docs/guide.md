@@ -310,3 +310,61 @@ s: com.comcast.ip4s.MulticastSocketAddress[com.comcast.ip4s.SourceSpecificMultic
 scala> val t = MulticastSocketAddress(MulticastJoin.ssm(ip"10.10.10.10", ssmip"232.10.11.12"), port"5555")
 t: com.comcast.ip4s.MulticastSocketAddress[com.comcast.ip4s.MulticastJoin,com.comcast.ip4s.IpAddress] = 10.10.10.10@232.10.11.12:5555
 ```
+
+# Hostnames
+
+The `Hostname` type models an RFC1123 compliant hostname -- limited to 253 total characters, labels separated by periods, and each label consisting of ASCII letters and digits and dashes, not beginning or ending in a dash, and not exceeding 63 characters.
+
+```scala
+scala> val home = Hostname("localhost")
+home: Option[com.comcast.ip4s.Hostname] = Some(localhost)
+
+scala> val ls = home.map(_.labels)
+ls: Option[cats.data.NonEmptyList[com.comcast.ip4s.Hostname.Label]] = Some(NonEmptyList(localhost))
+
+scala> val comcast = host"comcast.com"
+comcast: com.comcast.ip4s.Hostname = comcast.com
+
+scala> val cs = comcast.labels
+cs: cats.data.NonEmptyList[com.comcast.ip4s.Hostname.Label] = NonEmptyList(comcast, com)
+```
+
+On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolveAll`:
+
+```scala
+scala> import cats.effect.IO
+import cats.effect.IO
+
+scala> val home = host"localhost"
+home: com.comcast.ip4s.Hostname = localhost
+
+scala> val homeIp = home.resolve[IO]
+homeIp: cats.effect.IO[Option[com.comcast.ip4s.IpAddress]] = IO$2061525123
+
+scala> homeIp.unsafeRunSync
+res0: Option[com.comcast.ip4s.IpAddress] = Some(127.0.0.1)
+
+scala> val homeIps = home.resolveAll[IO]
+homeIps: cats.effect.IO[Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]]] = IO$458869682
+
+scala> homeIps.unsafeRunSync
+res1: Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
+```
+
+# Internationalized Domain Names
+
+RFC1123 hostnames are limited to ASCII characters. The `IDN` type provides a way to represent Unicode hostnames.
+
+```scala
+scala> val unicodeComcast = idn"comcast\u3002com"
+unicodeComcast: com.comcast.ip4s.IDN = comcast。com
+
+scala> unicodeComcast.hostname
+res2: com.comcast.ip4s.Hostname = comcast.com
+
+scala> val emojiRegistrar = idn"i❤.ws"
+emojiRegistrar: com.comcast.ip4s.IDN = i❤.ws
+
+scala> emojiRegistrar.hostname
+res3: com.comcast.ip4s.Hostname = xn--i-7iq.ws
+```

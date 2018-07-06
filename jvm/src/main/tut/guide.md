@@ -224,3 +224,39 @@ Similarly, a multicast socket address is a multicast join and a UDP port number.
 val s = MulticastSocketAddress(SourceSpecificMulticastJoin(ipv4"10.10.10.10", ssmipv4"232.10.11.12"), port"5555")
 val t = MulticastSocketAddress(MulticastJoin.ssm(ip"10.10.10.10", ssmip"232.10.11.12"), port"5555")
 ```
+
+# Hostnames
+
+The `Hostname` type models an RFC1123 compliant hostname -- limited to 253 total characters, labels separated by periods, and each label consisting of ASCII letters and digits and dashes, not beginning or ending in a dash, and not exceeding 63 characters.
+
+```tut
+val home = Hostname("localhost")
+val ls = home.map(_.labels)
+val comcast = host"comcast.com"
+val cs = comcast.labels
+```
+
+On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolveAll`:
+
+```tut
+import cats.effect.IO
+
+val home = host"localhost"
+val homeIp = home.resolve[IO]
+homeIp.unsafeRunSync
+
+val homeIps = home.resolveAll[IO]
+homeIps.unsafeRunSync
+```
+
+# Internationalized Domain Names
+
+RFC1123 hostnames are limited to ASCII characters. The `IDN` type provides a way to represent Unicode hostnames.
+
+```tut
+val unicodeComcast = idn"comcast\u3002com"
+unicodeComcast.hostname
+
+val emojiRegistrar = idn"i❤.ws"
+emojiRegistrar.hostname
+```

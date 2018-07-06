@@ -95,6 +95,9 @@ object LiteralSyntaxMacros {
                               s => Hostname(s).isDefined,
                               s => c.universe.reify(Hostname(s.splice).get))
 
+  def idnInterpolator(c: Context)(args: c.Expr[Any]*): c.Expr[IDN] =
+    singlePartInterpolator(c)(args, "IDN", s => IDN(s).isDefined, s => c.universe.reify(IDN(s.splice).get))
+
   private def singlePartInterpolator[A](c: Context)(args: Seq[c.Expr[Any]],
                                                     typeName: String,
                                                     validate: String => Boolean,
