@@ -54,7 +54,9 @@ object Multicast {
   * An instance of `SourceSpecificMulticast` is typically created by either calling `Multicast.apply`
   * or by using the `asSourceSpecificMulticast` method on `IpAddress`.
   */
-sealed trait SourceSpecificMulticast[+A <: IpAddress] extends Multicast[A]
+sealed trait SourceSpecificMulticast[+A <: IpAddress] extends Multicast[A] {
+  override def toString: String = address.toString
+}
 
 object SourceSpecificMulticast {
   private case class DefaultSourceSpecificMulticast[+A <: IpAddress](address: A) extends SourceSpecificMulticast[A] {
