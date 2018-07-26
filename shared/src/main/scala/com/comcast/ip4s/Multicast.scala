@@ -30,12 +30,16 @@ sealed trait Multicast[+A <: IpAddress] extends Product with Serializable {
 
 object Multicast {
   private case class DefaultMulticast[+A <: IpAddress](address: A) extends Multicast[A] {
+    override def equals(that: Any): Boolean = that match {
+      case that: Multicast[A] => address == that.address
+    }
+    override def hashCode: Int = address.hashCode
     override def toString: String = address.toString
   }
 
   /** Constructs a multicast IP address. Returns `None` is the supplied address is not in the valid multicast range. */
   def apply[A <: IpAddress](address: A): Option[Multicast[A]] =
-    if (address.isMulticast) Some(DefaultMulticast(address)) else None
+    if (address.isMulticast) Some(new DefaultMulticast(address)) else None
 
   implicit def ordering[A <: IpAddress]: Ordering[Multicast[A]] = Ordering.by(_.address)
 
@@ -50,18 +54,20 @@ object Multicast {
   * An instance of `SourceSpecificMulticast` is typically created by either calling `Multicast.apply`
   * or by using the `asSourceSpecificMulticast` method on `IpAddress`.
   */
-sealed trait SourceSpecificMulticast[+A <: IpAddress] extends Multicast[A] {
-  override def toString: String = address.toString
-}
+sealed trait SourceSpecificMulticast[+A <: IpAddress] extends Multicast[A]
 
 object SourceSpecificMulticast {
   private case class DefaultSourceSpecificMulticast[+A <: IpAddress](address: A) extends SourceSpecificMulticast[A] {
+    override def equals(that: Any): Boolean = that match {
+      case that: Multicast[A] => address == that.address
+    }
+    override def hashCode: Int = address.hashCode
     override def toString: String = address.toString
   }
 
   /** Constructs a source specific multicast IP address. Returns `None` is the supplied address is not in the valid source specific multicast range. */
   def apply[A <: IpAddress](address: A): Option[SourceSpecificMulticast[A]] =
-    if (address.isSourceSpecificMulticast) Some(DefaultSourceSpecificMulticast(address)) else None
+    if (address.isSourceSpecificMulticast) Some(new DefaultSourceSpecificMulticast(address)) else None
 
   implicit def ordering[A <: IpAddress]: Ordering[SourceSpecificMulticast[A]] =
     new Ordering[SourceSpecificMulticast[A]] {

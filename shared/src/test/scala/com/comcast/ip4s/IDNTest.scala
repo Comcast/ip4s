@@ -24,7 +24,7 @@ class IDNTest extends BaseTestSuite {
     "support any hostname" in {
       forAll { (h: Hostname) =>
         val i = IDN.fromHostname(h)
-        val representable = h.labels.forall(l => !l.toString.startsWith("xn--"))
+        val representable = h.labels.forall(l => !l.toString.toLowerCase.startsWith("xn--"))
         if (representable) {
           i.hostname shouldBe h
           IDN(h.toString) shouldBe Some(i)
