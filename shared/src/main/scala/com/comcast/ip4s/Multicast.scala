@@ -35,7 +35,9 @@ object Multicast {
 
   /** Constructs a multicast IP address. Returns `None` is the supplied address is not in the valid multicast range. */
   def apply[A <: IpAddress](address: A): Option[Multicast[A]] =
-    if (address.isMulticast) Some(DefaultMulticast(address)) else None
+    if (address.isSourceSpecificMulticast) Some(SourceSpecificMulticast.unsafeCreate(address))
+    else if (address.isMulticast) Some(DefaultMulticast(address))
+    else None
 
   implicit def ordering[A <: IpAddress]: Ordering[Multicast[A]] = Ordering.by(_.address)
 
@@ -61,7 +63,10 @@ object SourceSpecificMulticast {
 
   /** Constructs a source specific multicast IP address. Returns `None` is the supplied address is not in the valid source specific multicast range. */
   def apply[A <: IpAddress](address: A): Option[SourceSpecificMulticast[A]] =
-    if (address.isSourceSpecificMulticast) Some(DefaultSourceSpecificMulticast(address)) else None
+    if (address.isSourceSpecificMulticast) Some(new DefaultSourceSpecificMulticast(address)) else None
+
+  private[ip4s] def unsafeCreate[A <: IpAddress](address: A): SourceSpecificMulticast[A] =
+    DefaultSourceSpecificMulticast(address)
 
   implicit def ordering[A <: IpAddress]: Ordering[SourceSpecificMulticast[A]] =
     new Ordering[SourceSpecificMulticast[A]] {
