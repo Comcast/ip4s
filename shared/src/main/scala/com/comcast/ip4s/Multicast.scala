@@ -16,8 +16,6 @@
 
 package com.comcast.ip4s
 
-import cats.{Eq, Order, Show}
-
 /**
   * Witness that the wrapped address of type `A` is a multicast address.
   *
@@ -40,10 +38,6 @@ object Multicast {
     else None
 
   implicit def ordering[A <: IpAddress]: Ordering[Multicast[A]] = Ordering.by(_.address)
-
-  implicit def eq[A <: IpAddress]: Eq[Multicast[A]] = Eq.fromUniversalEquals[Multicast[A]]
-  implicit def order[A <: IpAddress]: Order[Multicast[A]] = Order.fromOrdering(ordering[A])
-  implicit def show[A <: IpAddress]: Show[Multicast[A]] = Show.fromToString[Multicast[A]]
 }
 
 /**

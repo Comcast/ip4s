@@ -16,9 +16,6 @@
 
 package com.comcast.ip4s
 
-import cats.{Eq, Order, Show}
-import cats.data.NonEmptyList
-import cats.implicits._
 import scala.util.hashing.MurmurHash3
 
 /**
@@ -38,7 +35,7 @@ import scala.util.hashing.MurmurHash3
   * Note: equality and comparison of IDNs is case-sensitive. Consider comparing normalized toString values
   * for a more lenient notion of equality.
   */
-final class IDN private (val labels: NonEmptyList[IDN.Label], val hostname: Hostname, override val toString: String)
+final class IDN private (val labels: List[IDN.Label], val hostname: Hostname, override val toString: String)
     extends Ordered[IDN] {
 
   /** Converts this IDN to lower case and replaces dots with ASCII periods. */
@@ -73,14 +70,15 @@ object IDN extends IDNCompanionPlatform {
   def apply(value: String): Option[IDN] = value.size match {
     case 0 => None
     case _ =>
-      val labels = NonEmptyList.fromList(
-        value
-          .split(DotPattern)
-          .iterator
-          .map(new Label(_))
-          .toList)
-      val hostname = toAscii(value).flatMap(Hostname(_))
-      (labels, hostname).mapN((l, h) => new IDN(l, h, value))
+      val labels = value
+        .split(DotPattern)
+        .iterator
+        .map(new Label(_))
+        .toList
+      Option(labels).filterNot(_.isEmpty).flatMap { ls =>
+        val hostname = toAscii(value).flatMap(Hostname(_))
+        hostname.map(h => new IDN(ls, h, value))
+      }
   }
 
   /** Converts the supplied (ASCII) hostname in to an IDN. */
@@ -89,8 +87,4 @@ object IDN extends IDNCompanionPlatform {
       hostname.labels.map(l => new Label(toUnicode(l.toString)))
     new IDN(labels, hostname, labels.toList.mkString("."))
   }
-
-  implicit val eq: Eq[IDN] = Eq.fromUniversalEquals[IDN]
-  implicit val order: Order[IDN] = Order.fromComparable[IDN]
-  implicit val show: Show[IDN] = Show.fromToString[IDN]
 }

@@ -16,8 +16,6 @@
 
 package com.comcast.ip4s
 
-import cats.{Eq, Order, Show}
-import cats.data.NonEmptyList
 import scala.util.hashing.MurmurHash3
 
 /**
@@ -27,9 +25,8 @@ import scala.util.hashing.MurmurHash3
   * A label may not start or end in a dash and may not exceed 63 characters in length. Labels are separated by
   * periods and the overall hostname must not exceed 253 characters in length.
   */
-final class Hostname private (val labels: NonEmptyList[Hostname.Label], override val toString: String)
-    extends HostnamePlatform
-    with Ordered[Hostname] {
+final class Hostname private (val labels: List[Hostname.Label], override val toString: String)
+    extends Ordered[Hostname] {
 
   /** Converts this hostname to lower case. */
   def normalized: Hostname =
@@ -75,12 +72,8 @@ object Hostname {
             .iterator
             .map(new Label(_))
             .toList
-          NonEmptyList.fromList(labels).map(new Hostname(_, value))
+          if (labels.isEmpty) None else Option(new Hostname(labels, value))
         case _ => None
       }
   }
-
-  implicit val eq: Eq[Hostname] = Eq.fromUniversalEquals[Hostname]
-  implicit val order: Order[Hostname] = Order.fromComparable[Hostname]
-  implicit val show: Show[Hostname] = Show.fromToString[Hostname]
 }

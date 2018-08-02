@@ -15,5 +15,12 @@
  */
 
 package com.comcast.ip4s
+package interop.cats
 
-private[ip4s] trait HostnamePlatform
+import _root_.cats.{Eq, Order, Show}
+
+trait MulticastInstances {
+  implicit def MulticastEq[A <: IpAddress]: Eq[Multicast[A]] = Eq.fromUniversalEquals[Multicast[A]]
+  implicit def MulticastOrder[A <: IpAddress]: Order[Multicast[A]] = Order.fromOrdering(Multicast.ordering[A])
+  implicit def MulticastShow[A <: IpAddress]: Show[Multicast[A]] = Show.fromToString[Multicast[A]]
+}
