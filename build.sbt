@@ -100,12 +100,12 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
     scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt =>
       !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
     tutTargetDirectory := baseDirectory.value / "../../docs",
-    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.cats.*;version=${Bundle-Version}"),
+    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.interop.cats.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
       Seq(s"""scala.*;version="[$major.$minor,$major.${minor + 1})"""", "*")
     },
-    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.cats.*"),
+    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.interop.cats.*"),
     OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
     osgiSettings
   )
