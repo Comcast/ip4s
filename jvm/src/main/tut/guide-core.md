@@ -7,136 +7,95 @@ This is the guide for IP Addresses for Scala & Scala.js. This library provides t
 
 The `IpAddress` type represents either an IPv4 address or an IPv6 address. The primary mechanism to construct an `IpAddress` is `IpAddress.apply`, which converts a string to an `Option[IpAddress]`. You can also construct an `IpAddress` from a byte array of either 4 bytes or 16 bytes.
 
-```scala
-scala> import com.comcast.ip4s.IpAddress
+```tut
 import com.comcast.ip4s.IpAddress
 
-scala> val home = IpAddress("127.0.0.1")
-home: Option[com.comcast.ip4s.IpAddress] = Some(127.0.0.1)
-
-scala> val home6 = IpAddress("::1")
-home6: Option[com.comcast.ip4s.IpAddress] = Some(::1)
+val home = IpAddress("127.0.0.1")
+val home6 = IpAddress("::1")
 ```
 
 The `toString` method on `IpAddress` renders the IP in dotted-decimal notation if it is a V4 address and condensed string notation if it is a V6 address. The `toBytes` method converts the IP into a 4 or 16 element byte array. There are a few more methods on `IpAddress` that we'll look at later but not many more -- the API is small.
 
 Sometimes it is useful to explicitly require an IPv4 or IPv6 address -- for example, when modelling the configuration of a device that requires an IPv6 address. This can be accomplished by using the `Ipv4Address` or `Ipv6Address` types, both of which are subtypes of `IpAddress`. We can construct these types directly via methods on their companions:
 
-```scala
-scala> import com.comcast.ip4s.{Ipv4Address, Ipv6Address}
+```tut
 import com.comcast.ip4s.{Ipv4Address, Ipv6Address}
 
-scala> val explicitV4Home = Ipv4Address("127.0.0.1")
-explicitV4Home: Option[com.comcast.ip4s.Ipv4Address] = Some(127.0.0.1)
-
-scala> val explicitV6Home = Ipv6Address("::1")
-explicitV6Home: Option[com.comcast.ip4s.Ipv6Address] = Some(::1)
+val explicitV4Home = Ipv4Address("127.0.0.1")
+val explicitV6Home = Ipv6Address("::1")
 ```
 
 Because `Ipv4Address` and `Ipv6Address` are subtypes of `IpAddress`, we can pattern match on an `IpAddress` or use the `fold` method:
 
-```scala
-scala> import com.comcast.ip4s.{Ipv4Address, Ipv6Address}
+```tut
 import com.comcast.ip4s.{Ipv4Address, Ipv6Address}
 
-scala> val homeIsV4 = home.get match {
-     |   case _: Ipv4Address => true
-     |   case _: Ipv6Address => false
-     | }
-homeIsV4: Boolean = true
+val homeIsV4 = home.get match {
+  case _: Ipv4Address => true
+  case _: Ipv6Address => false
+}
 
-scala> val home6IsV4 = home6.get.fold(_ => true, _ => false)
-home6IsV4: Boolean = false
+val home6IsV4 = home6.get.fold(_ => true, _ => false)
 ```
 
 ## IP Literals
 
 In the previous examples, all of the IP addresses were wrapped in an `Option`. When a string is statically (i.e. at compile time) known to be a valid IP address, we can avoid the `Option` entirely by using IP address string interpolators.
 
-```scala
-scala> import com.comcast.ip4s._
+```tut
 import com.comcast.ip4s._
 
-scala> val home = ip"127.0.0.1"
-home: com.comcast.ip4s.IpAddress = 127.0.0.1
-
-scala> val home4 = ipv4"127.0.0.1"
-home4: com.comcast.ip4s.Ipv4Address = 127.0.0.1
-
-scala> val home6 = ipv6"::1"
-home6: com.comcast.ip4s.Ipv6Address = ::1
+val home = ip"127.0.0.1"
+val home4 = ipv4"127.0.0.1"
+val home6 = ipv6"::1"
 ```
 
 The `ip` interpolator returns an `IpAddress`, the `ipv4` interpolator returns an `Ipv4Address`, and the `ipv6` interpolator returns an `Ipv6Address`. If the string is not a valid IP of the requested type, the expression will fail to compile.
 
-```scala
-scala> val bad = ipv4"::1"
-<console>:19: error: invalid IPv4 address
-       val bad = ipv4"::1"
-                 ^
+```tut:nofail
+val bad = ipv4"::1"
 ```
 
 ## IPv6 String Formats
 
 IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead, you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.apply` and `IpAddress.apply` can parse all of these formats.
 
-```scala
-scala> val home = ipv6"::7f00:1"
-home: com.comcast.ip4s.Ipv6Address = ::7f00:1
+```tut
+val home = ipv6"::7f00:1"
+val homeLong = home.toUncondensedString
+val homeMixed = home.toMixedString
 
-scala> val homeLong = home.toUncondensedString
-homeLong: String = 0000:0000:0000:0000:0000:0000:7f00:0001
-
-scala> val homeMixed = home.toMixedString
-homeMixed: String = ::127.0.0.1
-
-scala> val parsedHomeLong = Ipv6Address(homeLong)
-parsedHomeLong: Option[com.comcast.ip4s.Ipv6Address] = Some(::7f00:1)
-
-scala> val parsedHomeMixed = Ipv6Address(homeMixed)
-parsedHomeMixed: Option[com.comcast.ip4s.Ipv6Address] = Some(::7f00:1)
+val parsedHomeLong = Ipv6Address(homeLong)
+val parsedHomeMixed = Ipv6Address(homeMixed)
 ```
 
 ## Ordering
 
 IP addresses have a defined ordering, making them sortable. Note when comparing an IPv4 address to an IPv6 address, the V4 address is converted to a V6 address by left padding with 0 bytes (aka, a "compatible" V4-in-V6 address).
 
-```scala
-scala> val ips = List(ipv4"10.1.1.1", ipv4"10.1.2.0", ipv4"10.1.0.0", ipv6"::1", ipv6"ff3b::")
-ips: List[com.comcast.ip4s.IpAddress] = List(10.1.1.1, 10.1.2.0, 10.1.0.0, ::1, ff3b::)
-
-scala> val sorted = ips.sorted
-sorted: List[com.comcast.ip4s.IpAddress] = List(::1, 10.1.0.0, 10.1.1.1, 10.1.2.0, ff3b::)
+```tut
+val ips = List(ipv4"10.1.1.1", ipv4"10.1.2.0", ipv4"10.1.0.0", ipv6"::1", ipv6"ff3b::")
+val sorted = ips.sorted
 ```
 
 ## JVM Integration
 
 When compiling for the JVM, the various IP address classes have a `toInetAddress` method which returns a `java.net.InetAddress`, allowing easy integration with libraries that use `InetAddress`.
 
-```scala
-scala> val homeIA = ip"127.0.0.1".toInetAddress
-homeIA: java.net.InetAddress = /127.0.0.1
-
-scala> val home4IA = ipv4"127.0.0.1".toInetAddress
-home4IA: java.net.Inet4Address = /127.0.0.1
-
-scala> val home6IA = ipv6"::1".toInetAddress
-home6IA: java.net.Inet6Address = /0:0:0:0:0:0:0:1
+```tut
+val homeIA = ip"127.0.0.1".toInetAddress
+val home4IA = ipv4"127.0.0.1".toInetAddress
+val home6IA = ipv6"::1".toInetAddress
 ```
 
 # Multicast
 
 Both IPv4 and IPv6 have reserved address ranges for multicast and smaller reserved ranges for source specific multicast. The address types in this library are aware of these ranges:
 
-```scala
-scala> val ips = List(ip"127.0.0.1", ip"224.10.10.10", ip"232.11.11.11", ip"::1", ip"ff00::10", ip"ff3b::11")
-ips: List[com.comcast.ip4s.IpAddress] = List(127.0.0.1, 224.10.10.10, 232.11.11.11, ::1, ff00::10, ff3b::11)
-
-scala> val multicastIps = ips.filter(_.isMulticast)
-multicastIps: List[com.comcast.ip4s.IpAddress] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
-
-scala> val ssmIps = ips.filter(_.isSourceSpecificMulticast)
-ssmIps: List[com.comcast.ip4s.IpAddress] = List(232.11.11.11, ff3b::11)
+```tut
+val ips = List(ip"127.0.0.1", ip"224.10.10.10", ip"232.11.11.11", ip"::1", ip"ff00::10", ip"ff3b::11")
+val multicastIps = ips.filter(_.isMulticast)
+val ssmIps = ips.filter(_.isSourceSpecificMulticast)
 ```
 
 ## Multicast Witnesses
@@ -152,12 +111,9 @@ These wrappers serve as type level witnesses that the wrapped address is a valid
 
 To construct instances of `Multicast[A]` and `SourceSpecificMulticast[A]`, we can use the `asMulticast` and `asSourceSpecificMulticast` methods on `IpAddress`:
 
-```scala
-scala> val multicastIps = ips.flatMap(_.asMulticast)
-multicastIps: List[com.comcast.ip4s.Multicast[com.comcast.ip4s.IpAddress]] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
-
-scala> val ssmIps = ips.flatMap(_.asSourceSpecificMulticast)
-ssmIps: List[com.comcast.ip4s.SourceSpecificMulticast[com.comcast.ip4s.IpAddress]] = List(232.11.11.11, ff3b::11)
+```tut
+val multicastIps = ips.flatMap(_.asMulticast)
+val ssmIps = ips.flatMap(_.asSourceSpecificMulticast)
 ```
 
 ## Multicast Literals
@@ -189,15 +145,10 @@ case class SourceSpecificMulticastJoin[A <: IpAddress](source: A, group: SourceS
 
 To construct a `MulticastJoin`, we can use the `asm` and `ssm` methods in the `MulticastJoin` companion.
 
-```scala
-scala> val j1 = MulticastJoin.ssm(ipv4"10.11.12.13", ssmipv4"232.1.2.3")
-j1: com.comcast.ip4s.MulticastJoin[com.comcast.ip4s.Ipv4Address] = 10.11.12.13@232.1.2.3
-
-scala> val j2 = MulticastJoin.ssm(ipv4"10.11.12.13", ipv4"232.1.2.3".asSourceSpecificMulticast.get)
-j2: com.comcast.ip4s.MulticastJoin[com.comcast.ip4s.Ipv4Address] = 10.11.12.13@232.1.2.3
-
-scala> val j3 = MulticastJoin.asm(mipv6"ff3b::10")
-j3: com.comcast.ip4s.MulticastJoin[com.comcast.ip4s.Ipv6Address] = ff3b::10
+```tut
+val j1 = MulticastJoin.ssm(ipv4"10.11.12.13", ssmipv4"232.1.2.3")
+val j2 = MulticastJoin.ssm(ipv4"10.11.12.13", ipv4"232.1.2.3".asSourceSpecificMulticast.get)
+val j3 = MulticastJoin.asm(mipv6"ff3b::10")
 ```
 
 # CIDR
@@ -206,66 +157,40 @@ CIDR (classless inter-domain routing) addresses are a compact representation of 
 
 The `Cidr` type represents CIDR addresses. It's parameterized by the type of IP address you are working with -- either `IpAddress`, `Ipv4Address`, or `Ipv6Address`.
 
-```scala
-scala> val x = Cidr(ip"10.123.45.67", 8)
-x: com.comcast.ip4s.Cidr[com.comcast.ip4s.IpAddress] = 10.123.45.67/8
-
-scala> val y = Cidr(ipv4"10.123.45.67", 8)
-y: com.comcast.ip4s.Cidr[com.comcast.ip4s.Ipv4Address] = 10.123.45.67/8
-
-scala> val z = Cidr(ipv6"ff3b::10", 16)
-z: com.comcast.ip4s.Cidr[com.comcast.ip4s.Ipv6Address] = ff3b::10/16
+```tut
+val x = Cidr(ip"10.123.45.67", 8)
+val y = Cidr(ipv4"10.123.45.67", 8)
+val z = Cidr(ipv6"ff3b::10", 16)
 ```
 
 A shortand for constructing a `Cidr` is available as a method on `IpAddress`:
 
-```scala
-scala> val x = ip"10.123.45.67" / 8
-x: com.comcast.ip4s.Cidr[com.comcast.ip4s.IpAddress] = 10.123.45.67/8
-
-scala> val y = ipv4"10.123.45.67" / 8
-y: com.comcast.ip4s.Cidr[com.comcast.ip4s.Ipv4Address] = 10.123.45.67/8
-
-scala> val z = ipv6"ff3b::10" / 16
-z: com.comcast.ip4s.Cidr[com.comcast.ip4s.Ipv6Address] = ff3b::10/16
+```tut
+val x = ip"10.123.45.67" / 8
+val y = ipv4"10.123.45.67" / 8
+val z = ipv6"ff3b::10" / 16
 ```
 
 The `Cidr` object provides mechanisms for parsing CIDR strings as well:
 
-```scala
-scala> val parsedX = Cidr.fromString("10.123.45.67/8")
-parsedX: Option[com.comcast.ip4s.Cidr[com.comcast.ip4s.IpAddress]] = Some(10.123.45.67/8)
-
-scala> val parsedY = Cidr.fromString4("10.123.45.67/8")
-parsedY: Option[com.comcast.ip4s.Cidr[com.comcast.ip4s.Ipv4Address]] = Some(10.123.45.67/8)
-
-scala> val parsedZ = Cidr.fromString6("ff3b::10/16")
-parsedZ: Option[com.comcast.ip4s.Cidr[com.comcast.ip4s.Ipv6Address]] = Some(ff3b::10/16)
+```tut
+val parsedX = Cidr.fromString("10.123.45.67/8")
+val parsedY = Cidr.fromString4("10.123.45.67/8")
+val parsedZ = Cidr.fromString6("ff3b::10/16")
 ```
 
 Given a `Cidr[A]`, we can ask various things about the routing prefix:
 
-```scala
-scala> val prefixX = x.prefix
-prefixX: com.comcast.ip4s.IpAddress = 10.0.0.0
+```tut
+val prefixX = x.prefix
+val prefixZ = z.prefix
 
-scala> val prefixZ = z.prefix
-prefixZ: com.comcast.ip4s.Ipv6Address = ff3b::
+val maskX = x.mask
+val maskZ = z.mask
 
-scala> val maskX = x.mask
-maskX: com.comcast.ip4s.IpAddress = 255.0.0.0
-
-scala> val maskZ = z.mask
-maskZ: com.comcast.ip4s.Ipv6Address = ffff::
-
-scala> val doesXContainHome = x.contains(home)
-doesXContainHome: Boolean = false
-
-scala> val doesXContainSuccessor = x.contains(x.address.next)
-doesXContainSuccessor: Boolean = true
-
-scala> val lastAddressInX = x.last
-lastAddressInX: com.comcast.ip4s.IpAddress = 10.255.255.255
+val doesXContainHome = x.contains(home)
+val doesXContainSuccessor = x.contains(x.address.next)
+val lastAddressInX = x.last
 ```
 
 # Socket Addresses
@@ -278,96 +203,47 @@ case class SocketAddress[+A <: IpAddress](ip: A, port: Port)
 
 Like we saw with `CIDR` and `MulticastJoin`, `SocketAddress` is polymorphic in address type, allowing expression of contraints like a socket address with an IPv6 IP. `SocketAddress` can be converted to and from a string representation, where V6 addresses are surrounded by square brackets.
 
-```scala
-scala> val s = SocketAddress(ipv4"127.0.0.1", port"5555")
-s: com.comcast.ip4s.SocketAddress[com.comcast.ip4s.Ipv4Address] = 127.0.0.1:5555
-
-scala> val s1 = SocketAddress.fromString(s.toString)
-s1: Option[com.comcast.ip4s.SocketAddress[com.comcast.ip4s.IpAddress]] = Some(127.0.0.1:5555)
-
-scala> val t = SocketAddress(ipv6"::1", port"5555")
-t: com.comcast.ip4s.SocketAddress[com.comcast.ip4s.Ipv6Address] = [::1]:5555
-
-scala> val t1 = SocketAddress.fromString6(t.toString)
-t1: Option[com.comcast.ip4s.SocketAddress[com.comcast.ip4s.Ipv6Address]] = Some([::1]:5555)
+```tut
+val s = SocketAddress(ipv4"127.0.0.1", port"5555")
+val s1 = SocketAddress.fromString(s.toString)
+val t = SocketAddress(ipv6"::1", port"5555")
+val t1 = SocketAddress.fromString6(t.toString)
 ```
 
 On the JVM, a `SocketAddress` can be converted to a `java.net.InetSocketAddress` via the `toInetSocketAddress` method.
 
-```scala
-scala> val u = t.toInetSocketAddress
-u: java.net.InetSocketAddress = /0:0:0:0:0:0:0:1:5555
+```tut
+val u = t.toInetSocketAddress
 ```
 
 ## Multicast Socket Addresses
 
 Similarly, a multicast socket address is a multicast join and a UDP port number. It is defined polymorphically in both the IP address type and the join type (general join, any source join, or source specific join). For example, compare the types of `s` and `t`:
 
-```scala
-scala> val s = MulticastSocketAddress(SourceSpecificMulticastJoin(ipv4"10.10.10.10", ssmipv4"232.10.11.12"), port"5555")
-s: com.comcast.ip4s.MulticastSocketAddress[com.comcast.ip4s.SourceSpecificMulticastJoin,com.comcast.ip4s.Ipv4Address] = 10.10.10.10@232.10.11.12:5555
-
-scala> val t = MulticastSocketAddress(MulticastJoin.ssm(ip"10.10.10.10", ssmip"232.10.11.12"), port"5555")
-t: com.comcast.ip4s.MulticastSocketAddress[com.comcast.ip4s.MulticastJoin,com.comcast.ip4s.IpAddress] = 10.10.10.10@232.10.11.12:5555
+```tut
+val s = MulticastSocketAddress(SourceSpecificMulticastJoin(ipv4"10.10.10.10", ssmipv4"232.10.11.12"), port"5555")
+val t = MulticastSocketAddress(MulticastJoin.ssm(ip"10.10.10.10", ssmip"232.10.11.12"), port"5555")
 ```
 
 # Hostnames
 
 The `Hostname` type models an RFC1123 compliant hostname -- limited to 253 total characters, labels separated by periods, and each label consisting of ASCII letters and digits and dashes, not beginning or ending in a dash, and not exceeding 63 characters.
 
-```scala
-scala> val home = Hostname("localhost")
-home: Option[com.comcast.ip4s.Hostname] = Some(localhost)
-
-scala> val ls = home.map(_.labels)
-ls: Option[List[com.comcast.ip4s.Hostname.Label]] = Some(List(localhost))
-
-scala> val comcast = host"comcast.com"
-comcast: com.comcast.ip4s.Hostname = comcast.com
-
-scala> val cs = comcast.labels
-cs: List[com.comcast.ip4s.Hostname.Label] = List(comcast, com)
-```
-
-On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolveAll`:
-
-```scala
-scala> import cats.effect.IO
-import cats.effect.IO
-
-scala> import com.comcast.ip4s.interop.cats._
-import com.comcast.ip4s.interop.cats._
-
-scala> val home = host"localhost"
-home: com.comcast.ip4s.Hostname = localhost
-
-scala> val homeIp = HostnameResolver.resolve[IO](home)
-homeIp: cats.effect.IO[Option[com.comcast.ip4s.IpAddress]] = IO$1512515962
-
-scala> homeIp.unsafeRunSync
-res0: Option[com.comcast.ip4s.IpAddress] = Some(127.0.0.1)
-
-scala> val homeIps = HostnameResolver.resolveAll[IO](home)
-homeIps: cats.effect.IO[Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]]] = IO$1930822171
-
-scala> homeIps.unsafeRunSync
-res1: Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
+```tut
+val home = Hostname("localhost")
+val ls = home.map(_.labels)
+val comcast = host"comcast.com"
+val cs = comcast.labels
 ```
 
 # Internationalized Domain Names
 
 RFC1123 hostnames are limited to ASCII characters. The `IDN` type provides a way to represent Unicode hostnames.
 
-```scala
-scala> val unicodeComcast = idn"comcast\u3002com"
-unicodeComcast: com.comcast.ip4s.IDN = comcast。com
+```tut
+val unicodeComcast = idn"comcast\u3002com"
+unicodeComcast.hostname
 
-scala> unicodeComcast.hostname
-res2: com.comcast.ip4s.Hostname = comcast.com
-
-scala> val emojiRegistrar = idn"i❤.ws"
-emojiRegistrar: com.comcast.ip4s.IDN = i❤.ws
-
-scala> emojiRegistrar.hostname
-res3: com.comcast.ip4s.Hostname = xn--i-7iq.ws
+val emojiRegistrar = idn"i❤.ws"
+emojiRegistrar.hostname
 ```

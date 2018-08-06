@@ -49,6 +49,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
           libraryDependencies.value
       }
     },
+    scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt =>
+      !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
+    tutTargetDirectory := baseDirectory.value / "../docs",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
@@ -59,7 +62,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     osgiSettings
   )
 
-lazy val coreJVM = core.jvm.enablePlugins(SbtOsgi)
+lazy val coreJVM = core.jvm.enablePlugins(TutPlugin, SbtOsgi)
 lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val cats = crossProject(JVMPlatform, JSPlatform)
