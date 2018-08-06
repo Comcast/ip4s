@@ -16,7 +16,6 @@
 
 package com.comcast.ip4s
 
-import cats.{Eq, Order, Show}
 import scala.language.higherKinds
 
 /**
@@ -94,13 +93,6 @@ object MulticastJoin {
 
   implicit def ordering[J[x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Ordering[J[A]] =
     Ordering.by(_.sourceAndGroup)
-
-  implicit def eq[J[x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Eq[J[A]] =
-    Eq.fromUniversalEquals[J[A]]
-  implicit def order[J[x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Order[J[A]] =
-    Order.fromOrdering(ordering[J, A])
-  implicit def show[J[x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Show[J[A]] =
-    Show.fromToString[J[A]]
 }
 
 /** Multicast join to a group without a source filter. */

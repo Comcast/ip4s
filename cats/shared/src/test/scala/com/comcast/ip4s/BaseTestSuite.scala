@@ -15,18 +15,12 @@
  */
 
 package com.comcast.ip4s
+package interop.cats
 
-import cats.effect.IO
+import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
-class HostnameJvmTest extends BaseTestSuite {
-
-  "Hostname" should {
-    "support ip resolution" in {
-      val localhost = Hostname("localhost").get
-      val ip = localhost.resolve[IO].unsafeRunSync
-      ip shouldBe 'defined
-      val allIps = localhost.resolveAll[IO].unsafeRunSync
-      allIps.get.toList should contain(ip.get)
-    }
-  }
+abstract class BaseTestSuite extends WordSpec with GeneratorDrivenPropertyChecks with Matchers {
+  implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
+    PropertyCheckConfiguration(minSuccessful = 5000)
 }

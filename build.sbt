@@ -3,23 +3,71 @@ import com.typesafe.tools.mima.core.{Problem, ProblemFilters}
 import sbtrelease.Version
 import sbtcrossproject.{crossProject, CrossType}
 
-lazy val root = project.in(file(".")).
-  aggregate(coreJVM, coreJS).
-  settings(commonSettings).
-  settings(
+lazy val root = project
+  .in(file("."))
+  .aggregate(coreJVM, coreJS, catsJVM, catsJS)
+  .settings(commonSettings)
+  .settings(
     publish := {},
     publishLocal := {},
     PgpKeys.publishSigned := {},
     publishArtifact := false
-  ).
-  settings(publishingSettings)
+  )
+  .settings(publishingSettings)
 
-lazy val core = crossProject(JVMPlatform, JSPlatform).
-  in(file(".")).
-  enablePlugins(AutomateHeaderPlugin).
-  settings(commonSettings).
-  settings(
-    name := "ip4s",
+lazy val core = crossProject(JVMPlatform, JSPlatform)
+  .in(file("."))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
+  .settings(
+    name := "ip4s-core",
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
+      "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
+    ),
+    libraryDependencies += {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, v)) if v >= 13 =>
+          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP1" % "test"
+        case _ =>
+          "org.scalatest" %%% "scalatest" % "3.0.5-M1" % "test"
+      }
+    }
+  )
+  .jvmSettings(mimaSettings)
+  .jsSettings(
+    npmDependencies in Compile += "punycode" -> "2.1.1"
+  )
+  .settings(publishingSettings)
+  .jvmSettings(
+    libraryDependencies += "com.google.guava" % "guava" % "23.6.1-jre" % "test",
+    libraryDependencies := {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, v)) if v >= 13 =>
+          libraryDependencies.value.filterNot(_.toString.contains("tut-core"))
+        case _ =>
+          libraryDependencies.value
+      }
+    },
+    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
+    OsgiKeys.importPackage := {
+      val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
+      Seq(s"""scala.*;version="[$major.$minor,$major.${minor + 1})"""", "*")
+    },
+    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.*"),
+    OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
+    osgiSettings
+  )
+
+lazy val coreJVM = core.jvm.enablePlugins(SbtOsgi)
+lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
+
+lazy val cats = crossProject(JVMPlatform, JSPlatform)
+  .in(file("./cats"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
+  .settings(
+    name := "ip4s-cats",
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-effect" % "0.10",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
@@ -32,61 +80,14 @@ lazy val core = crossProject(JVMPlatform, JSPlatform).
         case _ =>
           "org.scalatest" %%% "scalatest" % "3.0.5-M1" % "test"
       }
-    },
-    scalacOptions ++= Seq(
-      "-deprecation",
-      "-encoding", "utf-8",
-      "-explaintypes",
-      "-feature",
-      "-unchecked",
-      "-Xcheckinit",
-      "-Xfatal-warnings",
-      "-Xfuture",
-      "-Xlint",
-      "-Ywarn-dead-code",
-      "-Ywarn-inaccessible",
-      "-Ywarn-infer-any",
-      "-Ywarn-nullary-override",
-      "-Ywarn-nullary-unit",
-      "-Ywarn-numeric-widen",
-      "-Ywarn-value-discard"
-    ),
-    scalacOptions ++= {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, v)) if v >= 12 =>
-          Seq(
-            "-Ywarn-extra-implicit",
-            "-Ywarn-unused:implicits",
-            "-Ywarn-unused:imports",
-            "-Ywarn-unused:locals",
-            // "-Ywarn-unused:params", disabled until https://github.com/tkawachi/sbt-doctest/issues/102
-            "-Ywarn-unused:patvars",
-            "-Ywarn-unused:privates"
-          )
-        case _ => Nil
-      }
-    },
-    scalacOptions in (Compile, console) := (scalacOptions in (Compile, console)).value.filter(opt => !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
-    scalacOptions in (Test, console) := (scalacOptions in (Compile, console)).value,
-    scalacOptions in (Compile, doc) ++= {
-      val tagOrBranch = {
-        if (version.value endsWith "SNAPSHOT") git.gitCurrentBranch.value
-        else ("v" + version.value)
-      }
-      Seq(
-        "-implicits",
-        "-implicits-show-all",
-        "-sourcepath", baseDirectory.value.getCanonicalPath,
-        "-doc-source-url", s"https://github.com/comcast/ip4s/tree/$tagOrBranch/€{FILE_PATH}.scala",
-        "-diagrams"
-      )
-    },
-    sourceDirectories in (Compile, scalafmt) += baseDirectory.value / "../shared/src/main/scala",
-    scalafmtOnCompile := true,
-    doctestTestFramework := DoctestTestFramework.ScalaTest,
-    initialCommands := "import com.comcast.ip4s._"
-  ).
-  jvmSettings(
+    }
+  )
+  .jvmSettings(mimaSettings)
+  .jsSettings(
+    npmDependencies in Compile += "punycode" -> "2.1.1"
+  )
+  .settings(publishingSettings)
+  .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "23.6.1-jre" % "test",
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
@@ -96,25 +97,22 @@ lazy val core = crossProject(JVMPlatform, JSPlatform).
           libraryDependencies.value
       }
     },
-    scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt => !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
-    tutTargetDirectory := baseDirectory.value / "../docs",
-    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
+    scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt =>
+      !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
+    tutTargetDirectory := baseDirectory.value / "../../docs",
+    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.cats.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
       Seq(s"""scala.*;version="[$major.$minor,$major.${minor + 1})"""", "*")
     },
-    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.*"),
+    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.cats.*"),
     OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
     osgiSettings
-  ).
-  jvmSettings(mimaSettings).
-  jsSettings(
-    npmDependencies in Compile += "punycode" -> "2.1.1"
-  ).
-  settings(publishingSettings)
+  )
+  .dependsOn(core)
 
-lazy val coreJVM = core.jvm.enablePlugins(TutPlugin, SbtOsgi)
-lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
+lazy val catsJVM = cats.jvm.enablePlugins(TutPlugin, SbtOsgi)
+lazy val catsJS = cats.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val commonSettings = Seq(
   organization := "com.comcast",
@@ -130,9 +128,66 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
   scalaVersion := "2.12.6",
-  crossScalaVersions := Seq("2.11.12", "2.12.6")
+  crossScalaVersions := Seq("2.11.12", "2.12.6"),
   // 2.13 support is disabled until there's a cats-effect build available
   // crossScalaVersions := Seq("2.11.12", "2.12.6", "2.13.0-M4")
+  scalacOptions ++= Seq(
+    "-language:higherKinds",
+    "-deprecation",
+    "-encoding",
+    "utf-8",
+    "-explaintypes",
+    "-feature",
+    "-unchecked",
+    "-Xcheckinit",
+    "-Xfatal-warnings",
+    "-Xfuture",
+    "-Xlint",
+    "-Ywarn-dead-code",
+    "-Ywarn-inaccessible",
+    "-Ywarn-infer-any",
+    "-Ywarn-nullary-override",
+    "-Ywarn-nullary-unit",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard"
+  ),
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v >= 12 =>
+        Seq(
+          "-Ywarn-extra-implicit",
+          "-Ywarn-unused:implicits",
+          "-Ywarn-unused:imports",
+          "-Ywarn-unused:locals",
+          // "-Ywarn-unused:params", disabled until https://github.com/tkawachi/sbt-doctest/issues/102
+          "-Ywarn-unused:patvars",
+          "-Ywarn-unused:privates"
+        )
+      case _ => Nil
+    }
+  },
+  scalacOptions in (Compile, console) := (scalacOptions in (Compile, console)).value.filter(opt =>
+    !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
+  scalacOptions in (Test, console) := (scalacOptions in (Compile, console)).value,
+  scalacOptions in (Compile, doc) ++= {
+    val tagOrBranch = {
+      if (version.value endsWith "SNAPSHOT") git.gitCurrentBranch.value
+      else ("v" + version.value)
+    }
+    Seq(
+      "-implicits",
+      "-implicits-show-all",
+      "-sourcepath",
+      baseDirectory.value.getCanonicalPath,
+      "-doc-source-url",
+      s"https://github.com/comcast/ip4s/tree/$tagOrBranch/€{FILE_PATH}.scala",
+      "-diagrams"
+    )
+  },
+  sourceDirectories in (Compile, scalafmt) += baseDirectory.value / "../shared/src/main/scala",
+  scalafmtOnCompile := true,
+  doctestTestFramework := DoctestTestFramework.ScalaTest,
+  initialCommands := "import com.comcast.ip4s._"
 )
 
 lazy val publishingSettings = Seq(
@@ -191,5 +246,6 @@ def previousVersion(currentVersion: String): Option[String] = {
 
 lazy val contributors = Seq(
   "mpilquist" -> "Michael Pilquist",
-  "matthughes" -> "Matt Hughes"
+  "matthughes" -> "Matt Hughes",
+  "nequissimus" -> "Tim Steinbach"
 )

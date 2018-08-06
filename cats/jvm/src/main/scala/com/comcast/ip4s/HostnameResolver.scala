@@ -15,13 +15,16 @@
  */
 
 package com.comcast.ip4s
+package interop.cats
 
-import cats.data.NonEmptyList
-import cats.effect.Sync
 import java.net.{InetAddress, UnknownHostException}
+
 import scala.language.higherKinds
 
-private[ip4s] trait HostnamePlatform {
+import _root_.cats.data.NonEmptyList
+import _root_.cats.effect.Sync
+
+object HostnameResolver {
 
   /**
     * Resolves this hostname to an ip address using the platform DNS resolver.
@@ -31,10 +34,10 @@ private[ip4s] trait HostnamePlatform {
     * Resolution happens synchronously when the returned task is evaluated
     * so consider shifting the returned task to a blocking execution context.
     */
-  def resolve[F[_]: Sync]: F[Option[IpAddress]] =
+  def resolve[F[_]: Sync](hostname: Hostname): F[Option[IpAddress]] =
     Sync[F].delay {
       try {
-        val addr = InetAddress.getByName(toString)
+        val addr = InetAddress.getByName(hostname.toString)
         IpAddress.fromBytes(addr.getAddress)
       } catch {
         case _: UnknownHostException => None
@@ -49,10 +52,10 @@ private[ip4s] trait HostnamePlatform {
     * Resolution happens synchronously when the returned task is evaluated
     * so consider shifting the returned task to a blocking execution context.
     */
-  def resolveAll[F[_]: Sync]: F[Option[NonEmptyList[IpAddress]]] =
+  def resolveAll[F[_]: Sync](hostname: Hostname): F[Option[NonEmptyList[IpAddress]]] =
     Sync[F].delay {
       try {
-        val addrs = InetAddress.getAllByName(toString)
+        val addrs = InetAddress.getAllByName(hostname.toString)
         NonEmptyList.fromList(addrs.toList.flatMap(addr => IpAddress.fromBytes(addr.getAddress)))
       } catch {
         case _: UnknownHostException => None

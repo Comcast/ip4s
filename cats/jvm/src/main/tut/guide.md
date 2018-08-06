@@ -240,12 +240,13 @@ On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolve
 
 ```tut
 import cats.effect.IO
+import com.comcast.ip4s.interop.cats._
 
 val home = host"localhost"
-val homeIp = home.resolve[IO]
+val homeIp = HostnameResolver.resolve[IO](home)
 homeIp.unsafeRunSync
 
-val homeIps = home.resolveAll[IO]
+val homeIps = HostnameResolver.resolveAll[IO](home)
 homeIps.unsafeRunSync
 ```
 

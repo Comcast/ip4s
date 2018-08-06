@@ -320,13 +320,13 @@ scala> val home = Hostname("localhost")
 home: Option[com.comcast.ip4s.Hostname] = Some(localhost)
 
 scala> val ls = home.map(_.labels)
-ls: Option[cats.data.NonEmptyList[com.comcast.ip4s.Hostname.Label]] = Some(NonEmptyList(localhost))
+ls: Option[List[com.comcast.ip4s.Hostname.Label]] = Some(List(localhost))
 
 scala> val comcast = host"comcast.com"
 comcast: com.comcast.ip4s.Hostname = comcast.com
 
 scala> val cs = comcast.labels
-cs: cats.data.NonEmptyList[com.comcast.ip4s.Hostname.Label] = NonEmptyList(comcast, com)
+cs: List[com.comcast.ip4s.Hostname.Label] = List(comcast, com)
 ```
 
 On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolveAll`:
@@ -335,17 +335,20 @@ On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolve
 scala> import cats.effect.IO
 import cats.effect.IO
 
+scala> import com.comcast.ip4s.interop.cats._
+import com.comcast.ip4s.interop.cats._
+
 scala> val home = host"localhost"
 home: com.comcast.ip4s.Hostname = localhost
 
-scala> val homeIp = home.resolve[IO]
-homeIp: cats.effect.IO[Option[com.comcast.ip4s.IpAddress]] = IO$2061525123
+scala> val homeIp = HostnameResolver.resolve[IO](home)
+homeIp: cats.effect.IO[Option[com.comcast.ip4s.IpAddress]] = IO$823547879
 
 scala> homeIp.unsafeRunSync
 res0: Option[com.comcast.ip4s.IpAddress] = Some(127.0.0.1)
 
-scala> val homeIps = home.resolveAll[IO]
-homeIps: cats.effect.IO[Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]]] = IO$458869682
+scala> val homeIps = HostnameResolver.resolveAll[IO](home)
+homeIps: cats.effect.IO[Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]]] = IO$986520546
 
 scala> homeIps.unsafeRunSync
 res1: Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
