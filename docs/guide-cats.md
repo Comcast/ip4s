@@ -30,13 +30,13 @@ scala> val home = host"localhost"
 home: com.comcast.ip4s.Hostname = localhost
 
 scala> val homeIp = HostnameResolver.resolve[IO](home)
-homeIp: cats.effect.IO[Option[com.comcast.ip4s.IpAddress]] = IO$798222167
+homeIp: cats.effect.IO[Option[com.comcast.ip4s.IpAddress]] = IO$80191396
 
 scala> homeIp.unsafeRunSync
 res2: Option[com.comcast.ip4s.IpAddress] = Some(127.0.0.1)
 
 scala> val homeIps = HostnameResolver.resolveAll[IO](home)
-homeIps: cats.effect.IO[Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]]] = IO$721209344
+homeIps: cats.effect.IO[Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]]] = IO$1478873688
 
 scala> homeIps.unsafeRunSync
 res3: Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
@@ -54,10 +54,10 @@ scala> import cats.implicits._
 import cats.implicits._
 
 scala> implicitly[Eq[Hostname]]
-res4: cats.Eq[com.comcast.ip4s.Hostname] = cats.kernel.Order$$anon$117@6912165e
+res4: cats.Eq[com.comcast.ip4s.Hostname] = cats.kernel.Order$$anon$117@336e3e9e
 
 scala> implicitly[Order[Hostname]]
-res5: cats.Order[com.comcast.ip4s.Hostname] = cats.kernel.Order$$anon$117@6912165e
+res5: cats.Order[com.comcast.ip4s.Hostname] = cats.kernel.Order$$anon$117@336e3e9e
 
 scala> val host1 = host"localhost"
 host1: com.comcast.ip4s.Hostname = localhost

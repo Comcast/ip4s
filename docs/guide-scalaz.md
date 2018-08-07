@@ -30,10 +30,10 @@ scala> import Scalaz._
 import Scalaz._
 
 scala> implicitly[Equal[Hostname]]
-res2: scalaz.Equal[com.comcast.ip4s.Hostname] = scalaz.Order$$anon$8@31119597
+res2: scalaz.Equal[com.comcast.ip4s.Hostname] = scalaz.Order$$anon$8@3d5ad95c
 
 scala> implicitly[Order[Hostname]]
-res3: scalaz.Order[com.comcast.ip4s.Hostname] = scalaz.Order$$anon$8@31119597
+res3: scalaz.Order[com.comcast.ip4s.Hostname] = scalaz.Order$$anon$8@3d5ad95c
 
 scala> val host1 = host"localhost"
 host1: com.comcast.ip4s.Hostname = localhost
