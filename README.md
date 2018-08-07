@@ -1,4 +1,4 @@
-[![Published Artifact](https://img.shields.io/maven-central/v/com.comcast/ip4s_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Cip4s) [![Build Status](https://travis-ci.org/Comcast/ip4s.svg?branch=master)](https://travis-ci.org/Comcast/ip4s)
+[![Published Artifact](https://img.shields.io/maven-central/v/com.comcast/ip4s-core_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Cip4s) [![Build Status](https://travis-ci.org/Comcast/ip4s.svg?branch=master)](https://travis-ci.org/Comcast/ip4s)
 
 ip4s: IP Addresses for Scala & Scala.js
 =======================================
