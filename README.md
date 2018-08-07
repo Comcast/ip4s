@@ -9,7 +9,7 @@ There are two defining characteristics of this project that make it different fr
 - all data types are immutable and every function/method is referentially transparent (e.g., no accidental DNS lookups by calling `InetAddress.getByName(...)`)
 - published for both Scala and Scala.js
 
-See the [guide](docs/guide-core.md) and [ScalaDoc](https://oss.sonatype.org/service/local/repositories/releases/archive/com/comcast/ip4s_2.12/1.0.2/ip4s_2.12-1.0.2-javadoc.jar/!/com/comcast/ip4s/index.html) for more details.
+See the [guide](docs/guide.md) and [ScalaDoc](https://oss.sonatype.org/service/local/repositories/releases/archive/com/comcast/ip4s_2.12/1.0.2/ip4s_2.12-1.0.2-javadoc.jar/!/com/comcast/ip4s/index.html) for more details.
 
 ## Getting Binaries
 
