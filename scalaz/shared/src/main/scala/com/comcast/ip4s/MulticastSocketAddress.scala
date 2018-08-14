@@ -20,7 +20,8 @@ package interop.scalaz
 import _root_.scalaz.{Equal, Order, Show}
 
 trait MulticastSocketAddressInstances {
-  implicit def MulticastSocketAddressEq[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
+  // Non-implicit because this conflicts with the Order instance
+  def MulticastSocketAddressEq[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
     : Equal[MulticastSocketAddress[J, A]] =
     Equal.equalA[MulticastSocketAddress[J, A]]
   implicit def MulticastSocketAddressOrder[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]

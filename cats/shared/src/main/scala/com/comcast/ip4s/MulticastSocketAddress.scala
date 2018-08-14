@@ -20,7 +20,8 @@ package interop.cats
 import _root_.cats.{Eq, Order, Show}
 
 trait MulticastSocketAddressInstances {
-  implicit def MulticastSocketAddressEq[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
+  // Non-implicit because this conflicts with the Order instance
+  def MulticastSocketAddressEq[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
     : Eq[MulticastSocketAddress[J, A]] =
     Eq.fromUniversalEquals[MulticastSocketAddress[J, A]]
   implicit def MulticastSocketAddressOrder[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
