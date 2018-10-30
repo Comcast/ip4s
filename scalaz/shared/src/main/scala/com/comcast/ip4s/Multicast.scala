@@ -20,7 +20,10 @@ package interop.scalaz
 import _root_.scalaz.{Equal, Order, Show}
 
 trait MulticastInstances {
-  implicit def MulticastEqual[A <: IpAddress]: Equal[Multicast[A]] = Equal.equalA[Multicast[A]]
-  implicit def MulticastOrder[A <: IpAddress]: Order[Multicast[A]] = Order.fromScalaOrdering(Multicast.ordering[A])
-  implicit def MulticastShow[A <: IpAddress]: Show[Multicast[A]] = Show.showFromToString[Multicast[A]]
+  implicit def MulticastEqual[J[x <: IpAddress] <: Multicast[x], A <: IpAddress]: Equal[J[A]] =
+    Equal.equalA[J[A]]
+  implicit def MulticastOrder[J[x <: IpAddress] <: Multicast[x], A <: IpAddress]: Order[J[A]] =
+    Order.fromScalaOrdering(Multicast.ordering[J, A])
+  implicit def MulticastShow[J[x <: IpAddress] <: Multicast[x], A <: IpAddress]: Show[J[A]] =
+    Show.showFromToString[J[A]]
 }

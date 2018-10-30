@@ -20,7 +20,9 @@ package interop.cats
 import _root_.cats.{Eq, Order, Show}
 
 trait MulticastInstances {
-  implicit def MulticastEq[A <: IpAddress]: Eq[Multicast[A]] = Eq.fromUniversalEquals[Multicast[A]]
-  implicit def MulticastOrder[A <: IpAddress]: Order[Multicast[A]] = Order.fromOrdering(Multicast.ordering[A])
-  implicit def MulticastShow[A <: IpAddress]: Show[Multicast[A]] = Show.fromToString[Multicast[A]]
+  implicit def MulticastEq[J[x <: IpAddress] <: Multicast[x], A <: IpAddress]: Eq[J[A]] = Eq.fromUniversalEquals[J[A]]
+  implicit def MulticastOrder[J[x <: IpAddress] <: Multicast[x], A <: IpAddress]: Order[J[A]] =
+    Order.fromOrdering(Multicast.ordering[J, A])
+  implicit def MulticastShow[J[x <: IpAddress] <: Multicast[x], A <: IpAddress]: Show[J[A]] =
+    Show.fromToString[J[A]]
 }
