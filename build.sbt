@@ -124,7 +124,7 @@ lazy val scalaz = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-scalaz",
     libraryDependencies ++= Seq(
-      "org.scalaz" %% "scalaz-core" % "7.2.25",
+      "org.scalaz" %% "scalaz-core" % "7.2.27",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
       "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
     ),
