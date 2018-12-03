@@ -1,7 +1,7 @@
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.10")
 addSbtPlugin("com.github.tkawachi" % "sbt-doctest" % "0.7.1")
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.2")
-addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.1.18")
+addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.3.0")
 addSbtPlugin("org.tpolecat" % "tut-plugin" % "0.6.9")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.23")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "0.4.0")
