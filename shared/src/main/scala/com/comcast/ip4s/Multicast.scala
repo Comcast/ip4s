@@ -37,7 +37,7 @@ object Multicast {
     else if (address.isMulticast) Some(DefaultMulticast(address))
     else None
 
-  implicit def ordering[A <: IpAddress]: Ordering[Multicast[A]] = Ordering.by(_.address)
+  implicit def ordering[J[x <: IpAddress] <: Multicast[x], A <: IpAddress]: Ordering[J[A]] = Ordering.by(_.address)
 }
 
 /**
@@ -63,8 +63,5 @@ object SourceSpecificMulticast {
     DefaultSourceSpecificMulticast(address)
 
   implicit def ordering[A <: IpAddress]: Ordering[SourceSpecificMulticast[A]] =
-    new Ordering[SourceSpecificMulticast[A]] {
-      override def compare(x: SourceSpecificMulticast[A], y: SourceSpecificMulticast[A]): Int =
-        Ordering[A].compare(x.address, y.address)
-    }
+    Multicast.ordering[SourceSpecificMulticast, A]
 }
