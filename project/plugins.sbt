@@ -1,4 +1,4 @@
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.10")
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.11")
 addSbtPlugin("com.github.tkawachi" % "sbt-doctest" % "0.7.1")
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.2")
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.1.18")
