@@ -30,7 +30,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
         case Some((2, v)) if v >= 13 =>
           "org.scalatest" %%% "scalatest" % "3.0.6-SNAP1" % "test"
         case _ =>
-          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP5" % "test"
+          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP6" % "test"
       }
     }
   )
@@ -81,7 +81,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
         case Some((2, v)) if v >= 13 =>
           "org.scalatest" %%% "scalatest" % "3.0.6-SNAP1" % "test"
         case _ =>
-          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP5" % "test"
+          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP6" % "test"
       }
     }
   )
@@ -133,7 +133,7 @@ lazy val scalaz = crossProject(JVMPlatform, JSPlatform)
         case Some((2, v)) if v >= 13 =>
           "org.scalatest" %%% "scalatest" % "3.0.6-SNAP1" % "test"
         case _ =>
-          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP5" % "test"
+          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP6" % "test"
       }
     }
   )
