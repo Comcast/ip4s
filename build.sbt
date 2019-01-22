@@ -72,7 +72,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-effect" % "1.0.0",
+      "org.typelevel" %%% "cats-effect" % "1.2.0",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
       "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
     ),
