@@ -1,4 +1,3 @@
-import com.typesafe.sbt.pgp.PgpKeys.publishSigned
 import com.typesafe.tools.mima.core.{Problem, ProblemFilters}
 import sbtrelease.Version
 import sbtcrossproject.{crossProject, CrossType}
@@ -10,7 +9,6 @@ lazy val root = project
   .settings(
     publish := {},
     publishLocal := {},
-    PgpKeys.publishSigned := {},
     publishArtifact := false
   )
   .settings(publishingSettings)
@@ -25,14 +23,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
       "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
     ),
-    libraryDependencies += {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, v)) if v >= 13 =>
-          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP1" % "test"
-        case _ =>
-          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP5" % "test"
-      }
-    }
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.6-SNAP6" % "test"
   )
   .jvmSettings(mimaSettings)
   .jsSettings(
@@ -71,27 +62,11 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-cats",
-    libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-effect" % "1.0.0",
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
-      "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
-    ),
-    libraryDependencies += {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, v)) if v >= 13 =>
-          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP1" % "test"
-        case _ =>
-          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP5" % "test"
-      }
-    }
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "1.2.0"
   )
   .jvmSettings(mimaSettings)
-  .jsSettings(
-    npmDependencies in Compile += "punycode" -> "2.1.1"
-  )
   .settings(publishingSettings)
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "27.0.1-jre" % "test",
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, v)) if v >= 13 =>
@@ -112,7 +87,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
     OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
     osgiSettings
   )
-  .dependsOn(core)
+  .dependsOn(core % "compile->compile;test->test")
 
 lazy val catsJVM = cats.jvm.enablePlugins(TutPlugin, SbtOsgi)
 lazy val catsJS = cats.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
@@ -123,27 +98,11 @@ lazy val scalaz = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-scalaz",
-    libraryDependencies ++= Seq(
-      "org.scalaz" %% "scalaz-core" % "7.2.27",
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
-      "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
-    ),
-    libraryDependencies += {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, v)) if v >= 13 =>
-          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP1" % "test"
-        case _ =>
-          "org.scalatest" %%% "scalatest" % "3.0.6-SNAP5" % "test"
-      }
-    }
+    libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.27"
   )
   .jvmSettings(mimaSettings)
-  .jsSettings(
-    npmDependencies in Compile += "punycode" -> "2.1.1"
-  )
   .settings(publishingSettings)
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "27.0.1-jre" % "test",
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, v)) if v >= 13 =>
@@ -164,7 +123,7 @@ lazy val scalaz = crossProject(JVMPlatform, JSPlatform)
     OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
     osgiSettings
   )
-  .dependsOn(core)
+  .dependsOn(core % "compile->compile;test->test")
 
 lazy val scalazJVM = scalaz.jvm.enablePlugins(TutPlugin, SbtOsgi)
 lazy val scalazJS = scalaz.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
@@ -182,10 +141,8 @@ lazy val commonSettings = Seq(
     val base = baseDirectory.value
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
-  scalaVersion := "2.12.6",
-  crossScalaVersions := Seq("2.11.12", "2.12.6"),
-  // 2.13 support is disabled until there's a cats-effect build available
-  // crossScalaVersions := Seq("2.11.12", "2.12.6", "2.13.0-M4")
+  scalaVersion := "2.12.8",
+  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-M5"),
   scalacOptions ++= Seq(
     "-language:higherKinds",
     "-deprecation",
@@ -199,10 +156,6 @@ lazy val commonSettings = Seq(
     "-Xfuture",
     "-Xlint",
     "-Ywarn-dead-code",
-    "-Ywarn-inaccessible",
-    "-Ywarn-infer-any",
-    "-Ywarn-nullary-override",
-    "-Ywarn-nullary-unit",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard"
   ),
@@ -281,8 +234,7 @@ lazy val publishingSettings = Seq(
     }
     new RuleTransformer(stripTestScope).transform(node)(0)
   },
-  releaseCrossBuild := true,
-  releasePublishArtifactsAction := PgpKeys.publishSigned.value
+  releaseCrossBuild := true
 )
 
 lazy val mimaSettings = Seq(

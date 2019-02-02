@@ -16,8 +16,6 @@
 
 package com.comcast.ip4s
 
-import scala.language.higherKinds
-
 /**
   * A multicast join of the specified type and a port number. Used to describe UDP join of a multicast group.
   */
