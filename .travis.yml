@@ -2,10 +2,10 @@ language: scala
 
 scala:
   - 2.11.12
-  - 2.12.6
+  - 2.12.8
 
 jdk:
-  - oraclejdk8
+  - openjdk8
 
 sudo: required
 dist: trusty

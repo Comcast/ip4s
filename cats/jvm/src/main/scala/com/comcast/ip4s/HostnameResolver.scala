@@ -19,8 +19,6 @@ package interop.cats
 
 import java.net.{InetAddress, UnknownHostException}
 
-import scala.language.higherKinds
-
 import _root_.cats.data.NonEmptyList
 import _root_.cats.effect.Sync
 

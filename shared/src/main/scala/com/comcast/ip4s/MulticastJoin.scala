@@ -16,8 +16,6 @@
 
 package com.comcast.ip4s
 
-import scala.language.higherKinds
-
 /**
   * Represents a join of a multicast group.
   *
