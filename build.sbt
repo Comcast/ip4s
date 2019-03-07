@@ -23,7 +23,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
       "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
     ),
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.6-SNAP6" % "test"
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.7-RC1" % "test"
   )
   .jvmSettings(mimaSettings)
   .jsSettings(
