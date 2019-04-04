@@ -10,3 +10,5 @@ target
 .DS_Store
 *.swp
 .metaserver
+.bloop
+.metals
