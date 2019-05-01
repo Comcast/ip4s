@@ -35,3 +35,8 @@ libraryDependencies += "com.comcast" %% "ip4s-scalaz" % "version"
 ## Copyright and License
 
 This project is made available under the [Apache License, Version 2.0](LICENSE). Copyright information can be found in [NOTICE](NOTICE).
+
+## Code of Conduct
+
+See the [Code of Conduct](CODE_OF_CONDUCT.md).
+
