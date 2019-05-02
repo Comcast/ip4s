@@ -62,7 +62,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-cats",
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "1.2.0"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "1.3.0"
   )
   .jvmSettings(mimaSettings)
   .settings(publishingSettings)
