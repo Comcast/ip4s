@@ -31,7 +31,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   )
   .settings(publishingSettings)
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "27.0.1-jre" % "test",
+    libraryDependencies += "com.google.guava" % "guava" % "27.1-jre" % "test",
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, v)) if v >= 13 =>
