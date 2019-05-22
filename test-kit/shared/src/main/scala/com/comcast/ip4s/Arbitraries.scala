@@ -51,12 +51,13 @@ object Arbitraries {
   implicit val portArbitrary: Arbitrary[Port] = Arbitrary(portGenerator)
 
   def socketAddressGenerator[A <: IpAddress](genIp: Gen[A], genPort: Gen[Port]): Gen[SocketAddress[A]] =
-    for { 
+    for {
       ip <- genIp
       port <- genPort
     } yield SocketAddress(ip, port)
 
-  implicit def socketAddressArbitrary[A <: IpAddress](implicit arbIp: Arbitrary[A], arbPort: Arbitrary[Port]): Arbitrary[SocketAddress[A]] =
+  implicit def socketAddressArbitrary[A <: IpAddress](implicit arbIp: Arbitrary[A],
+                                                      arbPort: Arbitrary[Port]): Arbitrary[SocketAddress[A]] =
     Arbitrary(socketAddressGenerator(arbIp.arbitrary, arbPort.arbitrary))
 
   val multicastGenerator4: Gen[Multicast[Ipv4Address]] = for {
@@ -72,27 +73,32 @@ object Arbitraries {
   implicit val multicastArbitrary6: Arbitrary[Multicast[Ipv6Address]] = Arbitrary(multicastGenerator6)
 
   val multicastGenerator: Gen[Multicast[IpAddress]] = Gen.oneOf(multicastGenerator4, multicastGenerator6)
-    
+
   implicit val multicastArbitrary: Arbitrary[Multicast[IpAddress]] = Arbitrary(multicastGenerator)
 
   def multicastJoinGenerator[A <: IpAddress](genSource: Gen[A], genGroup: Gen[Multicast[A]]): Gen[MulticastJoin[A]] =
     genGroup.flatMap { group =>
       group.address.asSourceSpecificMulticast match {
         case Some(grp) => genSource.filter(_.getClass == grp.getClass).flatMap(src => MulticastJoin.ssm(src, grp))
-        case None => MulticastJoin.asm(group)
+        case None      => MulticastJoin.asm(group)
       }
     }
 
-  implicit def multicastJoinArbitrary[A <: IpAddress](implicit arbSource: Arbitrary[A], arbGroup: Arbitrary[Multicast[A]]): Arbitrary[MulticastJoin[A]] =
+  implicit def multicastJoinArbitrary[A <: IpAddress](implicit arbSource: Arbitrary[A],
+                                                      arbGroup: Arbitrary[Multicast[A]]): Arbitrary[MulticastJoin[A]] =
     Arbitrary(multicastJoinGenerator(arbSource.arbitrary, arbGroup.arbitrary))
 
-  def multicastSocketAddressGenerator[A <: IpAddress](genJoin: Gen[MulticastJoin[A]], genPort: Gen[Port]): Gen[MulticastSocketAddress[MulticastJoin, A]] =
-    for { 
+  def multicastSocketAddressGenerator[A <: IpAddress](
+      genJoin: Gen[MulticastJoin[A]],
+      genPort: Gen[Port]): Gen[MulticastSocketAddress[MulticastJoin, A]] =
+    for {
       join <- genJoin
       port <- genPort
     } yield MulticastSocketAddress(join, port)
 
-  implicit def multicastSocketAddressArbitrary[A <: IpAddress](implicit arbJoin: Arbitrary[MulticastJoin[A]], arbPort: Arbitrary[Port]): Arbitrary[MulticastSocketAddress[MulticastJoin, A]] =
+  implicit def multicastSocketAddressArbitrary[A <: IpAddress](
+      implicit arbJoin: Arbitrary[MulticastJoin[A]],
+      arbPort: Arbitrary[Port]): Arbitrary[MulticastSocketAddress[MulticastJoin, A]] =
     Arbitrary(multicastSocketAddressGenerator(arbJoin.arbitrary, arbPort.arbitrary))
 
   val hostnameGenerator: Gen[Hostname] = {
