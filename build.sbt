@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-lazy val scalaTestVersion = "3.0.6-SNAP6"
+lazy val scalaTestVersion = "3.0.8-RC3"
 
 lazy val root = project
   .in(file("."))
@@ -25,7 +25,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
 //  .jvmSettings(mimaSettings)
   .settings(publishingSettings)
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "27.0.1-jre" % "test",
+    libraryDependencies += "com.google.guava" % "guava" % "27.1-jre" % "test",
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, v)) if v >= 13 =>
@@ -176,7 +176,7 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
   scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-M5"),
+  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC1"),
   scalacOptions ++= Seq(
     "-language:higherKinds",
     "-deprecation",
