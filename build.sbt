@@ -1,10 +1,10 @@
-import com.typesafe.tools.mima.core.{Problem, ProblemFilters}
-import sbtrelease.Version
-import sbtcrossproject.{crossProject, CrossType}
+import sbtcrossproject.CrossPlugin.autoImport.crossProject
+
+lazy val scalaTestVersion = "3.0.6-SNAP6"
 
 lazy val root = project
   .in(file("."))
-  .aggregate(coreJVM, coreJS, catsJVM, catsJS, scalazJVM, scalazJS)
+  .aggregate(coreJVM, coreJS, catsJVM, catsJS, scalazJVM, scalazJS, testKitJVM, testKitJS)
   .settings(commonSettings)
   .settings(
     publish := {},
@@ -13,17 +13,51 @@ lazy val root = project
   )
   .settings(publishingSettings)
 
+lazy val testKit = crossProject(JVMPlatform, JSPlatform)
+  .in(file("./test-kit"))
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(commonSettings)
+  .settings(
+    name := "ip4s-test-kit",
+    libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
+  )
+//  .jvmSettings(mimaSettings)
+  .settings(publishingSettings)
+  .jvmSettings(
+    libraryDependencies += "com.google.guava" % "guava" % "27.0.1-jre" % "test",
+    libraryDependencies := {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, v)) if v >= 13 =>
+          libraryDependencies.value.filterNot(_.toString.contains("tut-core"))
+        case _ =>
+          libraryDependencies.value
+      }
+    },
+    scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt =>
+      !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
+    tutTargetDirectory := baseDirectory.value / "../../docs",
+    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
+    OsgiKeys.importPackage := {
+      val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
+      Seq(s"""scala.*;version="[$major.$minor,$major.${minor + 1})"""", "*")
+    },
+    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.*"),
+    OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
+    osgiSettings
+  )
+  .dependsOn(core % "compile->compile")
+
+lazy val testKitJVM = testKit.jvm.enablePlugins(TutPlugin, SbtOsgi)
+lazy val testKitJS = testKit.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
+
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .in(file("."))
   .enablePlugins(AutomateHeaderPlugin)
   .settings(commonSettings)
   .settings(
     name := "ip4s-core",
-    libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
-      "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
-    ),
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.6-SNAP6" % "test"
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided"
   )
   .jvmSettings(mimaSettings)
   .jsSettings(
@@ -31,7 +65,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   )
   .settings(publishingSettings)
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "27.0.1-jre" % "test",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, v)) if v >= 13 =>
@@ -87,7 +121,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
     OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
     osgiSettings
   )
-  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(testKit % "compile->compile;test->test")
 
 lazy val catsJVM = cats.jvm.enablePlugins(TutPlugin, SbtOsgi)
 lazy val catsJS = cats.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
@@ -123,7 +157,7 @@ lazy val scalaz = crossProject(JVMPlatform, JSPlatform)
     OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
     osgiSettings
   )
-  .dependsOn(core % "compile->compile;test->test")
+  .dependsOn(testKit % "compile->compile;test->test")
 
 lazy val scalazJVM = scalaz.jvm.enablePlugins(TutPlugin, SbtOsgi)
 lazy val scalazJS = scalaz.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
