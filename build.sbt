@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-lazy val scalaTestVersion = "3.0.8-RC3"
+lazy val scalaTestVersion = "3.1.0-SNAP10"
 
 lazy val root = project
   .in(file("."))
@@ -20,6 +20,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-test-kit",
     libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0",
+    libraryDependencies += "org.scalatestplus" %%% "scalatestplus-scalacheck" % "1.0.0-SNAP5",
     libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
   )
 //  .jvmSettings(mimaSettings)
@@ -96,7 +97,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-cats",
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "1.3.0"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.0.0-M1"
   )
   .jvmSettings(mimaSettings)
   .settings(publishingSettings)
@@ -187,12 +188,12 @@ lazy val commonSettings = Seq(
     "-unchecked",
     "-Xcheckinit",
     "-Xfatal-warnings",
-    "-Xfuture",
     "-Xlint",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard"
   ),
+  scalacOptions in Test := (scalacOptions in Test).value.filterNot(_ == "-Xfatal-warnings"),
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, v)) if v >= 12 =>
