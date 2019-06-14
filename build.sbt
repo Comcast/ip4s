@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-lazy val scalaTestVersion = "3.1.0-SNAP10"
+lazy val scalaTestVersion = "3.1.0-SNAP13"
 
 lazy val root = project
   .in(file("."))
@@ -20,7 +20,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-test-kit",
     libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0",
-    libraryDependencies += "org.scalatestplus" %%% "scalatestplus-scalacheck" % "1.0.0-SNAP5",
+    libraryDependencies += "org.scalatestplus" %%% "scalatestplus-scalacheck" % "1.0.0-SNAP8",
     libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
   )
 //  .jvmSettings(mimaSettings)
@@ -97,7 +97,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-cats",
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.0.0-M1"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.0.0-M4"
   )
   .jvmSettings(mimaSettings)
   .settings(publishingSettings)
@@ -177,7 +177,7 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
   scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC1"),
+  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0"),
   scalacOptions ++= Seq(
     "-language:higherKinds",
     "-deprecation",

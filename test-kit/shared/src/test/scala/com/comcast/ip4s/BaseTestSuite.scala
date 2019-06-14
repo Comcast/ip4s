@@ -16,10 +16,11 @@
 
 package com.comcast.ip4s
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-abstract class BaseTestSuite extends WordSpec with ScalaCheckPropertyChecks with Matchers {
+abstract class BaseTestSuite extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 5000)
 }
