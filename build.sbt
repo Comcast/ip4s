@@ -133,7 +133,7 @@ lazy val scalaz = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-scalaz",
-    libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.27"
+    libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.28"
   )
   .jvmSettings(mimaSettings)
   .settings(publishingSettings)
