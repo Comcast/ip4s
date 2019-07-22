@@ -9,7 +9,8 @@ lazy val root = project
   .settings(
     publish := {},
     publishLocal := {},
-    publishArtifact := false
+    publishArtifact := false,
+    mimaPreviousArtifacts := Set.empty
   )
   .settings(publishingSettings)
 
@@ -23,7 +24,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies += "org.scalatestplus" %%% "scalatestplus-scalacheck" % "1.0.0-SNAP8",
     libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
   )
-//  .jvmSettings(mimaSettings)
+  .settings(mimaPreviousArtifacts := Set.empty)
   .settings(publishingSettings)
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "28.0-jre" % "test",
@@ -61,6 +62,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided"
   )
   .jvmSettings(mimaSettings)
+  .jsSettings(mimaPreviousArtifacts := Set.empty)
   .jsSettings(
     npmDependencies in Compile += "punycode" -> "2.1.1"
   )
@@ -100,6 +102,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.0.0-M4"
   )
   .jvmSettings(mimaSettings)
+  .jsSettings(mimaPreviousArtifacts := Set.empty)
   .settings(publishingSettings)
   .jvmSettings(
     libraryDependencies := {
@@ -136,6 +139,7 @@ lazy val scalaz = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.28"
   )
   .jvmSettings(mimaSettings)
+  .jsSettings(mimaPreviousArtifacts := Set.empty)
   .settings(publishingSettings)
   .jvmSettings(
     libraryDependencies := {
