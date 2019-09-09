@@ -27,7 +27,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(publishingSettings)
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "28.0-jre" % "test",
+    libraryDependencies += "com.google.guava" % "guava" % "28.1-jre" % "test",
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, v)) if v >= 13 =>
