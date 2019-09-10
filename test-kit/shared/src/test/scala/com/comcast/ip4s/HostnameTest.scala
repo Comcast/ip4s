@@ -35,7 +35,7 @@ class HostnameTest extends BaseTestSuite {
 
     "require overall length be less than 254 chars" in {
       forAll { (h: Hostname) =>
-        val hstr = h.toString 
+        val hstr = h.toString
         val h2 = hstr + "." + hstr
         val expected = if (h2.length > 253) None else Some(Hostname(h2).get)
         Hostname(h2) shouldBe expected
@@ -50,7 +50,7 @@ class HostnameTest extends BaseTestSuite {
         Hostname(tooLong) shouldBe None
       }
     }
-    
+
     "disallow labels that end in a dash" in {
       forAll { (h: Hostname) =>
         val hstr = h.toString

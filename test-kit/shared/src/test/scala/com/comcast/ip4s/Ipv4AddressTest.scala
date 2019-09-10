@@ -63,12 +63,16 @@ class Ipv4AddressTest extends BaseTestSuite {
 
     "support computing next IP" in {
       Ipv4Address("255.255.255.255").map(_.next) shouldBe Ipv4Address("0.0.0.0")
-      forAll { (ip: Ipv4Address) => ip.next shouldBe Ipv4Address.fromLong(ip.toLong + 1) }
+      forAll { (ip: Ipv4Address) =>
+        ip.next shouldBe Ipv4Address.fromLong(ip.toLong + 1)
+      }
     }
 
     "support computing previous IP" in {
       Ipv4Address("0.0.0.0").map(_.previous) shouldBe Ipv4Address("255.255.255.255")
-      forAll { (ip: Ipv4Address) => ip.previous shouldBe Ipv4Address.fromLong(ip.toLong - 1) }
+      forAll { (ip: Ipv4Address) =>
+        ip.previous shouldBe Ipv4Address.fromLong(ip.toLong - 1)
+      }
     }
   }
 }

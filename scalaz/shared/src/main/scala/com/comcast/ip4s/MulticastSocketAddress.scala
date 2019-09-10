@@ -22,12 +22,12 @@ import _root_.scalaz.{Equal, Order, Show}
 trait MulticastSocketAddressInstances {
   // Non-implicit because this conflicts with the Order instance
   def MulticastSocketAddressEq[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
-    : Equal[MulticastSocketAddress[J, A]] =
+      : Equal[MulticastSocketAddress[J, A]] =
     Equal.equalA[MulticastSocketAddress[J, A]]
   implicit def MulticastSocketAddressOrder[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
-    : Order[MulticastSocketAddress[J, A]] =
+      : Order[MulticastSocketAddress[J, A]] =
     Order.fromScalaOrdering(MulticastSocketAddress.ordering[J, A])
   implicit def MulticastSocketAddressShow[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
-    : Show[MulticastSocketAddress[J, A]] =
+      : Show[MulticastSocketAddress[J, A]] =
     Show.showFromToString[MulticastSocketAddress[J, A]]
 }

@@ -93,8 +93,7 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
   def contains[AA >: A <: IpAddress]: AA => Boolean = {
     val start = prefix
     val end = last
-    a =>
-      a >= start && a <= end
+    a => a >= start && a <= end
   }
 
   override def toString: String = s"$address/$prefixBits"

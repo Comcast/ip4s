@@ -71,8 +71,10 @@ object MulticastJoin {
     fromStringGeneric(value, Ipv6Address(_))
 
   private val Pattern = """(?:([^@]+)@)?(.+)""".r
-  private[ip4s] def fromStringGeneric[A <: IpAddress](value: String,
-                                                      parse: String => Option[A]): Option[MulticastJoin[A]] =
+  private[ip4s] def fromStringGeneric[A <: IpAddress](
+      value: String,
+      parse: String => Option[A]
+  ): Option[MulticastJoin[A]] =
     value match {
       case Pattern(sourceStr, groupStr) =>
         Option(sourceStr) match {

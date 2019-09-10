@@ -576,22 +576,24 @@ object Ipv6Address {
     *
     * Each byte is represented as an `Int` to avoid having to manually call `.toByte` on each value -- the `toByte` call is done inside this function.
     */
-  def fromBytes(b0: Int,
-                b1: Int,
-                b2: Int,
-                b3: Int,
-                b4: Int,
-                b5: Int,
-                b6: Int,
-                b7: Int,
-                b8: Int,
-                b9: Int,
-                b10: Int,
-                b11: Int,
-                b12: Int,
-                b13: Int,
-                b14: Int,
-                b15: Int): Ipv6Address = {
+  def fromBytes(
+      b0: Int,
+      b1: Int,
+      b2: Int,
+      b3: Int,
+      b4: Int,
+      b5: Int,
+      b6: Int,
+      b7: Int,
+      b8: Int,
+      b9: Int,
+      b10: Int,
+      b11: Int,
+      b12: Int,
+      b13: Int,
+      b14: Int,
+      b15: Int
+  ): Ipv6Address = {
     val bytes = new Array[Byte](16)
     bytes(0) = b0.toByte
     bytes(1) = b1.toByte

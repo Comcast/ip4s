@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-lazy val scalaTestVersion = "3.1.0-SNAP13"
+lazy val scalaTestVersion = "3.1.0-RC2"
 
 lazy val root = project
   .in(file("."))
@@ -99,7 +99,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-cats",
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.0.0-RC2"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.0.0"
   )
   .jvmSettings(mimaSettings)
   .jsSettings(mimaPreviousArtifacts := Set.empty)

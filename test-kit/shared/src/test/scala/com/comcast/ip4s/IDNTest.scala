@@ -46,7 +46,7 @@ class IDNTest extends BaseTestSuite {
 
     "require overall ascii length be less than 254 chars" in {
       forAll { (i: IDN) =>
-        val istr = i.toString 
+        val istr = i.toString
         val i2 = istr + "." + istr
         val expected = if (i.hostname.toString.length > (253 / 2)) None else Some(IDN(i2).get)
         IDN(i2) shouldBe expected
@@ -61,7 +61,7 @@ class IDNTest extends BaseTestSuite {
         IDN(tooLong) shouldBe None
       }
     }
-    
+
     "disallow labels that end in a dash" in {
       forAll { (i: IDN) =>
         val str = i.toString

@@ -22,22 +22,28 @@ import scala.util.Try
 /** Macros that support literal string interpolators. */
 object LiteralSyntaxMacros {
   def ipInterpolator(c: Context)(args: c.Expr[Any]*): c.Expr[IpAddress] =
-    singlePartInterpolator(c)(args,
-                              "IP address",
-                              IpAddress(_).isDefined,
-                              s => c.universe.reify(IpAddress(s.splice).get))
+    singlePartInterpolator(c)(
+      args,
+      "IP address",
+      IpAddress(_).isDefined,
+      s => c.universe.reify(IpAddress(s.splice).get)
+    )
 
   def ipv4Interpolator(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv4Address] =
-    singlePartInterpolator(c)(args,
-                              "IPv4 address",
-                              Ipv4Address(_).isDefined,
-                              s => c.universe.reify(Ipv4Address(s.splice).get))
+    singlePartInterpolator(c)(
+      args,
+      "IPv4 address",
+      Ipv4Address(_).isDefined,
+      s => c.universe.reify(Ipv4Address(s.splice).get)
+    )
 
   def ipv6Interpolator(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv6Address] =
-    singlePartInterpolator(c)(args,
-                              "IPv6 address",
-                              Ipv6Address(_).isDefined,
-                              s => c.universe.reify(Ipv6Address(s.splice).get))
+    singlePartInterpolator(c)(
+      args,
+      "IPv6 address",
+      Ipv6Address(_).isDefined,
+      s => c.universe.reify(Ipv6Address(s.splice).get)
+    )
 
   def mipInterpolator(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[IpAddress]] =
     singlePartInterpolator(c)(
@@ -84,24 +90,30 @@ object LiteralSyntaxMacros {
     )
 
   def portInterpolator(c: Context)(args: c.Expr[Any]*): c.Expr[Port] =
-    singlePartInterpolator(c)(args,
-                              "port",
-                              s => Try(s.toInt).toOption.flatMap(Port(_)).isDefined,
-                              s => c.universe.reify(Port(s.splice.toInt).get))
+    singlePartInterpolator(c)(
+      args,
+      "port",
+      s => Try(s.toInt).toOption.flatMap(Port(_)).isDefined,
+      s => c.universe.reify(Port(s.splice.toInt).get)
+    )
 
   def hostnameInterpolator(c: Context)(args: c.Expr[Any]*): c.Expr[Hostname] =
-    singlePartInterpolator(c)(args,
-                              "hostname",
-                              s => Hostname(s).isDefined,
-                              s => c.universe.reify(Hostname(s.splice).get))
+    singlePartInterpolator(c)(
+      args,
+      "hostname",
+      s => Hostname(s).isDefined,
+      s => c.universe.reify(Hostname(s.splice).get)
+    )
 
   def idnInterpolator(c: Context)(args: c.Expr[Any]*): c.Expr[IDN] =
     singlePartInterpolator(c)(args, "IDN", s => IDN(s).isDefined, s => c.universe.reify(IDN(s.splice).get))
 
-  private def singlePartInterpolator[A](c: Context)(args: Seq[c.Expr[Any]],
-                                                    typeName: String,
-                                                    validate: String => Boolean,
-                                                    construct: c.Expr[String] => c.Expr[A]): c.Expr[A] = {
+  private def singlePartInterpolator[A](c: Context)(
+      args: Seq[c.Expr[Any]],
+      typeName: String,
+      validate: String => Boolean,
+      construct: c.Expr[String] => c.Expr[A]
+  ): c.Expr[A] = {
     import c.universe._
     identity(args)
     c.prefix.tree match {

@@ -19,8 +19,10 @@ package com.comcast.ip4s
 /**
   * A multicast join of the specified type and a port number. Used to describe UDP join of a multicast group.
   */
-final case class MulticastSocketAddress[J[+x <: IpAddress] <: MulticastJoin[x], +A <: IpAddress](join: J[A],
-                                                                                                 port: Port) {
+final case class MulticastSocketAddress[J[+x <: IpAddress] <: MulticastJoin[x], +A <: IpAddress](
+    join: J[A],
+    port: Port
+) {
 
   /** Narrows join to an `AnySourceMulticastJoin`. */
   def asAsm: Option[MulticastSocketAddress[AnySourceMulticastJoin, A]] =
@@ -65,16 +67,19 @@ object MulticastSocketAddress {
   def sourceSpecificFromString(value: String): Option[MulticastSocketAddress[SourceSpecificMulticastJoin, IpAddress]] =
     sourceSpecificFromString4(value) orElse sourceSpecificFromString6(value)
   def sourceSpecificFromString6(
-      value: String): Option[MulticastSocketAddress[SourceSpecificMulticastJoin, Ipv6Address]] =
+      value: String
+  ): Option[MulticastSocketAddress[SourceSpecificMulticastJoin, Ipv6Address]] =
     fromString6(value).flatMap(_.asSsm)
   def sourceSpecificFromString4(
-      value: String): Option[MulticastSocketAddress[SourceSpecificMulticastJoin, Ipv4Address]] =
+      value: String
+  ): Option[MulticastSocketAddress[SourceSpecificMulticastJoin, Ipv4Address]] =
     fromString4(value).flatMap(_.asSsm)
 
   private def fromStringGeneric[A <: IpAddress](
       value: String,
       pattern: util.matching.Regex,
-      parse: String => Option[A]): Option[MulticastSocketAddress[MulticastJoin, A]] = {
+      parse: String => Option[A]
+  ): Option[MulticastSocketAddress[MulticastJoin, A]] = {
     val Pattern = pattern
     value match {
       case Pattern(sourceStr, groupStr, portStr) =>
@@ -96,5 +101,5 @@ object MulticastSocketAddress {
   }
 
   implicit def ordering[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
-    : Ordering[MulticastSocketAddress[J, A]] = Ordering.by(x => (x.join, x.port))
+      : Ordering[MulticastSocketAddress[J, A]] = Ordering.by(x => (x.join, x.port))
 }

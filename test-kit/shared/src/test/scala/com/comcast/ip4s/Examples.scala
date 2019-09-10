@@ -20,13 +20,13 @@ object Examples {
   val localhost4: Ipv4Address = ipv4"127.0.0.1"
   val localhost6: Ipv6Address = ipv6"::1"
 
-  val ssmv4: SourceSpecificMulticastJoin[Ipv4Address] = 
+  val ssmv4: SourceSpecificMulticastJoin[Ipv4Address] =
     SourceSpecificMulticastJoin(localhost4, ssmipv4"232.10.10.10")
-  val ssmv4WithPort: MulticastSocketAddress[SourceSpecificMulticastJoin, Ipv4Address] = 
+  val ssmv4WithPort: MulticastSocketAddress[SourceSpecificMulticastJoin, Ipv4Address] =
     MulticastSocketAddress(ssmv4, port"5555")
 
-  val asmv4: AnySourceMulticastJoin[Ipv4Address] = 
+  val asmv4: AnySourceMulticastJoin[Ipv4Address] =
     AnySourceMulticastJoin(ssmipv4"232.10.10.10")
-  val asmv4WithPort: MulticastSocketAddress[AnySourceMulticastJoin, Ipv4Address] = 
+  val asmv4WithPort: MulticastSocketAddress[AnySourceMulticastJoin, Ipv4Address] =
     MulticastSocketAddress(asmv4, port"5555")
 }
