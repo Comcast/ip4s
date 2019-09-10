@@ -21,7 +21,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-test-kit",
     libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0",
-    libraryDependencies += "org.scalatestplus" %%% "scalatestplus-scalacheck" % "1.0.0-SNAP8",
+    libraryDependencies += "org.scalatestplus" %%% "scalatestplus-scalacheck" % "3.1.0.0-RC2",
     libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
   )
   .settings(mimaPreviousArtifacts := Set.empty)
