@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import scala.util.Try
 
 private[ip4s] trait IDNCompanionPlatform {
-
   private[ip4s] def toAscii(value: String): Option[String] =
     Try(java.net.IDN.toASCII(value)).toOption
 

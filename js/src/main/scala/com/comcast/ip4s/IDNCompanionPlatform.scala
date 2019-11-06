@@ -21,7 +21,6 @@ import scala.scalajs.js.annotation._
 import scala.util.Try
 
 private[ip4s] trait IDNCompanionPlatform {
-
   private[ip4s] def toAscii(value: String): Option[String] =
     Try(Punycode.toASCII(value)).toOption
 

@@ -40,7 +40,6 @@ import scala.math.Ordering.Implicits._
   * with networking libraries. This method does not exist on the Scala.js version.
   */
 sealed abstract class IpAddress extends IpAddressPlatform with Serializable {
-
   protected val bytes: Array[Byte]
 
   /** Converts this address to a network order byte array of either 4 or 16 bytes. */
@@ -95,7 +94,6 @@ sealed abstract class IpAddress extends IpAddressPlatform with Serializable {
 }
 
 object IpAddress {
-
   /** Parses an IP address from a string, either in dotted decimal notation or in RFC4291 notation. */
   def apply(value: String): Option[IpAddress] =
     Ipv4Address(value) orElse Ipv6Address(value)
@@ -135,7 +133,6 @@ object IpAddress {
 
 /** Representation of an IPv4 address that works on both the JVM and Scala.js. */
 final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAddress with Ipv4AddressPlatform {
-
   override def fold[A](v4: Ipv4Address => A, v6: Ipv6Address => A): A = v4(this)
 
   override def transform(v4: Ipv4Address => Ipv4Address, v6: Ipv6Address => Ipv6Address): this.type =
@@ -221,7 +218,6 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
 }
 
 object Ipv4Address {
-
   /** First IP address in the IPv4 multicast range. */
   val MulticastRangeStart: Ipv4Address = fromBytes(224, 0, 0, 0)
 
@@ -311,7 +307,6 @@ object Ipv4Address {
 
 /** Representation of an IPv6 address that works on both the JVM and Scala.js. */
 final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAddress with Ipv6AddressPlatform {
-
   override def fold[A](v4: Ipv4Address => A, v6: Ipv6Address => A): A = v6(this)
   override def transform(v4: Ipv4Address => Ipv4Address, v6: Ipv6Address => Ipv6Address): this.type =
     v6(this).asInstanceOf[this.type]
@@ -456,7 +451,6 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
 }
 
 object Ipv6Address {
-
   /** First IP address in the IPv6 multicast range. */
   val MulticastRangeStart: Ipv6Address =
     fromBytes(255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)

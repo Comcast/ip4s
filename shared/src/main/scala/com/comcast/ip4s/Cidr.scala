@@ -27,7 +27,6 @@ import scala.util.hashing.MurmurHash3
   * @param prefixBits number of leading 1s in the routing mask
   */
 final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) extends Product with Serializable {
-
   def copy[AA >: A <: IpAddress](address: AA = this.address, prefixBits: Int = this.prefixBits): Cidr[AA] =
     Cidr[AA](address, prefixBits)
 
@@ -112,7 +111,6 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
 }
 
 object Cidr {
-
   /**
     * Constructs a CIDR from the supplied IP address and prefix bit count.
     * Note if `prefixBits` is less than 0, the built `Cidr` will have `prefixBits` set to 0. Similarly,

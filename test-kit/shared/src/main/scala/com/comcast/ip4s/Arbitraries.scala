@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import org.scalacheck.{Arbitrary, Gen}
 
 object Arbitraries {
-
   val ipv4Generator: Gen[Ipv4Address] = for {
     bytes <- Gen.listOfN(4, Arbitrary.arbitrary[Byte])
   } yield Ipv4Address.fromBytes(bytes.toArray).get

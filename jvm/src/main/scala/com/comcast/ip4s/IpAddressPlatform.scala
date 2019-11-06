@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import java.net.{InetAddress, Inet4Address, Inet6Address}
 
 private[ip4s] trait IpAddressPlatform {
-
   /** Converts this address to a `java.net.InetAddress`. Note this method only exists on the JVM. */
   def toInetAddress: InetAddress
 }

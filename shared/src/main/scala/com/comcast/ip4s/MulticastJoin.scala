@@ -25,7 +25,6 @@ package com.comcast.ip4s
   * a similar reason -- to allow domain modeling where a specific address type is required.
   */
 sealed abstract class MulticastJoin[+A <: IpAddress] extends Product with Serializable {
-
   /** Converts this join to a value of type `A` using the supplied functions. */
   def fold[B](asm: AnySourceMulticastJoin[A] => B, ssm: SourceSpecificMulticastJoin[A] => B): B =
     this match {
@@ -52,7 +51,6 @@ sealed abstract class MulticastJoin[+A <: IpAddress] extends Product with Serial
 }
 
 object MulticastJoin {
-
   /** Constructs an `AnySourceMulticastJoin[A]`. */
   def asm[A <: IpAddress](group: Multicast[A]): MulticastJoin[A] =
     AnySourceMulticastJoin(group)

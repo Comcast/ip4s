@@ -37,7 +37,6 @@ import scala.util.hashing.MurmurHash3
   */
 final class IDN private (val labels: List[IDN.Label], val hostname: Hostname, override val toString: String)
     extends Ordered[IDN] {
-
   /** Converts this IDN to lower case and replaces dots with ASCII periods. */
   def normalized: IDN = {
     val newLabels = labels.map(l => new IDN.Label(l.toString.toLowerCase))
@@ -53,7 +52,6 @@ final class IDN private (val labels: List[IDN.Label], val hostname: Hostname, ov
 }
 
 object IDN extends IDNCompanionPlatform {
-
   /** Label component of an IDN. */
   final class Label private[IDN] (override val toString: String) extends Serializable with Ordered[Label] {
     def compare(that: Label): Int = toString.compare(that.toString)
