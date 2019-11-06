@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-lazy val scalaTestVersion = "3.1.0-RC2"
+lazy val scalaTestVersion = "3.1.0-RC3"
 
 lazy val root = project
   .in(file("."))
@@ -136,7 +136,7 @@ lazy val scalaz = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-scalaz",
-    libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.28"
+    libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.29"
   )
   .jvmSettings(mimaSettings)
   .jsSettings(mimaPreviousArtifacts := Set.empty)
