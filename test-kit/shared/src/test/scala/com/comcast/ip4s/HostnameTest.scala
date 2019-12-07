@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import Arbitraries._
 
 class HostnameTest extends BaseTestSuite {
-
   "Hostname" should {
     "roundtrip through string" in {
       forAll { (h: Hostname) =>

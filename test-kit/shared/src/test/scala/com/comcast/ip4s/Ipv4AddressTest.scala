@@ -21,9 +21,7 @@ import org.scalacheck.{Arbitrary, Gen}
 import Arbitraries._
 
 class Ipv4AddressTest extends BaseTestSuite {
-
   "Ipv4Address" should {
-
     "support parsing from string form".which {
       "does not parse the empty string" in {
         Ipv4Address.apply("") shouldBe None

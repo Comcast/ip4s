@@ -16,9 +16,9 @@
 
 package com.comcast.ip4s
 
-import org.scalatest.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import org.scalatest.matchers.should.Matchers
 
 abstract class BaseTestSuite extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =

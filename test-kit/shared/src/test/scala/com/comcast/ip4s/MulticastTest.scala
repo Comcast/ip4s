@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import Arbitraries._
 
 class MulticastTest extends BaseTestSuite {
-
   "Multicast" should {
     "support equality" in {
       forAll { (mip: Multicast[IpAddress]) =>

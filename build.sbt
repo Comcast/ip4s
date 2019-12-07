@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-lazy val scalaTestVersion = "3.1.0-RC3"
+lazy val scalaTestVersion = "3.1.0"
 
 lazy val root = project
   .in(file("."))
