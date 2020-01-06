@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import Arbitraries._
 
 class PortTest extends BaseTestSuite {
-
   "Port" should {
     "roundtrip through string" in {
       forAll { (p: Port) =>

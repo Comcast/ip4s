@@ -20,7 +20,6 @@ package interop.cats
 import _root_.cats.effect.IO
 
 class HostnameJvmTest extends BaseTestSuite {
-
   "Hostname" should {
     "support ip resolution" in {
       val localhost = Hostname("localhost").get

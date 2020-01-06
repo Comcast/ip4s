@@ -21,7 +21,6 @@ import org.scalacheck.{Arbitrary, Gen}
 import Arbitraries._
 
 class Ipv6AddressTest extends BaseTestSuite {
-
   "Ipv6Address" should {
     "support parsing from string form".which {
       "does not parse the empty string" in {

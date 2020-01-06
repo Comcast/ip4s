@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import Arbitraries._
 
 class IDNTest extends BaseTestSuite {
-
   "IDN" should {
     "support any hostname" in {
       forAll { (h: Hostname) =>

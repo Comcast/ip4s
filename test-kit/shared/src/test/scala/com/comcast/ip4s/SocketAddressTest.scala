@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import Arbitraries._
 
 class SocketAddressTest extends BaseTestSuite {
-
   "SocketAddress" should {
     "roundtrip through string" in {
       forAll { (sa: SocketAddress[IpAddress]) =>

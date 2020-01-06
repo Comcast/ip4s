@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import Arbitraries._
 
 class MulticastSocketAddressTest extends BaseTestSuite {
-
   "MulticastSocketAddress" should {
     "roundtrip through string" in {
       forAll { (msa: MulticastSocketAddress[MulticastJoin, IpAddress]) =>

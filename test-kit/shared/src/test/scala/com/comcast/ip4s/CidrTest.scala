@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import Arbitraries._
 
 class CidrTest extends BaseTestSuite {
-
   "Cidr" should {
     "roundtrip through string" in {
       forAll { (cidr: Cidr[IpAddress]) =>
