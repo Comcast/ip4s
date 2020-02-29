@@ -1,7 +1,7 @@
 addSbtPlugin("com.github.tkawachi" % "sbt-doctest" % "0.9.6")
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.13")
 addSbtPlugin("io.crashbox" % "sbt-gpg" % "0.2.1")
-addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.6.4")
+addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.7.0")
 addSbtPlugin("org.tpolecat" % "tut-plugin" % "0.6.13")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.32")
