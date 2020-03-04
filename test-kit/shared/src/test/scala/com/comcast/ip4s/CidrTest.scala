@@ -21,9 +21,7 @@ import Arbitraries._
 class CidrTest extends BaseTestSuite {
   "Cidr" should {
     "roundtrip through string" in {
-      forAll { (cidr: Cidr[IpAddress]) =>
-        Cidr.fromString(cidr.toString) shouldBe Some(cidr)
-      }
+      forAll { (cidr: Cidr[IpAddress]) => Cidr.fromString(cidr.toString) shouldBe Some(cidr) }
     }
   }
 }

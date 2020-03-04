@@ -21,7 +21,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-test-kit",
     libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3",
-    libraryDependencies += "org.scalatestplus" %%% "scalatestplus-scalacheck" % "3.1.0.0-RC2",
+    libraryDependencies += "org.scalatestplus" %%% "scalacheck-1-14" % "3.1.1.1",
     libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test"
   )
   .settings(mimaPreviousArtifacts := Set.empty)
@@ -99,7 +99,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-cats",
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.0.0"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.1.2"
   )
   .jvmSettings(mimaSettings)
   .jsSettings(mimaPreviousArtifacts := Set.empty)
@@ -180,8 +180,8 @@ lazy val commonSettings = Seq(
     val base = baseDirectory.value
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0"),
+  scalaVersion := "2.12.10",
+  crossScalaVersions := Seq("2.12.10", "2.13.1"),
   scalacOptions ++= Seq(
     "-language:higherKinds",
     "-deprecation",
