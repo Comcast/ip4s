@@ -32,15 +32,11 @@ class IDNTest extends BaseTestSuite {
     }
 
     "roundtrip through string" in {
-      forAll { (i: IDN) =>
-        IDN(i.toString) shouldBe Some(i)
-      }
+      forAll { (i: IDN) => IDN(i.toString) shouldBe Some(i) }
     }
 
     "allow access to labels" in {
-      forAll { (i: IDN) =>
-        IDN(i.labels.toList.mkString(".")).map(_.labels) shouldBe Some(i.labels)
-      }
+      forAll { (i: IDN) => IDN(i.labels.toList.mkString(".")).map(_.labels) shouldBe Some(i.labels) }
     }
 
     "require overall ascii length be less than 254 chars" in {
@@ -79,9 +75,7 @@ class IDNTest extends BaseTestSuite {
     }
 
     "support normalization" in {
-      forAll { (i: IDN) =>
-        i.normalized shouldBe IDN(i.labels.map(_.toString.toLowerCase).toList.mkString(".")).get
-      }
+      forAll { (i: IDN) => i.normalized shouldBe IDN(i.labels.map(_.toString.toLowerCase).toList.mkString(".")).get }
     }
   }
 }

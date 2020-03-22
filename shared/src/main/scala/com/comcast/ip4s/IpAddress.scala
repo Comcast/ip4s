@@ -94,6 +94,7 @@ sealed abstract class IpAddress extends IpAddressPlatform with Serializable {
 }
 
 object IpAddress {
+
   /** Parses an IP address from a string, either in dotted decimal notation or in RFC4291 notation. */
   def apply(value: String): Option[IpAddress] =
     Ipv4Address(value) orElse Ipv6Address(value)
@@ -218,6 +219,7 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
 }
 
 object Ipv4Address {
+
   /** First IP address in the IPv4 multicast range. */
   val MulticastRangeStart: Ipv4Address = fromBytes(224, 0, 0, 0)
 
@@ -451,6 +453,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
 }
 
 object Ipv6Address {
+
   /** First IP address in the IPv6 multicast range. */
   val MulticastRangeStart: Ipv6Address =
     fromBytes(255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)

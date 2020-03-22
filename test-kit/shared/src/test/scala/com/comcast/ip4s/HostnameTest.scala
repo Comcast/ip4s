@@ -21,15 +21,11 @@ import Arbitraries._
 class HostnameTest extends BaseTestSuite {
   "Hostname" should {
     "roundtrip through string" in {
-      forAll { (h: Hostname) =>
-        Hostname(h.toString) shouldBe Some(h)
-      }
+      forAll { (h: Hostname) => Hostname(h.toString) shouldBe Some(h) }
     }
 
     "allow access to labels" in {
-      forAll { (h: Hostname) =>
-        Hostname(h.labels.toList.mkString(".")) shouldBe Some(h)
-      }
+      forAll { (h: Hostname) => Hostname(h.labels.toList.mkString(".")) shouldBe Some(h) }
     }
 
     "require overall length be less than 254 chars" in {
