@@ -23,6 +23,7 @@ final case class MulticastSocketAddress[J[+x <: IpAddress] <: MulticastJoin[x], 
     join: J[A],
     port: Port
 ) {
+
   /** Narrows join to an `AnySourceMulticastJoin`. */
   def asAsm: Option[MulticastSocketAddress[AnySourceMulticastJoin, A]] =
     join.asAsm.map(j => MulticastSocketAddress(j, port))

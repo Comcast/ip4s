@@ -111,6 +111,7 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
 }
 
 object Cidr {
+
   /**
     * Constructs a CIDR from the supplied IP address and prefix bit count.
     * Note if `prefixBits` is less than 0, the built `Cidr` will have `prefixBits` set to 0. Similarly,

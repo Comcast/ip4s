@@ -27,6 +27,7 @@ import scala.util.hashing.MurmurHash3
   */
 final class Hostname private (val labels: List[Hostname.Label], override val toString: String)
     extends Ordered[Hostname] {
+
   /** Converts this hostname to lower case. */
   def normalized: Hostname =
     new Hostname(labels.map(l => new Hostname.Label(l.toString.toLowerCase)), toString.toLowerCase)
@@ -40,6 +41,7 @@ final class Hostname private (val labels: List[Hostname.Label], override val toS
 }
 
 object Hostname {
+
   /**
     * Label component of a hostname.
     *

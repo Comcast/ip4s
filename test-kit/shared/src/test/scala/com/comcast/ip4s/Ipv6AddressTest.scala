@@ -102,16 +102,12 @@ class Ipv6AddressTest extends BaseTestSuite {
 
     "support computing next IP" in {
       Ipv6Address("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff").map(_.next) shouldBe Ipv6Address("::")
-      forAll { (ip: Ipv6Address) =>
-        ip.next shouldBe Ipv6Address.fromBigInt(ip.toBigInt + 1)
-      }
+      forAll { (ip: Ipv6Address) => ip.next shouldBe Ipv6Address.fromBigInt(ip.toBigInt + 1) }
     }
 
     "support computing previous IP" in {
       Ipv6Address("::").map(_.previous) shouldBe Ipv6Address("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
-      forAll { (ip: Ipv6Address) =>
-        ip.previous shouldBe Ipv6Address.fromBigInt(ip.toBigInt - 1)
-      }
+      forAll { (ip: Ipv6Address) => ip.previous shouldBe Ipv6Address.fromBigInt(ip.toBigInt - 1) }
     }
   }
 }

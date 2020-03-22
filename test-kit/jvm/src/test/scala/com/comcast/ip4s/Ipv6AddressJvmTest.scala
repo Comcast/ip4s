@@ -50,9 +50,7 @@ class Ipv6AddressJvmTest extends BaseTestSuite {
       }
     }
     "support conversion to Inet6Address" in {
-      forAll { (ip: Ipv6Address) =>
-        ip.toInetAddress shouldBe an[Inet6Address]
-      }
+      forAll { (ip: Ipv6Address) => ip.toInetAddress shouldBe an[Inet6Address] }
     }
   }
 }
