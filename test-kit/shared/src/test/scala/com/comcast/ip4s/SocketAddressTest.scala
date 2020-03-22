@@ -21,9 +21,7 @@ import Arbitraries._
 class SocketAddressTest extends BaseTestSuite {
   "SocketAddress" should {
     "roundtrip through string" in {
-      forAll { (sa: SocketAddress[IpAddress]) =>
-        SocketAddress.fromString(sa.toString) shouldBe Some(sa)
-      }
+      forAll { (sa: SocketAddress[IpAddress]) => SocketAddress.fromString(sa.toString) shouldBe Some(sa) }
     }
   }
 }

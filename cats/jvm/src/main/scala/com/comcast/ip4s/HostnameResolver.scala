@@ -23,6 +23,7 @@ import _root_.cats.data.NonEmptyList
 import _root_.cats.effect.Sync
 
 object HostnameResolver {
+
   /**
     * Resolves this hostname to an ip address using the platform DNS resolver.
     *
