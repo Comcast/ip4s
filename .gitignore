@@ -12,3 +12,4 @@ target
 .metaserver
 .bloop
 .metals
+project/metals.sbt
