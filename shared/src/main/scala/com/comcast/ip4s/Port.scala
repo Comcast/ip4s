@@ -19,7 +19,7 @@ package com.comcast.ip4s
 import scala.util.Try
 import scala.util.hashing.MurmurHash3
 
-import cats.{Eq, Order, Show}
+import cats.{Order, Show}
 
 /** TCP or UDP port number. */
 final class Port private (val value: Int) extends Product with Serializable with Ordered[Port] {
@@ -49,7 +49,6 @@ object Port {
 
   def unapply(p: Port): Option[Int] = Some(p.value)
 
-  implicit val eq: Eq[Port] = Eq.fromUniversalEquals[Port]
   implicit val order: Order[Port] = Order.fromComparable[Port]
   implicit val show: Show[Port] = Show.fromToString[Port]
 }

@@ -16,7 +16,7 @@
 
 package com.comcast.ip4s
 
-import cats.{Eq, Order, Show}
+import cats.{Order, Show}
 
 /**
   * Represents a join of a multicast group.
@@ -93,8 +93,6 @@ object MulticastJoin {
       case _ => None
     }
 
-  implicit def eq[J[x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Eq[J[A]] =
-    Eq.fromUniversalEquals[J[A]]
   implicit def order[J[x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Order[J[A]] =
     Order.fromOrdering(MulticastJoin.ordering[J, A])
   implicit def ordering[J[x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Ordering[J[A]] =
