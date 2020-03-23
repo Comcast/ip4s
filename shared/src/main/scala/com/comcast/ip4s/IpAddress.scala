@@ -16,8 +16,6 @@
 
 package com.comcast.ip4s
 
-import scala.math.Ordering.Implicits._
-
 /**
   * Immutable and safe representation of an IP address, either V4 or V6.
   *
@@ -39,7 +37,7 @@ import scala.math.Ordering.Implicits._
   * If using `IpAddress` on the JVM, you can call `toInetAddress` to convert the address to a `java.net.InetAddress`, for use
   * with networking libraries. This method does not exist on the Scala.js version.
   */
-sealed abstract class IpAddress extends IpAddressPlatform with Serializable {
+sealed abstract class IpAddress extends IpAddressPlatform with Ordered[IpAddress] with Serializable {
   protected val bytes: Array[Byte]
 
   /** Converts this address to a network order byte array of either 4 or 16 bytes. */
@@ -91,6 +89,21 @@ sealed abstract class IpAddress extends IpAddressPlatform with Serializable {
   }
 
   override def hashCode: Int = java.util.Arrays.hashCode(bytes)
+
+  override def compare(that: IpAddress): Int = {
+    this match {
+      case x: Ipv4Address =>
+        that match {
+          case y: Ipv4Address => IpAddress.compareBytes(x, y)
+          case y: Ipv6Address => IpAddress.compareBytes(x.toCompatV6, y)
+        }
+      case x: Ipv6Address =>
+        that match {
+          case y: Ipv4Address => IpAddress.compareBytes(x, y.toCompatV6)
+          case y: Ipv6Address => IpAddress.compareBytes(x, y)
+        }
+    }
+  }
 }
 
 object IpAddress {
@@ -115,21 +128,7 @@ object IpAddress {
     result
   }
 
-  implicit def ordering[A <: IpAddress]: Ordering[A] = new Ordering[A] {
-    def compare(x: A, y: A): Int =
-      x match {
-        case x: Ipv4Address =>
-          y match {
-            case y: Ipv4Address => IpAddress.compareBytes(x, y)
-            case y: Ipv6Address => IpAddress.compareBytes(x.toCompatV6, y)
-          }
-        case x: Ipv6Address =>
-          y match {
-            case y: Ipv4Address => IpAddress.compareBytes(x, y.toCompatV6)
-            case y: Ipv6Address => IpAddress.compareBytes(x, y)
-          }
-      }
-  }
+  implicit def ordering[A <: IpAddress]: Ordering[A] = _.compare(_)
 }
 
 /** Representation of an IPv4 address that works on both the JVM and Scala.js. */

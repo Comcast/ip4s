@@ -16,7 +16,6 @@
 
 package com.comcast.ip4s
 
-import scala.math.Ordering.Implicits._
 import scala.util.Try
 import scala.util.hashing.MurmurHash3
 
