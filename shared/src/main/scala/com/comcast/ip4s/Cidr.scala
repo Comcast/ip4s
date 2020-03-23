@@ -19,6 +19,8 @@ package com.comcast.ip4s
 import scala.util.Try
 import scala.util.hashing.MurmurHash3
 
+import cats.{Eq, Order, Show}
+
 /**
   * Classless Inter-Domain Routing address, which represents an IP address and its routing prefix.
   *
@@ -143,6 +145,10 @@ object Cidr {
     }
 
   implicit def ordering[A <: IpAddress]: Ordering[Cidr[A]] = Ordering.by(x => (x.address, x.prefixBits))
+
+  implicit def eq[A <: IpAddress]: Eq[Cidr[A]] = Eq.fromUniversalEquals[Cidr[A]]
+  implicit def order[A <: IpAddress]: Order[Cidr[A]] = Order.fromOrdering(Cidr.ordering[A])
+  implicit def show[A <: IpAddress]: Show[Cidr[A]] = Show.fromToString[Cidr[A]]
 
   def unapply[A <: IpAddress](c: Cidr[A]): Option[(A, Int)] = Some((c.address, c.prefixBits))
 }

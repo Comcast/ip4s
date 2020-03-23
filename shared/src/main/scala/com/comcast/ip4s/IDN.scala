@@ -18,6 +18,8 @@ package com.comcast.ip4s
 
 import scala.util.hashing.MurmurHash3
 
+import cats.{Eq, Order, Show}
+
 /**
   * Internationalized domain name, as specified by RFC3490 and RFC5891.
   *
@@ -87,4 +89,8 @@ object IDN extends IDNCompanionPlatform {
       hostname.labels.map(l => new Label(toUnicode(l.toString)))
     new IDN(labels, hostname, labels.toList.mkString("."))
   }
+
+  implicit val eq: Eq[IDN] = Eq.fromUniversalEquals[IDN]
+  implicit val order: Order[IDN] = Order.fromComparable[IDN]
+  implicit val show: Show[IDN] = Show.fromToString[IDN]
 }

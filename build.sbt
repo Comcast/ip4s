@@ -4,7 +4,7 @@ lazy val scalaTestVersion = "3.1.1"
 
 lazy val root = project
   .in(file("."))
-  .aggregate(coreJVM, coreJS, catsJVM, catsJS, scalazJVM, scalazJS, testKitJVM, testKitJS)
+  .aggregate(coreJVM, coreJS, testKitJVM, testKitJS)
   .settings(commonSettings)
   .settings(
     publish := {},
@@ -59,7 +59,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-core",
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided"
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
+      "org.typelevel" %%% "cats-effect" % "2.1.2"
+    ),
   )
   .jvmSettings(mimaSettings)
   .jsSettings(mimaPreviousArtifacts := Set.empty)
@@ -68,6 +71,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   )
   .settings(publishingSettings)
   .jvmSettings(
+    // Needed for sbt-doctest
     libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
@@ -92,80 +96,6 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
 
 lazy val coreJVM = core.jvm.enablePlugins(TutPlugin, SbtOsgi)
 lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
-
-lazy val cats = crossProject(JVMPlatform, JSPlatform)
-  .in(file("./cats"))
-  .enablePlugins(AutomateHeaderPlugin)
-  .settings(commonSettings)
-  .settings(
-    name := "ip4s-cats",
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.1.2"
-  )
-  .jvmSettings(mimaSettings)
-  .jsSettings(mimaPreviousArtifacts := Set.empty)
-  .settings(publishingSettings)
-  .jvmSettings(
-    libraryDependencies := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, v)) if v >= 13 =>
-          libraryDependencies.value.filterNot(_.toString.contains("tut-core"))
-        case _ =>
-          libraryDependencies.value
-      }
-    },
-    scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt =>
-      !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
-    tutTargetDirectory := baseDirectory.value / "../../docs",
-    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.interop.cats.*;version=${Bundle-Version}"),
-    OsgiKeys.importPackage := {
-      val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
-      Seq(s"""scala.*;version="[$major.$minor,$major.${minor + 1})"""", "*")
-    },
-    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.interop.cats.*"),
-    OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
-    osgiSettings
-  )
-  .dependsOn(testKit % "compile->compile;test->test")
-
-lazy val catsJVM = cats.jvm.enablePlugins(TutPlugin, SbtOsgi)
-lazy val catsJS = cats.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
-
-lazy val scalaz = crossProject(JVMPlatform, JSPlatform)
-  .in(file("./scalaz"))
-  .enablePlugins(AutomateHeaderPlugin)
-  .settings(commonSettings)
-  .settings(
-    name := "ip4s-scalaz",
-    libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.30"
-  )
-  .jvmSettings(mimaSettings)
-  .jsSettings(mimaPreviousArtifacts := Set.empty)
-  .settings(publishingSettings)
-  .jvmSettings(
-    libraryDependencies := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, v)) if v >= 13 =>
-          libraryDependencies.value.filterNot(_.toString.contains("tut-core"))
-        case _ =>
-          libraryDependencies.value
-      }
-    },
-    scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt =>
-      !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
-    tutTargetDirectory := baseDirectory.value / "../../docs",
-    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.interop.scalaz.*;version=${Bundle-Version}"),
-    OsgiKeys.importPackage := {
-      val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
-      Seq(s"""scala.*;version="[$major.$minor,$major.${minor + 1})"""", "*")
-    },
-    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.interop.scalaz.*"),
-    OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
-    osgiSettings
-  )
-  .dependsOn(testKit % "compile->compile;test->test")
-
-lazy val scalazJVM = scalaz.jvm.enablePlugins(TutPlugin, SbtOsgi)
-lazy val scalazJS = scalaz.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val commonSettings = Seq(
   organization := "com.comcast",

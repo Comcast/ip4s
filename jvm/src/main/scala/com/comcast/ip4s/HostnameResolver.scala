@@ -15,12 +15,11 @@
  */
 
 package com.comcast.ip4s
-package interop.cats
 
 import java.net.{InetAddress, UnknownHostException}
 
-import _root_.cats.data.NonEmptyList
-import _root_.cats.effect.Sync
+import cats.data.NonEmptyList
+import cats.effect.Sync
 
 object HostnameResolver {
 

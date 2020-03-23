@@ -16,6 +16,8 @@
 
 package com.comcast.ip4s
 
+import cats.{Eq, Order, Show}
+
 /**
   * A multicast join of the specified type and a port number. Used to describe UDP join of a multicast group.
   */
@@ -100,6 +102,13 @@ object MulticastSocketAddress {
     }
   }
 
+  // Non-implicit because this conflicts with the Order instance
+  def eq[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Eq[MulticastSocketAddress[J, A]] =
+    Eq.fromUniversalEquals[MulticastSocketAddress[J, A]]
+  implicit def order[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Order[MulticastSocketAddress[J, A]] =
+    Order.fromOrdering(MulticastSocketAddress.ordering[J, A])
   implicit def ordering[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]
       : Ordering[MulticastSocketAddress[J, A]] = Ordering.by(x => (x.join, x.port))
+  implicit def show[J[+x <: IpAddress] <: MulticastJoin[x], A <: IpAddress]: Show[MulticastSocketAddress[J, A]] =
+    Show.fromToString[MulticastSocketAddress[J, A]]
 }

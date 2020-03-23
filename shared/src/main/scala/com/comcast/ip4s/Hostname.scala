@@ -18,6 +18,8 @@ package com.comcast.ip4s
 
 import scala.util.hashing.MurmurHash3
 
+import cats.{Eq, Order, Show}
+
 /**
   * RFC1123 compliant hostname.
   *
@@ -76,4 +78,8 @@ object Hostname {
         case _ => None
       }
   }
+
+  implicit val eq: Eq[Hostname] = Eq.fromUniversalEquals[Hostname]
+  implicit val order: Order[Hostname] = Order.fromComparable[Hostname]
+  implicit val show: Show[Hostname] = Show.fromToString[Hostname]
 }

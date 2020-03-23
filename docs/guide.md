@@ -3,8 +3,6 @@ ip4s: IP Addresses for Scala & Scala.js
 
 This is the guide for IP Addresses for Scala & Scala.js. This library provides the package `com.comcast.ip4s`, which contains all types. It is a small package and it is often useful to import all of its contents via `import com.comcast.ip4s._` -- doing so will enable some syntax.
 
-There are interop libraries for both [cats](guide-cats.md) and [scalaz](guide-scalaz.md).
-
 # IP Addresses
 
 The `IpAddress` type represents either an IPv4 address or an IPv6 address. The primary mechanism to construct an `IpAddress` is `IpAddress.apply`, which converts a string to an `Option[IpAddress]`. You can also construct an `IpAddress` from a byte array of either 4 bytes or 16 bytes.
@@ -331,6 +329,30 @@ scala> val cs = comcast.labels
 cs: List[com.comcast.ip4s.Hostname.Label] = List(comcast, com)
 ```
 
+## Hostname Resolution
+
+On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolveAll`:
+
+```scala
+scala> import cats.effect.IO
+import cats.effect.IO
+
+scala> val home = host"localhost"
+home: com.comcast.ip4s.Hostname = localhost
+
+scala> val homeIp = HostnameResolver.resolve[IO](home)
+homeIp: cats.effect.IO[Option[com.comcast.ip4s.IpAddress]] = IO$244817425
+
+scala> homeIp.unsafeRunSync
+res0: Option[com.comcast.ip4s.IpAddress] = Some(127.0.0.1)
+
+scala> val homeIps = HostnameResolver.resolveAll[IO](home)
+homeIps: cats.effect.IO[Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]]] = IO$764523004
+
+scala> homeIps.unsafeRunSync
+res1: Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
+```
+
 # Internationalized Domain Names
 
 RFC1123 hostnames are limited to ASCII characters. The `IDN` type provides a way to represent Unicode hostnames.
@@ -340,11 +362,11 @@ scala> val unicodeComcast = idn"comcast\u3002com"
 unicodeComcast: com.comcast.ip4s.IDN = comcast。com
 
 scala> unicodeComcast.hostname
-res0: com.comcast.ip4s.Hostname = comcast.com
+res2: com.comcast.ip4s.Hostname = comcast.com
 
 scala> val emojiRegistrar = idn"i❤.ws"
 emojiRegistrar: com.comcast.ip4s.IDN = i❤.ws
 
 scala> emojiRegistrar.hostname
-res1: com.comcast.ip4s.Hostname = xn--i-7iq.ws
+res3: com.comcast.ip4s.Hostname = xn--i-7iq.ws
 ```
