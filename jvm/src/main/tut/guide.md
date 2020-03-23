@@ -244,10 +244,10 @@ On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolve
 import cats.effect.IO
 
 val home = host"localhost"
-val homeIp = HostnameResolver.resolve[IO](home)
+val homeIp = home.resolve[IO]
 homeIp.unsafeRunSync
 
-val homeIps = HostnameResolver.resolveAll[IO](home)
+val homeIps = home.resolveAll[IO]
 homeIps.unsafeRunSync
 ```
 

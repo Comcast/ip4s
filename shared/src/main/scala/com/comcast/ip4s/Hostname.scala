@@ -28,7 +28,8 @@ import cats.{Order, Show}
   * periods and the overall hostname must not exceed 253 characters in length.
   */
 final class Hostname private (val labels: List[Hostname.Label], override val toString: String)
-    extends Ordered[Hostname] {
+    extends HostnamePlatform
+    with Ordered[Hostname] {
 
   /** Converts this hostname to lower case. */
   def normalized: Hostname =

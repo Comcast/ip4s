@@ -21,7 +21,7 @@ import java.net.{InetAddress, UnknownHostException}
 import cats.data.NonEmptyList
 import cats.effect.Sync
 
-object HostnameResolver {
+private[ip4s] trait HostnamePlatform { self: Hostname =>
 
   /**
     * Resolves this hostname to an ip address using the platform DNS resolver.
@@ -31,10 +31,10 @@ object HostnameResolver {
     * Resolution happens synchronously when the returned task is evaluated
     * so consider shifting the returned task to a blocking execution context.
     */
-  def resolve[F[_]: Sync](hostname: Hostname): F[Option[IpAddress]] =
+  def resolve[F[_]: Sync]: F[Option[IpAddress]] =
     Sync[F].delay {
       try {
-        val addr = InetAddress.getByName(hostname.toString)
+        val addr = InetAddress.getByName(self.toString)
         IpAddress.fromBytes(addr.getAddress)
       } catch {
         case _: UnknownHostException => None
@@ -49,10 +49,10 @@ object HostnameResolver {
     * Resolution happens synchronously when the returned task is evaluated
     * so consider shifting the returned task to a blocking execution context.
     */
-  def resolveAll[F[_]: Sync](hostname: Hostname): F[Option[NonEmptyList[IpAddress]]] =
+  def resolveAll[F[_]: Sync]: F[Option[NonEmptyList[IpAddress]]] =
     Sync[F].delay {
       try {
-        val addrs = InetAddress.getAllByName(hostname.toString)
+        val addrs = InetAddress.getAllByName(self.toString)
         NonEmptyList.fromList(addrs.toList.flatMap(addr => IpAddress.fromBytes(addr.getAddress)))
       } catch {
         case _: UnknownHostException => None

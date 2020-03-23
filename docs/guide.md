@@ -340,14 +340,14 @@ import cats.effect.IO
 scala> val home = host"localhost"
 home: com.comcast.ip4s.Hostname = localhost
 
-scala> val homeIp = HostnameResolver.resolve[IO](home)
-homeIp: cats.effect.IO[Option[com.comcast.ip4s.IpAddress]] = IO$244817425
+scala> val homeIp = home.resolve[IO]
+homeIp: cats.effect.IO[Option[com.comcast.ip4s.IpAddress]] = IO$204250116
 
 scala> homeIp.unsafeRunSync
 res0: Option[com.comcast.ip4s.IpAddress] = Some(127.0.0.1)
 
-scala> val homeIps = HostnameResolver.resolveAll[IO](home)
-homeIps: cats.effect.IO[Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]]] = IO$764523004
+scala> val homeIps = home.resolveAll[IO]
+homeIps: cats.effect.IO[Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]]] = IO$1531343066
 
 scala> homeIps.unsafeRunSync
 res1: Option[cats.data.NonEmptyList[com.comcast.ip4s.IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
