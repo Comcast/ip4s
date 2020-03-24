@@ -52,10 +52,6 @@ val home6 = ipv6"::1"
 
 The `ip` interpolator returns an `IpAddress`, the `ipv4` interpolator returns an `Ipv4Address`, and the `ipv6` interpolator returns an `Ipv6Address`. If the string is not a valid IP of the requested type, the expression will fail to compile.
 
-```scala mdoc:fail:to-string
-val bad = ipv4"::1"
-```
-
 ## IPv6 String Formats
 
 IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead, you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.apply` and `IpAddress.apply` can parse all of these formats.

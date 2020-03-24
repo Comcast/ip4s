@@ -61,13 +61,6 @@ val home6 = ipv6"::1"
 
 The `ip` interpolator returns an `IpAddress`, the `ipv4` interpolator returns an `Ipv4Address`, and the `ipv6` interpolator returns an `Ipv6Address`. If the string is not a valid IP of the requested type, the expression will fail to compile.
 
-```scala
-val bad = ipv4"::1"
-// error: invalid IPv4 address
-// val j1 = MulticastJoin.ssm(ipv4"10.11.12.13", ssmipv4"232.1.2.3")
-//                            ^
-```
-
 ## IPv6 String Formats
 
 IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead, you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.apply` and `IpAddress.apply` can parse all of these formats.
@@ -308,14 +301,14 @@ import cats.effect.IO
 val home = host"localhost"
 // home: Hostname = localhost
 val homeIp = home.resolve[IO]
-// homeIp: IO[Option[IpAddress]] = IO$1374402300
+// homeIp: IO[Option[IpAddress]] = IO$1854634462
 homeIp.unsafeRunSync
-// res5: Option[IpAddress] = Some(127.0.0.1)
+// res4: Option[IpAddress] = Some(127.0.0.1)
 
 val homeIps = home.resolveAll[IO]
-// homeIps: IO[Option[cats.data.NonEmptyList[IpAddress]]] = IO$112945871
+// homeIps: IO[Option[cats.data.NonEmptyList[IpAddress]]] = IO$1663940228
 homeIps.unsafeRunSync
-// res6: Option[cats.data.NonEmptyList[IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
+// res5: Option[cats.data.NonEmptyList[IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
 ```
 
 # Internationalized Domain Names
@@ -326,10 +319,10 @@ RFC1123 hostnames are limited to ASCII characters. The `IDN` type provides a way
 val unicodeComcast = idn"comcast\u3002com"
 // unicodeComcast: IDN = comcast。com
 unicodeComcast.hostname
-// res7: Hostname = comcast.com
+// res6: Hostname = comcast.com
 
 val emojiRegistrar = idn"i❤.ws"
 // emojiRegistrar: IDN = i❤.ws
 emojiRegistrar.hostname
-// res8: Hostname = xn--i-7iq.ws
+// res7: Hostname = xn--i-7iq.ws
 ```
