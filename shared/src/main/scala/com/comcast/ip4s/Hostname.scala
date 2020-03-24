@@ -18,6 +18,8 @@ package com.comcast.ip4s
 
 import scala.util.hashing.MurmurHash3
 
+import cats.{Order, Show}
+
 /**
   * RFC1123 compliant hostname.
   *
@@ -26,7 +28,8 @@ import scala.util.hashing.MurmurHash3
   * periods and the overall hostname must not exceed 253 characters in length.
   */
 final class Hostname private (val labels: List[Hostname.Label], override val toString: String)
-    extends Ordered[Hostname] {
+    extends HostnamePlatform
+    with Ordered[Hostname] {
 
   /** Converts this hostname to lower case. */
   def normalized: Hostname =
@@ -76,4 +79,7 @@ object Hostname {
         case _ => None
       }
   }
+
+  implicit val order: Order[Hostname] = Order.fromComparable[Hostname]
+  implicit val show: Show[Hostname] = Show.fromToString[Hostname]
 }

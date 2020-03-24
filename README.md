@@ -21,16 +21,7 @@ libraryDependencies += "com.comcast" %% "ip4s-core" % "version"
 
 ## Interop
 
-Modules for interopability with [cats](https://typelevel.org/cats/) or [Scalaz](http://scalaz.org/) are available.
-A series of typeclass instances as well as helper functionality is available in these modules.
-
-Supplemental guides are available for [ip4s-cats](docs/guide-cats.md) and [ip4s-scalaz](docs/guide-scalaz.md).
-
-```scala
-libraryDependencies += "com.comcast" %% "ip4s-cats" % "version"
-
-libraryDependencies += "com.comcast" %% "ip4s-scalaz" % "version"
-```
+As of 1.4, ip4s depends on cats and provides type class instances directly in data type companion objects. For Scalaz support, we recommend [shims](https://github.com/djspiewak/shims).
 
 ## Copyright and License
 

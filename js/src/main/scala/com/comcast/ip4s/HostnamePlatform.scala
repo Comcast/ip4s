@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-package com.comcast.ip4s.interop.scalaz
+package com.comcast.ip4s
 
-object implicits
-    extends CidrInstances
-    with HostnameInstances
-    with IDNInstances
-    with IpAddressInstances
-    with MulticastInstances
-    with MulticastJoinInstances
-    with MulticastSocketAddressInstances
-    with PortInstances
-    with SocketAddressInstances
+private[ip4s] trait HostnamePlatform

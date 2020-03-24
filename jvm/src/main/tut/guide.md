@@ -3,8 +3,6 @@ ip4s: IP Addresses for Scala & Scala.js
 
 This is the guide for IP Addresses for Scala & Scala.js. This library provides the package `com.comcast.ip4s`, which contains all types. It is a small package and it is often useful to import all of its contents via `import com.comcast.ip4s._` -- doing so will enable some syntax.
 
-There are interop libraries for both [cats](guide-cats.md) and [scalaz](guide-scalaz.md).
-
 # IP Addresses
 
 The `IpAddress` type represents either an IPv4 address or an IPv6 address. The primary mechanism to construct an `IpAddress` is `IpAddress.apply`, which converts a string to an `Option[IpAddress]`. You can also construct an `IpAddress` from a byte array of either 4 bytes or 16 bytes.
@@ -236,6 +234,21 @@ val home = Hostname("localhost")
 val ls = home.map(_.labels)
 val comcast = host"comcast.com"
 val cs = comcast.labels
+```
+
+## Hostname Resolution
+
+On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolveAll`:
+
+```tut
+import cats.effect.IO
+
+val home = host"localhost"
+val homeIp = home.resolve[IO]
+homeIp.unsafeRunSync
+
+val homeIps = home.resolveAll[IO]
+homeIps.unsafeRunSync
 ```
 
 # Internationalized Domain Names
