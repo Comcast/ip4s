@@ -28,17 +28,6 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(publishingSettings)
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "28.2-jre" % "test",
-    libraryDependencies := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, v)) if v >= 13 =>
-          libraryDependencies.value.filterNot(_.toString.contains("tut-core"))
-        case _ =>
-          libraryDependencies.value
-      }
-    },
-    scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt =>
-      !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
-    tutTargetDirectory := baseDirectory.value / "../../docs",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
@@ -50,7 +39,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   )
   .dependsOn(core % "compile->compile")
 
-lazy val testKitJVM = testKit.jvm.enablePlugins(TutPlugin, SbtOsgi)
+lazy val testKitJVM = testKit.jvm.enablePlugins(SbtOsgi)
 lazy val testKitJS = testKit.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
@@ -73,17 +62,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .jvmSettings(
     // Needed for sbt-doctest
     libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
-    libraryDependencies := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, v)) if v >= 13 =>
-          libraryDependencies.value.filterNot(_.toString.contains("tut-core"))
-        case _ =>
-          libraryDependencies.value
-      }
-    },
-    scalacOptions in Tut := (scalacOptions in Compile).value.filter(opt =>
-      !(opt.startsWith("-Ywarn-unused") || opt == "-Xfatal-warnings" || opt == "-Xlint")),
-    tutTargetDirectory := baseDirectory.value / "../docs",
+    mdocIn := baseDirectory.value / "src/main/docs",
+    mdocOut := baseDirectory.value / "../docs",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
@@ -94,7 +74,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     osgiSettings
   )
 
-lazy val coreJVM = core.jvm.enablePlugins(TutPlugin, SbtOsgi)
+lazy val coreJVM = core.jvm.enablePlugins(MdocPlugin, SbtOsgi)
 lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val commonSettings = Seq(
