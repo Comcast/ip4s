@@ -50,7 +50,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     name := "ip4s-core",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
-      "org.typelevel" %%% "cats-effect" % "2.1.2"
+      "org.typelevel" %%% "cats-effect" % "2.1.3"
     ),
   )
   .jvmSettings(mimaSettings)
