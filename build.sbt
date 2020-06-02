@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-lazy val scalaTestVersion = "3.1.1"
+lazy val scalaTestVersion = "3.1.2"
 
 lazy val root = project
   .in(file("."))
@@ -27,7 +27,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(publishingSettings)
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "28.2-jre" % "test",
+    libraryDependencies += "com.google.guava" % "guava" % "29.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
