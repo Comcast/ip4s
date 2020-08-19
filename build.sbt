@@ -123,12 +123,8 @@ lazy val commonSettings = Seq(
     val base = baseDirectory.value
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
-  scalacOptions ++= Seq(
-    "-language:higherKinds",
-    "-deprecation",
-    "-feature",
-    "-Xlint"
-  ),
+  scalacOptions ++= Seq("-language:higherKinds"),
+  scalacOptions := scalacOptions.value.filterNot(_ == "-Xfatal-warnings"),
   scalacOptions in (Compile, doc) ++= {
     val tagOrBranch = {
       if (version.value endsWith "SNAPSHOT") git.gitCurrentBranch.value
