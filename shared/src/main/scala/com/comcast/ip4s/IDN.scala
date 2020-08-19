@@ -48,10 +48,11 @@ final class IDN private (val labels: List[IDN.Label], val hostname: Hostname, ov
 
   def compare(that: IDN): Int = toString.compare(that.toString)
   override def hashCode: Int = MurmurHash3.stringHash(toString, "IDN".hashCode)
-  override def equals(other: Any): Boolean = other match {
-    case that: IDN => toString == that.toString
-    case _         => false
-  }
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: IDN => toString == that.toString
+      case _         => false
+    }
 }
 
 object IDN extends IDNCompanionPlatform {
@@ -60,28 +61,30 @@ object IDN extends IDNCompanionPlatform {
   final class Label private[IDN] (override val toString: String) extends Serializable with Ordered[Label] {
     def compare(that: Label): Int = toString.compare(that.toString)
     override def hashCode: Int = MurmurHash3.stringHash(toString, "Label".hashCode)
-    override def equals(other: Any): Boolean = other match {
-      case that: Label => toString == that.toString
-      case _           => false
-    }
-  }
-
-  private val DotPattern = raw"[\.\u002e\u3002\uff0e\uff61]"
-
-  /** Constructs a `IDN` from a string. */
-  def apply(value: String): Option[IDN] = value.size match {
-    case 0 => None
-    case _ =>
-      val labels = value
-        .split(DotPattern)
-        .iterator
-        .map(new Label(_))
-        .toList
-      Option(labels).filterNot(_.isEmpty).flatMap { ls =>
-        val hostname = toAscii(value).flatMap(Hostname(_))
-        hostname.map(h => new IDN(ls, h, value))
+    override def equals(other: Any): Boolean =
+      other match {
+        case that: Label => toString == that.toString
+        case _           => false
       }
   }
+
+  private val DotPattern = "[\\.\u002e\u3002\uff0e\uff61]"
+
+  /** Constructs a `IDN` from a string. */
+  def apply(value: String): Option[IDN] =
+    value.size match {
+      case 0 => None
+      case _ =>
+        val labels = value
+          .split(DotPattern)
+          .iterator
+          .map(new Label(_))
+          .toList
+        Option(labels).filterNot(_.isEmpty).flatMap { ls =>
+          val hostname = toAscii(value).flatMap(Hostname(_))
+          hostname.map(h => new IDN(ls, h, value))
+        }
+    }
 
   /** Converts the supplied (ASCII) hostname in to an IDN. */
   def fromHostname(hostname: Hostname): IDN = {

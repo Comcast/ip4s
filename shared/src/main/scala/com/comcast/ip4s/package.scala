@@ -16,8 +16,6 @@
 
 package com.comcast
 
-import scala.language.experimental.macros
-
 package object ip4s {
   final implicit class IpLiteralSyntax(val sc: StringContext) extends AnyVal {
     def ip(args: Any*): IpAddress = macro LiteralSyntaxMacros.ipInterpolator

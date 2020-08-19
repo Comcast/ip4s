@@ -27,10 +27,11 @@ final class Port private (val value: Int) extends Product with Serializable with
   def compare(that: Port): Int = value.compare(that.value)
   override def toString: String = value.toString
   override def hashCode: Int = MurmurHash3.productHash(this, productPrefix.hashCode)
-  override def equals(other: Any): Boolean = other match {
-    case that: Port => value == that.value
-    case _          => false
-  }
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: Port => value == that.value
+      case _          => false
+    }
   override def canEqual(other: Any): Boolean = other.isInstanceOf[Port]
   override def productArity: Int = 1
   override def productElement(n: Int): Any =

@@ -98,17 +98,19 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
 
   override def toString: String = s"$address/$prefixBits"
   override def hashCode: Int = MurmurHash3.productHash(this, productPrefix.hashCode)
-  override def equals(other: Any): Boolean = other match {
-    case that: Cidr[_] => address == that.address && prefixBits == that.prefixBits
-    case _             => false
-  }
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: Cidr[_] => address == that.address && prefixBits == that.prefixBits
+      case _             => false
+    }
   override def canEqual(other: Any): Boolean = other.isInstanceOf[Cidr[_]]
   override def productArity: Int = 2
-  override def productElement(n: Int): Any = n match {
-    case 0 => address
-    case 1 => prefixBits
-    case _ => throw new IndexOutOfBoundsException
-  }
+  override def productElement(n: Int): Any =
+    n match {
+      case 0 => address
+      case 1 => prefixBits
+      case _ => throw new IndexOutOfBoundsException
+    }
 }
 
 object Cidr {
@@ -119,7 +121,7 @@ object Cidr {
     * if `prefixBits` is greater than the bit length of the address, it will be set to the bit length of the address.
     */
   def apply[A <: IpAddress](address: A, prefixBits: Int): Cidr[A] = {
-    val maxPrefixBits = address.fold(v4 => 32, v6 => 128)
+    val maxPrefixBits = address.fold(_ => 32, _ => 128)
     val b = if (prefixBits < 0) 0 else if (prefixBits > maxPrefixBits) maxPrefixBits else prefixBits
     new Cidr(address, b)
   }

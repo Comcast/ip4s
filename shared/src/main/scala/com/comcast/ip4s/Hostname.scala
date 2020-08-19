@@ -37,10 +37,11 @@ final class Hostname private (val labels: List[Hostname.Label], override val toS
 
   def compare(that: Hostname): Int = toString.compare(that.toString)
   override def hashCode: Int = MurmurHash3.stringHash(toString, "Hostname".hashCode)
-  override def equals(other: Any): Boolean = other match {
-    case that: Hostname => toString == that.toString
-    case _              => false
-  }
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: Hostname => toString == that.toString
+      case _              => false
+    }
 }
 
 object Hostname {
@@ -54,31 +55,33 @@ object Hostname {
   final class Label private[Hostname] (override val toString: String) extends Serializable with Ordered[Label] {
     def compare(that: Label): Int = toString.compare(that.toString)
     override def hashCode: Int = MurmurHash3.stringHash(toString, "Label".hashCode)
-    override def equals(other: Any): Boolean = other match {
-      case that: Label => toString == that.toString
-      case _           => false
-    }
+    override def equals(other: Any): Boolean =
+      other match {
+        case that: Label => toString == that.toString
+        case _           => false
+      }
   }
 
   private val Pattern =
     """[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*""".r
 
   /** Constructs a `Hostname` from a string. */
-  def apply(value: String): Option[Hostname] = value.size match {
-    case 0            => None
-    case i if i > 253 => None
-    case _ =>
-      value match {
-        case Pattern(_*) =>
-          val labels = value
-            .split('.')
-            .iterator
-            .map(new Label(_))
-            .toList
-          if (labels.isEmpty) None else Option(new Hostname(labels, value))
-        case _ => None
-      }
-  }
+  def apply(value: String): Option[Hostname] =
+    value.size match {
+      case 0            => None
+      case i if i > 253 => None
+      case _ =>
+        value match {
+          case Pattern(_*) =>
+            val labels = value
+              .split('.')
+              .iterator
+              .map(new Label(_))
+              .toList
+            if (labels.isEmpty) None else Option(new Hostname(labels, value))
+          case _ => None
+        }
+    }
 
   implicit val order: Order[Hostname] = Order.fromComparable[Hostname]
   implicit val show: Show[Hostname] = Show.fromToString[Hostname]

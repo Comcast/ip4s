@@ -85,10 +85,11 @@ sealed abstract class IpAddress extends IpAddressPlatform with Ordered[IpAddress
     */
   def toUriString: String
 
-  override def equals(other: Any): Boolean = other match {
-    case that: IpAddress => java.util.Arrays.equals(bytes, that.bytes)
-    case _               => false
-  }
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: IpAddress => java.util.Arrays.equals(bytes, that.bytes)
+      case _               => false
+    }
 
   override def hashCode: Int = java.util.Arrays.hashCode(bytes)
 
@@ -543,22 +544,23 @@ object Ipv6Address {
   }
 
   private val MixedStringFormat = """([:a-fA-F0-9]+:)(\d+\.\d+\.\d+\.\d+)""".r
-  private def fromMixedString(value: String): Option[Ipv6Address] = value match {
-    case MixedStringFormat(prefix, v4Str) =>
-      for {
-        pfx <- fromNonMixedString(prefix + "0:0")
-        v4 <- Ipv4Address(v4Str)
-      } yield {
-        val bytes = pfx.toBytes
-        val v4bytes = v4.toBytes
-        bytes(12) = v4bytes(0)
-        bytes(13) = v4bytes(1)
-        bytes(14) = v4bytes(2)
-        bytes(15) = v4bytes(3)
-        unsafeFromBytes(bytes)
-      }
-    case _ => None
-  }
+  private def fromMixedString(value: String): Option[Ipv6Address] =
+    value match {
+      case MixedStringFormat(prefix, v4Str) =>
+        for {
+          pfx <- fromNonMixedString(prefix + "0:0")
+          v4 <- Ipv4Address(v4Str)
+        } yield {
+          val bytes = pfx.toBytes
+          val v4bytes = v4.toBytes
+          bytes(12) = v4bytes(0)
+          bytes(13) = v4bytes(1)
+          bytes(14) = v4bytes(2)
+          bytes(15) = v4bytes(3)
+          unsafeFromBytes(bytes)
+        }
+      case _ => None
+    }
 
   /**
     * Constructs an IPv6 address from a 16-element byte array.

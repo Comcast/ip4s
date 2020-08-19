@@ -22,10 +22,11 @@ import cats.{Order, Show}
   * An IP address of the specified type and a port number. Used to describe the source or destination of a socket.
   */
 final case class SocketAddress[+A <: IpAddress](ip: A, port: Port) extends SocketAddressPlatform[A] {
-  override def toString: String = ip match {
-    case _: Ipv4Address => s"$ip:$port"
-    case _: Ipv6Address => s"[$ip]:$port"
-  }
+  override def toString: String =
+    ip match {
+      case _: Ipv4Address => s"$ip:$port"
+      case _: Ipv6Address => s"[$ip]:$port"
+    }
 }
 
 object SocketAddress {

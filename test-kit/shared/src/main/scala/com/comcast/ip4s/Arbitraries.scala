@@ -55,8 +55,8 @@ object Arbitraries {
       port <- genPort
     } yield SocketAddress(ip, port)
 
-  implicit def socketAddressArbitrary[A <: IpAddress](
-      implicit arbIp: Arbitrary[A],
+  implicit def socketAddressArbitrary[A <: IpAddress](implicit
+      arbIp: Arbitrary[A],
       arbPort: Arbitrary[Port]
   ): Arbitrary[SocketAddress[A]] =
     Arbitrary(socketAddressGenerator(arbIp.arbitrary, arbPort.arbitrary))
@@ -85,8 +85,8 @@ object Arbitraries {
       }
     }
 
-  implicit def multicastJoinArbitrary[A <: IpAddress](
-      implicit arbSource: Arbitrary[A],
+  implicit def multicastJoinArbitrary[A <: IpAddress](implicit
+      arbSource: Arbitrary[A],
       arbGroup: Arbitrary[Multicast[A]]
   ): Arbitrary[MulticastJoin[A]] =
     Arbitrary(multicastJoinGenerator(arbSource.arbitrary, arbGroup.arbitrary))
@@ -100,8 +100,8 @@ object Arbitraries {
       port <- genPort
     } yield MulticastSocketAddress(join, port)
 
-  implicit def multicastSocketAddressArbitrary[A <: IpAddress](
-      implicit arbJoin: Arbitrary[MulticastJoin[A]],
+  implicit def multicastSocketAddressArbitrary[A <: IpAddress](implicit
+      arbJoin: Arbitrary[MulticastJoin[A]],
       arbPort: Arbitrary[Port]
   ): Arbitrary[MulticastSocketAddress[MulticastJoin, A]] =
     Arbitrary(multicastSocketAddressGenerator(arbJoin.arbitrary, arbPort.arbitrary))
@@ -136,7 +136,6 @@ object Arbitraries {
       numLabels <- Gen.chooseNum(1, 5)
       labels <- Gen.listOfN(numLabels, genLabel)
       dot <- Gen.oneOf('.', '\u002e', '\u3002', '\uff0e', '\uff61')
-      if labels.foldLeft(0)(_ + _.size) < (253 - (numLabels - 1))
       idn = IDN(labels.mkString(dot.toString)) if idn.isDefined
     } yield idn.get
   }
