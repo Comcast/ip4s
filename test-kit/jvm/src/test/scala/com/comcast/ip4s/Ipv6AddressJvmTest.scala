@@ -18,39 +18,38 @@ package com.comcast.ip4s
 
 import com.google.common.net.InetAddresses
 import java.net.{InetAddress, Inet6Address}
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.{Arbitrary, Gen, Test}
 
+import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class Ipv6AddressJvmTest extends BaseTestSuite {
-  implicit override val generatorDrivenConfig =
-    PropertyCheckConfiguration(minSuccessful = 10000)
+  override protected def scalaCheckTestParameters: Test.Parameters =
+    super.scalaCheckTestParameters.withMinSuccessfulTests(10000)
 
-  "Ipv6Address" should {
-    "support converting to string form".which {
-      "roundtrips through strings" in {
-        forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
-          if (bytesList.size == 16) {
-            val bytes = bytesList.toArray
-            val str =
-              InetAddresses.toAddrString(InetAddress.getByAddress(bytes))
-            Ipv6Address(str).map(_.toString) shouldBe Some(str)
-          }
-        }
-      }
-      "follows RFC5952" in {
-        forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
-          if (bytesList.size == 16) {
-            val bytes = bytesList.toArray
-            val expected =
-              InetAddresses.toAddrString(InetAddress.getByAddress(bytes))
-            Ipv6Address.fromBytes(bytes).map(_.toString) shouldBe Some(expected)
-          }
-        }
+  test("to string - roundtrips through strings") {
+    forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
+      if (bytesList.size == 16) {
+        val bytes = bytesList.toArray
+        val str =
+          InetAddresses.toAddrString(InetAddress.getByAddress(bytes))
+        assertEquals(Ipv6Address(str).map(_.toString), Some(str))
       }
     }
-    "support conversion to Inet6Address" in {
-      forAll { (ip: Ipv6Address) => ip.toInetAddress shouldBe an[Inet6Address] }
+  }
+
+  test("to string - follows RFC5952") {
+    forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
+      if (bytesList.size == 16) {
+        val bytes = bytesList.toArray
+        val expected =
+          InetAddresses.toAddrString(InetAddress.getByAddress(bytes))
+        assertEquals(Ipv6Address.fromBytes(bytes).map(_.toString), Some(expected))
+      }
     }
+  }
+
+  test("support conversion to Inet6Address") {
+    forAll { (ip: Ipv6Address) => assert(ip.toInetAddress.isInstanceOf[Inet6Address]) }
   }
 }

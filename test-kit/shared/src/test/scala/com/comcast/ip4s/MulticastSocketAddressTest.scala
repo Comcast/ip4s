@@ -16,14 +16,13 @@
 
 package com.comcast.ip4s
 
+import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class MulticastSocketAddressTest extends BaseTestSuite {
-  "MulticastSocketAddress" should {
-    "roundtrip through string" in {
-      forAll { (msa: MulticastSocketAddress[MulticastJoin, IpAddress]) =>
-        MulticastSocketAddress.fromString(msa.toString) shouldBe Some(msa)
-      }
+  test("roundtrip through string") {
+    forAll { (msa: MulticastSocketAddress[MulticastJoin, IpAddress]) =>
+      assertEquals(MulticastSocketAddress.fromString(msa.toString), Some(msa))
     }
   }
 }

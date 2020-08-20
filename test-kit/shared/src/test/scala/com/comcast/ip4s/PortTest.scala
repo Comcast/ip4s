@@ -16,12 +16,11 @@
 
 package com.comcast.ip4s
 
+import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class PortTest extends BaseTestSuite {
-  "Port" should {
-    "roundtrip through string" in {
-      forAll { (p: Port) => Port.fromString(p.toString) shouldBe Some(p) }
-    }
+  test("roundtrip through string") {
+    forAll { (p: Port) => assertEquals(Port.fromString(p.toString), Some(p)) }
   }
 }

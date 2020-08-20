@@ -12,4 +12,5 @@ target
 .metaserver
 .bloop
 .metals
+.vscode
 project/metals.sbt

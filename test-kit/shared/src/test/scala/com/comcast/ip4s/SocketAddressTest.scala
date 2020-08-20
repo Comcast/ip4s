@@ -16,12 +16,11 @@
 
 package com.comcast.ip4s
 
+import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class SocketAddressTest extends BaseTestSuite {
-  "SocketAddress" should {
-    "roundtrip through string" in {
-      forAll { (sa: SocketAddress[IpAddress]) => SocketAddress.fromString(sa.toString) shouldBe Some(sa) }
-    }
+  test("roundtrip through string") {
+    forAll { (sa: SocketAddress[IpAddress]) => assertEquals(SocketAddress.fromString(sa.toString), Some(sa)) }
   }
 }

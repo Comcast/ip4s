@@ -16,50 +16,49 @@
 
 package com.comcast.ip4s
 
+import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class HostnameTest extends BaseTestSuite {
-  "Hostname" should {
-    "roundtrip through string" in {
-      forAll { (h: Hostname) => Hostname(h.toString) shouldBe Some(h) }
-    }
+  test("roundtrip through string") {
+    forAll { (h: Hostname) => assertEquals(Hostname(h.toString), Some(h)) }
+  }
 
-    "allow access to labels" in {
-      forAll { (h: Hostname) => Hostname(h.labels.toList.mkString(".")) shouldBe Some(h) }
-    }
+  test("allow access to labels") {
+    forAll { (h: Hostname) => assertEquals(Hostname(h.labels.toList.mkString(".")), Some(h)) }
+  }
 
-    "require overall length be less than 254 chars" in {
-      forAll { (h: Hostname) =>
-        val hstr = h.toString
-        val h2 = hstr + "." + hstr
-        val expected = if (h2.length > 253) None else Some(Hostname(h2).get)
-        Hostname(h2) shouldBe expected
-      }
+  test("require overall length be less than 254 chars") {
+    forAll { (h: Hostname) =>
+      val hstr = h.toString
+      val h2 = hstr + "." + hstr
+      val expected = if (h2.length > 253) None else Some(Hostname(h2).get)
+      assertEquals(Hostname(h2), expected)
     }
+  }
 
-    "require labels be less than 64 chars" in {
-      forAll { (h: Hostname) =>
-        val hstr = h.toString
-        val suffix = new String(Array.fill(63)(hstr.last))
-        val tooLong = hstr + suffix
-        Hostname(tooLong) shouldBe None
-      }
+  test("require labels be less than 64 chars") {
+    forAll { (h: Hostname) =>
+      val hstr = h.toString
+      val suffix = new String(Array.fill(63)(hstr.last))
+      val tooLong = hstr + suffix
+      assertEquals(Hostname(tooLong), None)
     }
+  }
 
-    "disallow labels that end in a dash" in {
-      forAll { (h: Hostname) =>
-        val hstr = h.toString
-        val disallowed = hstr + "-"
-        Hostname(disallowed) shouldBe None
-      }
+  test("disallow labels that end in a dash") {
+    forAll { (h: Hostname) =>
+      val hstr = h.toString
+      val disallowed = hstr + "-"
+      assertEquals(Hostname(disallowed), None)
     }
+  }
 
-    "disallow labels that start with a dash" in {
-      forAll { (h: Hostname) =>
-        val hstr = h.toString
-        val disallowed = "-" + hstr
-        Hostname(disallowed) shouldBe None
-      }
+  test("disallow labels that start with a dash") {
+    forAll { (h: Hostname) =>
+      val hstr = h.toString
+      val disallowed = "-" + hstr
+      assertEquals(Hostname(disallowed), None)
     }
   }
 }

@@ -18,96 +18,96 @@ package com.comcast.ip4s
 
 import org.scalacheck.{Arbitrary, Gen}
 
+import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class Ipv6AddressTest extends BaseTestSuite {
-  "Ipv6Address" should {
-    "support parsing from string form".which {
-      "does not parse the empty string" in {
-        Ipv6Address("") shouldBe None
-      }
-      "does not parse white space string" in {
-        Ipv6Address(" ") shouldBe None
-      }
-      "does not parse a single :" in {
-        Ipv6Address(":") shouldBe None
-        Ipv6Address(" : ") shouldBe None
-      }
-      "does parse ::" in {
-        Ipv6Address("::").isDefined shouldBe true
-        Ipv6Address(" :: ").isDefined shouldBe true
-      }
-      "supports mixed strings" in {
-        forAll { (v4: Ipv4Address) =>
-          Ipv6Address("::" + v4) shouldBe Some(v4.toCompatV6)
-          Ipv6Address("::ffff:" + v4) shouldBe Some(v4.toMappedV6)
-        }
-      }
-    }
+  test("parsing from string - does not parse the empty string") {
+    assertEquals(Ipv6Address(""), None)
+  }
 
-    "support converting to uncondensed string form" in {
-      forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
-        if (bytesList.size == 16) {
-          val bytes = bytesList.toArray
-          val addr = Ipv6Address.fromBytes(bytes).get
-          addr.toUncondensedString should have size (4 * 8 + 7)
-        }
+  test("parsing from string - does not parse white space string") {
+    assertEquals(Ipv6Address(" "), None)
+  }
+
+  test("parsing from string - does not parse a single :") {
+    assertEquals(Ipv6Address(":"), None)
+    assertEquals(Ipv6Address(" : "), None)
+  }
+  test("parsing from string - does parse ::") {
+    assertEquals(Ipv6Address("::").isDefined, true)
+    assertEquals(Ipv6Address(" :: ").isDefined, true)
+  }
+
+  test("parsing from string - supports mixed strings") {
+    forAll { (v4: Ipv4Address) =>
+      assertEquals(Ipv6Address("::" + v4), Some(v4.toCompatV6))
+      assertEquals(Ipv6Address("::ffff:" + v4), Some(v4.toMappedV6))
+    }
+  }
+
+  test("support converting to uncondensed string form") {
+    forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
+      if (bytesList.size == 16) {
+        val bytes = bytesList.toArray
+        val addr = Ipv6Address.fromBytes(bytes).get
+        assert(addr.toUncondensedString.size == 4 * 8 + 7)
       }
     }
+  }
 
-    "roundtrip through uncondensed strings" in {
-      forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
-        if (bytesList.size == 16) {
-          val bytes = bytesList.toArray
-          val addr = Ipv6Address.fromBytes(bytes).get
-          Ipv6Address(addr.toUncondensedString) shouldBe Some(addr)
-        }
+  test("roundtrip through uncondensed strings") {
+    forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
+      if (bytesList.size == 16) {
+        val bytes = bytesList.toArray
+        val addr = Ipv6Address.fromBytes(bytes).get
+        assertEquals(Ipv6Address(addr.toUncondensedString), Some(addr))
       }
     }
+  }
 
-    "support converting to mixed string form" in {
-      forAll { (v4: Ipv4Address) =>
-        v4.toCompatV6.toMixedString shouldBe ("::" + v4)
-        v4.toMappedV6.toMixedString shouldBe ("::ffff:" + v4)
+  test("support converting to mixed string form") {
+    forAll { (v4: Ipv4Address) =>
+      assertEquals(v4.toCompatV6.toMixedString, "::" + v4)
+      assertEquals(v4.toMappedV6.toMixedString, "::ffff:" + v4)
+    }
+  }
+
+  test("roundtrip through mixed strings") {
+    forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
+      if (bytesList.size == 16) {
+        val bytes = bytesList.toArray
+        val addr = Ipv6Address.fromBytes(bytes).get
+        assertEquals(Ipv6Address(addr.toMixedString), Some(addr))
       }
     }
+  }
 
-    "roundtrip through mixed strings" in {
-      forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
-        if (bytesList.size == 16) {
-          val bytes = bytesList.toArray
-          val addr = Ipv6Address.fromBytes(bytes).get
-          Ipv6Address(addr.toMixedString) shouldBe Some(addr)
-        }
+  test("roundtrip through BigInt") {
+    forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
+      if (bytesList.size == 16) {
+        val bytes = bytesList.toArray
+        val addr = Ipv6Address.fromBytes(bytes).get
+        assertEquals(Ipv6Address.fromBigInt(addr.toBigInt), addr)
       }
     }
+  }
 
-    "roundtrip through BigInt" in {
-      forAll(Gen.listOfN(16, Arbitrary.arbitrary[Byte])) { bytesList =>
-        if (bytesList.size == 16) {
-          val bytes = bytesList.toArray
-          val addr = Ipv6Address.fromBytes(bytes).get
-          Ipv6Address.fromBigInt(addr.toBigInt) shouldBe addr
-        }
-      }
+  test("support ordering") {
+    forAll { (left: Ipv6Address, right: Ipv6Address) =>
+      val bigIntCompare = left.toBigInt.compare(right.toBigInt)
+      val result = Ordering[Ipv6Address].compare(left, right)
+      assertEquals(result, bigIntCompare)
     }
+  }
 
-    "support ordering" in {
-      forAll { (left: Ipv6Address, right: Ipv6Address) =>
-        val bigIntCompare = left.toBigInt.compare(right.toBigInt)
-        val result = Ordering[Ipv6Address].compare(left, right)
-        result shouldBe bigIntCompare
-      }
-    }
+  test("support computing next IP") {
+    assertEquals(Ipv6Address("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff").map(_.next), Ipv6Address("::"))
+    forAll { (ip: Ipv6Address) => assertEquals(ip.next, Ipv6Address.fromBigInt(ip.toBigInt + 1)) }
+  }
 
-    "support computing next IP" in {
-      Ipv6Address("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff").map(_.next) shouldBe Ipv6Address("::")
-      forAll { (ip: Ipv6Address) => ip.next shouldBe Ipv6Address.fromBigInt(ip.toBigInt + 1) }
-    }
-
-    "support computing previous IP" in {
-      Ipv6Address("::").map(_.previous) shouldBe Ipv6Address("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
-      forAll { (ip: Ipv6Address) => ip.previous shouldBe Ipv6Address.fromBigInt(ip.toBigInt - 1) }
-    }
+  test("support computing previous IP") {
+    assertEquals(Ipv6Address("::").map(_.previous), Ipv6Address("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"))
+    forAll { (ip: Ipv6Address) => assertEquals(ip.previous, Ipv6Address.fromBigInt(ip.toBigInt - 1)) }
   }
 }

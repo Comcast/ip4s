@@ -16,16 +16,15 @@
 
 package com.comcast.ip4s
 
+import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class MulticastTest extends BaseTestSuite {
-  "Multicast" should {
-    "support equality" in {
-      forAll { (mip: Multicast[IpAddress]) =>
-        mip.address.asMulticast shouldBe Some(mip)
-        mip.address.asSourceSpecificMulticast.foreach(_ shouldBe mip)
-        mip.address.asSourceSpecificMulticast.foreach(mip shouldBe _)
-      }
+  test("support equality") {
+    forAll { (mip: Multicast[IpAddress]) =>
+      assertEquals(mip.address.asMulticast, Some(mip))
+      mip.address.asSourceSpecificMulticast.foreach(x => assert(x == mip))
+      mip.address.asSourceSpecificMulticast.foreach(x => assertEquals(mip, x))
     }
   }
 }

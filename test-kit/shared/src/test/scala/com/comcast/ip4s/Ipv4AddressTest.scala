@@ -17,56 +17,54 @@
 package com.comcast.ip4s
 
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Prop.forAll
 
 import Arbitraries._
 
 class Ipv4AddressTest extends BaseTestSuite {
-  "Ipv4Address" should {
-    "support parsing from string form".which {
-      "does not parse the empty string" in {
-        Ipv4Address.apply("") shouldBe None
-      }
-      "does not parse white space string" in {
-        Ipv4Address.apply(" ") shouldBe None
-      }
-    }
+  test("parsing from string - does not parse the empty string") {
+    assertEquals(Ipv4Address.apply(""), None)
+  }
 
-    "roundtrip through string" in {
-      forAll(Gen.listOfN(4, Arbitrary.arbitrary[Byte])) { bytesList =>
-        if (bytesList.size == 4) {
-          val bytes = bytesList.toArray
-          val addr = Ipv4Address.fromBytes(bytes).get
-          Ipv4Address(addr.toString) shouldBe Some(addr)
-        }
+  test("parsing from string - does not parse white space string") {
+    assertEquals(Ipv4Address.apply(" "), None)
+  }
+
+  test("roundtrip through string") {
+    forAll(Gen.listOfN(4, Arbitrary.arbitrary[Byte])) { bytesList =>
+      if (bytesList.size == 4) {
+        val bytes = bytesList.toArray
+        val addr = Ipv4Address.fromBytes(bytes).get
+        assertEquals(Ipv4Address(addr.toString), Some(addr))
       }
     }
+  }
 
-    "roundtrip through long" in {
-      forAll(Gen.listOfN(4, Arbitrary.arbitrary[Byte])) { bytesList =>
-        if (bytesList.size == 4) {
-          val bytes = bytesList.toArray
-          val addr = Ipv4Address.fromBytes(bytes).get
-          Ipv4Address.fromLong(addr.toLong) shouldBe addr
-        }
+  test("roundtrip through long") {
+    forAll(Gen.listOfN(4, Arbitrary.arbitrary[Byte])) { bytesList =>
+      if (bytesList.size == 4) {
+        val bytes = bytesList.toArray
+        val addr = Ipv4Address.fromBytes(bytes).get
+        assertEquals(Ipv4Address.fromLong(addr.toLong), addr)
       }
     }
+  }
 
-    "support ordering" in {
-      forAll { (left: Ipv4Address, right: Ipv4Address) =>
-        val longCompare = left.toLong.compare(right.toLong)
-        val result = Ordering[Ipv4Address].compare(left, right)
-        result shouldBe longCompare
-      }
+  test("support ordering") {
+    forAll { (left: Ipv4Address, right: Ipv4Address) =>
+      val longCompare = left.toLong.compare(right.toLong)
+      val result = Ordering[Ipv4Address].compare(left, right)
+      assertEquals(result, longCompare)
     }
+  }
 
-    "support computing next IP" in {
-      Ipv4Address("255.255.255.255").map(_.next) shouldBe Ipv4Address("0.0.0.0")
-      forAll { (ip: Ipv4Address) => ip.next shouldBe Ipv4Address.fromLong(ip.toLong + 1) }
-    }
+  test("support computing next IP") {
+    assertEquals(Ipv4Address("255.255.255.255").map(_.next), Ipv4Address("0.0.0.0"))
+    forAll { (ip: Ipv4Address) => assertEquals(ip.next, Ipv4Address.fromLong(ip.toLong + 1)) }
+  }
 
-    "support computing previous IP" in {
-      Ipv4Address("0.0.0.0").map(_.previous) shouldBe Ipv4Address("255.255.255.255")
-      forAll { (ip: Ipv4Address) => ip.previous shouldBe Ipv4Address.fromLong(ip.toLong - 1) }
-    }
+  test("support computing previous IP") {
+    assertEquals(Ipv4Address("0.0.0.0").map(_.previous), Ipv4Address("255.255.255.255"))
+    forAll { (ip: Ipv4Address) => assertEquals(ip.previous, Ipv4Address.fromLong(ip.toLong - 1)) }
   }
 }

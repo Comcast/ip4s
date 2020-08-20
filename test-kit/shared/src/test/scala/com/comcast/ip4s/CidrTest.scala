@@ -16,12 +16,11 @@
 
 package com.comcast.ip4s
 
+import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class CidrTest extends BaseTestSuite {
-  "Cidr" should {
-    "roundtrip through string" in {
-      forAll { (cidr: Cidr[IpAddress]) => Cidr.fromString(cidr.toString) shouldBe Some(cidr) }
-    }
+  property("roundtrip through string") {
+    forAll { (cidr: Cidr[IpAddress]) => assertEquals(Cidr.fromString(cidr.toString), Some(cidr)) }
   }
 }
