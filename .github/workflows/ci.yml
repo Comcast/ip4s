@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.12.11, 2.13.3]
+        scala: [2.12.11, 2.13.3, 0.26.0-RC1]
         java: [adopt@1.8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -125,7 +125,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.3]
+        scala: [0.26.0-RC1]
         java: [adopt@1.8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -188,6 +188,12 @@ jobs:
           name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-target
           path: target
 
+      - name: Download target directory 'target' (0.26.0-RC1)
+        uses: actions/download-artifact@v1
+        with:
+          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-target
+          path: target
+
       - name: Download target directory 'test-kit/js/target' (2.12.11)
         uses: actions/download-artifact@v1
         with:
@@ -198,6 +204,12 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-test-kit_js_target
+          path: test-kit/js/target
+
+      - name: Download target directory 'test-kit/js/target' (0.26.0-RC1)
+        uses: actions/download-artifact@v1
+        with:
+          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-test-kit_js_target
           path: test-kit/js/target
 
       - name: Download target directory 'js/target' (2.12.11)
@@ -212,6 +224,12 @@ jobs:
           name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-js_target
           path: js/target
 
+      - name: Download target directory 'js/target' (0.26.0-RC1)
+        uses: actions/download-artifact@v1
+        with:
+          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-js_target
+          path: js/target
+
       - name: Download target directory 'test-kit/jvm/target' (2.12.11)
         uses: actions/download-artifact@v1
         with:
@@ -224,6 +242,12 @@ jobs:
           name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-test-kit_jvm_target
           path: test-kit/jvm/target
 
+      - name: Download target directory 'test-kit/jvm/target' (0.26.0-RC1)
+        uses: actions/download-artifact@v1
+        with:
+          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-test-kit_jvm_target
+          path: test-kit/jvm/target
+
       - name: Download target directory 'jvm/target' (2.12.11)
         uses: actions/download-artifact@v1
         with:
@@ -234,6 +258,12 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-jvm_target
+          path: jvm/target
+
+      - name: Download target directory 'jvm/target' (0.26.0-RC1)
+        uses: actions/download-artifact@v1
+        with:
+          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-jvm_target
           path: jvm/target
 
       - name: Download target directory 'project/target'
