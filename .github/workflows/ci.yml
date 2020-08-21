@@ -82,41 +82,14 @@ jobs:
 
       - run: sbt ++${{ matrix.scala }} ci
 
-      - name: Upload target directory 'target' (${{ matrix.scala }})
-        uses: actions/upload-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}-target
-          path: target
+      - name: Compress target directories
+        run: tar cf targets.tar target test-kit/js/target js/target test-kit/jvm/target jvm/target project/target
 
-      - name: Upload target directory 'test-kit/js/target' (${{ matrix.scala }})
-        uses: actions/upload-artifact@v1
+      - name: Upload target directories
+        uses: actions/upload-artifact@v2
         with:
-          name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}-test-kit_js_target
-          path: test-kit/js/target
-
-      - name: Upload target directory 'js/target' (${{ matrix.scala }})
-        uses: actions/upload-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}-js_target
-          path: js/target
-
-      - name: Upload target directory 'test-kit/jvm/target' (${{ matrix.scala }})
-        uses: actions/upload-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}-test-kit_jvm_target
-          path: test-kit/jvm/target
-
-      - name: Upload target directory 'jvm/target' (${{ matrix.scala }})
-        uses: actions/upload-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}-jvm_target
-          path: jvm/target
-
-      - name: Upload target directory 'project/target'
-        uses: actions/upload-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-project_target
-          path: project/target
+          name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}
+          path: targets.tar
 
   publish:
     name: Publish Artifacts
@@ -176,101 +149,38 @@ jobs:
           path: ~/.sbt
           key: ${{ runner.os }}-sbt-cache-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
 
-      - name: Download target directory 'target' (2.12.11)
-        uses: actions/download-artifact@v1
+      - name: Download target directories (2.12.11)
+        uses: actions/download-artifact@v2
         with:
-          name: target-${{ matrix.os }}-2.12.11-${{ matrix.java }}-target
-          path: target
+          name: target-${{ matrix.os }}-2.12.11-${{ matrix.java }}
+          path: targets.tar
 
-      - name: Download target directory 'target' (2.13.3)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-target
-          path: target
+      - name: Inflate target directories (2.12.11)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
 
-      - name: Download target directory 'target' (0.26.0-RC1)
-        uses: actions/download-artifact@v1
+      - name: Download target directories (2.13.3)
+        uses: actions/download-artifact@v2
         with:
-          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-target
-          path: target
+          name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}
+          path: targets.tar
 
-      - name: Download target directory 'test-kit/js/target' (2.12.11)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-2.12.11-${{ matrix.java }}-test-kit_js_target
-          path: test-kit/js/target
+      - name: Inflate target directories (2.13.3)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
 
-      - name: Download target directory 'test-kit/js/target' (2.13.3)
-        uses: actions/download-artifact@v1
+      - name: Download target directories (0.26.0-RC1)
+        uses: actions/download-artifact@v2
         with:
-          name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-test-kit_js_target
-          path: test-kit/js/target
+          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}
+          path: targets.tar
 
-      - name: Download target directory 'test-kit/js/target' (0.26.0-RC1)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-test-kit_js_target
-          path: test-kit/js/target
-
-      - name: Download target directory 'js/target' (2.12.11)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-2.12.11-${{ matrix.java }}-js_target
-          path: js/target
-
-      - name: Download target directory 'js/target' (2.13.3)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-js_target
-          path: js/target
-
-      - name: Download target directory 'js/target' (0.26.0-RC1)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-js_target
-          path: js/target
-
-      - name: Download target directory 'test-kit/jvm/target' (2.12.11)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-2.12.11-${{ matrix.java }}-test-kit_jvm_target
-          path: test-kit/jvm/target
-
-      - name: Download target directory 'test-kit/jvm/target' (2.13.3)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-test-kit_jvm_target
-          path: test-kit/jvm/target
-
-      - name: Download target directory 'test-kit/jvm/target' (0.26.0-RC1)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-test-kit_jvm_target
-          path: test-kit/jvm/target
-
-      - name: Download target directory 'jvm/target' (2.12.11)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-2.12.11-${{ matrix.java }}-jvm_target
-          path: jvm/target
-
-      - name: Download target directory 'jvm/target' (2.13.3)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-2.13.3-${{ matrix.java }}-jvm_target
-          path: jvm/target
-
-      - name: Download target directory 'jvm/target' (0.26.0-RC1)
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-0.26.0-RC1-${{ matrix.java }}-jvm_target
-          path: jvm/target
-
-      - name: Download target directory 'project/target'
-        uses: actions/download-artifact@v1
-        with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-project_target
-          path: project/target
+      - name: Inflate target directories (0.26.0-RC1)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
 
       - name: Import signing key
         run: echo $PGP_SECRET | base64 -d | gpg --import
