@@ -17,7 +17,7 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3")
+ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "0.26.0-RC1")
 
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("main")),
@@ -51,8 +51,6 @@ ThisBuild / testFrameworks += new TestFramework("munit.Framework")
 
 ThisBuild / strictSemVer := false
 
-lazy val scalaTestVersion = "3.1.2"
-
 lazy val root = project
   .in(file("."))
   .aggregate(coreJVM, coreJS, testKitJVM, testKitJS)
@@ -64,10 +62,12 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-test-kit",
-    libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.11",
     testFrameworks += new TestFramework("munit.Framework")
   )
   .settings(mimaPreviousArtifacts := Set.empty)
+  .settings(dottyLibrarySettings)
+  .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
+  .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.11")
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "29.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
@@ -90,18 +90,28 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-core",
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
       "org.typelevel" %%% "cats-effect" % "2.1.4",
       "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
-    )
+    ),
+    libraryDependencies ++= {
+      if (isDotty.value) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
+    },
+    Compile / unmanagedSourceDirectories ++= {
+      val major = if (isDotty.value) "-3" else "-2"
+      List(CrossType.Pure, CrossType.Full).flatMap(
+        _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
+      )
+    },
+    Compile / scalafmt / unmanagedSources := (Compile / scalafmt / unmanagedSources).value.filterNot(_.toString.endsWith("Interpolators.scala")),
+    Test / scalafmt / unmanagedSources := (Test / scalafmt / unmanagedSources).value.filterNot(_.toString.endsWith("Interpolators.scala")),
   )
-  .jsSettings(mimaPreviousArtifacts := Set.empty)
+  .settings(scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)))
+  .settings(dottyLibrarySettings)
+  .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .jsSettings(
     npmDependencies in Compile += "punycode" -> "2.1.1"
   )
   .jvmSettings(
-    // Needed for sbt-doctest
-    libraryDependencies += "org.scalatest" %%% "scalatest" % scalaTestVersion % "test",
     mdocIn := baseDirectory.value / "src/main/docs",
     mdocOut := baseDirectory.value / "../docs",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
@@ -122,7 +132,6 @@ lazy val commonSettings = Seq(
     val base = baseDirectory.value
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
-  scalacOptions ++= Seq("-language:higherKinds"),
   scalacOptions := scalacOptions.value.filterNot(_ == "-Xfatal-warnings"),
   scalacOptions in (Compile, doc) ++= {
     val tagOrBranch = {
