@@ -17,7 +17,7 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "0.26.0-RC1")
+ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "0.27.0-RC1")
 
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("main")),
@@ -61,13 +61,12 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .in(file("./test-kit"))
   .settings(commonSettings)
   .settings(
-    name := "ip4s-test-kit",
-    testFrameworks += new TestFramework("munit.Framework")
+    name := "ip4s-test-kit"
   )
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
-  .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.11")
+  .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.12")
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "29.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
