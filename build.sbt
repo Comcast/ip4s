@@ -132,21 +132,6 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
   scalacOptions := scalacOptions.value.filterNot(_ == "-Xfatal-warnings"),
-  scalacOptions in (Compile, doc) ++= {
-    val tagOrBranch = {
-      if (version.value endsWith "SNAPSHOT") git.gitCurrentBranch.value
-      else ("v" + version.value)
-    }
-    Seq(
-      "-implicits",
-      "-implicits-show-all",
-      "-sourcepath",
-      baseDirectory.value.getCanonicalPath,
-      "-doc-source-url",
-      s"https://github.com/comcast/ip4s/tree/$tagOrBranch/€{FILE_PATH}.scala",
-      "-diagrams"
-    )
-  },
   sourceDirectories in (Compile, scalafmt) += baseDirectory.value / "../shared/src/main/scala",
   scalafmtOnCompile := true,
   doctestTestFramework := DoctestTestFramework.ScalaCheck,
