@@ -19,6 +19,11 @@ ThisBuild / developers ++= List(
 
 ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "0.27.0-RC1")
 
+
+ThisBuild / versionIntroduced := Map(
+  "0.27.0-RC1" -> "1.4.1"
+)
+
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("main")),
   RefPredicate.StartsWith(Ref.Tag("v"))
