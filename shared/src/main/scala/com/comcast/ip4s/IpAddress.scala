@@ -18,6 +18,12 @@ package com.comcast.ip4s
 
 import cats.{Order, Show}
 
+sealed trait IpVersion
+object IpVersion {
+  case object V4 extends IpVersion
+  case object V6 extends IpVersion
+}
+
 /**
   * Immutable and safe representation of an IP address, either V4 or V6.
   *
@@ -69,6 +75,9 @@ sealed abstract class IpAddress extends IpAddressPlatform with Ordered[IpAddress
 
   /** Narrows this address to an Ipv6Address if that is the underlying type. */
   def asIpv6: Option[Ipv6Address] = fold(_ => None, Some(_))
+ 
+  /*** Returns the version of this address. */
+  def version: IpVersion = fold(_ => IpVersion.V4, _ => IpVersion.V6)
 
   /** Constructs a [[Cidr]] address from this address. */
   def /(prefixBits: Int): Cidr[this.type] = Cidr(this, prefixBits)
