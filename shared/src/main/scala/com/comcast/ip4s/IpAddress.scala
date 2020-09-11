@@ -75,8 +75,8 @@ sealed abstract class IpAddress extends IpAddressPlatform with Ordered[IpAddress
 
   /** Narrows this address to an Ipv6Address if that is the underlying type. */
   def asIpv6: Option[Ipv6Address] = fold(_ => None, Some(_))
- 
-  /*** Returns the version of this address. */
+
+  /** Returns the version of this address. */
   def version: IpVersion = fold(_ => IpVersion.V4, _ => IpVersion.V6)
 
   /** Constructs a [[Cidr]] address from this address. */
