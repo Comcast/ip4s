@@ -86,7 +86,9 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .dependsOn(core % "compile->compile")
 
 lazy val testKitJVM = testKit.jvm.enablePlugins(SbtOsgi)
-lazy val testKitJS = testKit.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
+lazy val testKitJS = testKit.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin).settings(
+  crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("0."))
+)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .in(file("."))
@@ -113,7 +115,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .jsSettings(
-    npmDependencies in Compile += "punycode" -> "2.1.1"
+    npmDependencies in Compile += "punycode" -> "2.1.1",
+    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("0."))
   )
   .jvmSettings(
     mdocIn := baseDirectory.value / "src/main/docs",
