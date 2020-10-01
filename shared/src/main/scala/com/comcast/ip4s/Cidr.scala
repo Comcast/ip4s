@@ -81,7 +81,7 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
   def totalIps: BigInt = {
     BigInt(1) << (address.fold(_ => 32, _ => 128) - prefixBits)
   }
- 
+
   /**
     * Returns a predicate which tests if the supplied address is in the range described by this CIDR.
     *
