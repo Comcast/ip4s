@@ -246,10 +246,10 @@ import cats.effect.IO
 
 val home = host"localhost"
 val homeIp = home.resolve[IO]
-homeIp.unsafeRunSync
+homeIp.unsafeRunSync()
 
 val homeIps = home.resolveAll[IO]
-homeIps.unsafeRunSync
+homeIps.unsafeRunSync()
 ```
 
 # Internationalized Domain Names
@@ -257,7 +257,7 @@ homeIps.unsafeRunSync
 RFC1123 hostnames are limited to ASCII characters. The `IDN` type provides a way to represent Unicode hostnames.
 
 ```scala mdoc:to-string
-val unicodeComcast = idn"comcast\u3002com"
+val unicodeComcast = idn"comcast。com"
 unicodeComcast.hostname
 
 val emojiRegistrar = idn"i❤.ws"

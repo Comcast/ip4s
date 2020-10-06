@@ -259,7 +259,7 @@ On the JVM, a `SocketAddress` can be converted to a `java.net.InetSocketAddress`
 
 ```scala
 val u = t.toInetSocketAddress
-// u: java.net.InetSocketAddress = /0:0:0:0:0:0:0:1:5555
+// u: java.net.InetSocketAddress = /[0:0:0:0:0:0:0:1]:5555
 ```
 
 ## Multicast Socket Addresses
@@ -301,13 +301,13 @@ import cats.effect.IO
 val home = host"localhost"
 // home: Hostname = localhost
 val homeIp = home.resolve[IO]
-// homeIp: IO[Option[IpAddress]] = IO$1854634462
-homeIp.unsafeRunSync
+// homeIp: IO[Option[IpAddress]] = IO$1249038588
+homeIp.unsafeRunSync()
 // res4: Option[IpAddress] = Some(127.0.0.1)
 
 val homeIps = home.resolveAll[IO]
-// homeIps: IO[Option[cats.data.NonEmptyList[IpAddress]]] = IO$1663940228
-homeIps.unsafeRunSync
+// homeIps: IO[Option[cats.data.NonEmptyList[IpAddress]]] = IO$1994639181
+homeIps.unsafeRunSync()
 // res5: Option[cats.data.NonEmptyList[IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
 ```
 
@@ -316,7 +316,7 @@ homeIps.unsafeRunSync
 RFC1123 hostnames are limited to ASCII characters. The `IDN` type provides a way to represent Unicode hostnames.
 
 ```scala
-val unicodeComcast = idn"comcast\u3002com"
+val unicodeComcast = idn"comcast。com"
 // unicodeComcast: IDN = comcast。com
 unicodeComcast.hostname
 // res6: Hostname = comcast.com

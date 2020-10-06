@@ -56,6 +56,8 @@ ThisBuild / testFrameworks += new TestFramework("munit.Framework")
 
 ThisBuild / strictSemVer := false
 
+ThisBuild / doctestTestFramework := DoctestTestFramework.ScalaCheck
+
 lazy val root = project
   .in(file("."))
   .aggregate(coreJVM, coreJS, testKitJVM, testKitJS)
@@ -105,10 +107,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     Compile / scalafmt / unmanagedSources := (Compile / scalafmt / unmanagedSources).value.filterNot(_.toString.endsWith("Interpolators.scala")),
     Test / scalafmt / unmanagedSources := (Test / scalafmt / unmanagedSources).value.filterNot(_.toString.endsWith("Interpolators.scala")),
   )
-  .settings(scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)))
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .jsSettings(
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     npmDependencies in Compile += "punycode" -> "2.1.1",
     crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("0."))
   )
@@ -125,7 +127,18 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     osgiSettings
   )
 
-lazy val coreJVM = core.jvm.enablePlugins(MdocPlugin, SbtOsgi)
+lazy val coreJVM = core.jvm.enablePlugins(MdocPlugin, SbtOsgi).settings(
+  pomPostProcess := { (node) =>
+    import scala.xml._
+    import scala.xml.transform._
+    def stripIf(f: Node => Boolean) = new RewriteRule {
+      override def transform(n: Node) =
+        if (f(n)) NodeSeq.Empty else n
+    }
+    val stripTestScope = stripIf(n => n.label == "dependency" && (n \ "artifactId").text.startsWith("mdoc"))
+    new RuleTransformer(stripTestScope).transform(node)(0)
+  }
+)
 lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val commonSettings = Seq(
@@ -134,8 +147,6 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   },
   scalacOptions := scalacOptions.value.filterNot(_ == "-Xfatal-warnings"),
-  sourceDirectories in (Compile, scalafmt) += baseDirectory.value / "../shared/src/main/scala",
   scalafmtOnCompile := true,
-  doctestTestFramework := DoctestTestFramework.ScalaCheck,
   initialCommands := "import com.comcast.ip4s._"
 )
