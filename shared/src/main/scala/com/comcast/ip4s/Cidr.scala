@@ -76,6 +76,13 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
     address.transform(_.maskedLast(Ipv4Address.mask(prefixBits)), _.maskedLast(Ipv6Address.mask(prefixBits)))
 
   /**
+    * Returns the number of addresses in the range described by this CIDR.
+    */
+  def totalIps: BigInt = {
+    BigInt(1) << (address.fold(_ => 32, _ => 128) - prefixBits)
+  }
+
+  /**
     * Returns a predicate which tests if the supplied address is in the range described by this CIDR.
     *
     * @example {{{
