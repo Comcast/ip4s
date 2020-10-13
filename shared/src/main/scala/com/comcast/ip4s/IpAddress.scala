@@ -24,8 +24,7 @@ object IpVersion {
   case object V6 extends IpVersion
 }
 
-/**
-  * Immutable and safe representation of an IP address, either V4 or V6.
+/** Immutable and safe representation of an IP address, either V4 or V6.
   *
   * === Construction ===
   *
@@ -88,8 +87,7 @@ sealed abstract class IpAddress extends IpAddressPlatform with Ordered[IpAddress
   /** Gets the IP address before this address, with underflow from minimum value to the maximum value. */
   def previous: IpAddress
 
-  /**
-    * Converts this address to a string form that is compatible for use in a URI per RFC3986
+  /** Converts this address to a string form that is compatible for use in a URI per RFC3986
     * (namely, IPv6 addresses are rendered in condensed form and surrounded by brackets).
     */
   def toUriString: String
@@ -180,8 +178,7 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
   override def isSourceSpecificMulticast: Boolean =
     this >= Ipv4Address.SourceSpecificMulticastRangeStart && this <= Ipv4Address.SourceSpecificMulticastRangeEnd
 
-  /**
-    * Converts this V4 address to a compat V6 address, where the first 12 bytes are all zero
+  /** Converts this V4 address to a compat V6 address, where the first 12 bytes are all zero
     * and the last 4 bytes contain the bytes of this V4 address.
     */
   def toCompatV6: Ipv6Address = {
@@ -193,8 +190,7 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
     Ipv6Address.fromBytes(compat).get
   }
 
-  /**
-    * Converts this V4 address to a mapped V6 address, where the first 10 bytes are all zero,
+  /** Converts this V4 address to a mapped V6 address, where the first 10 bytes are all zero,
     * the next two bytes are `ff`, and the last 4 bytes contain the bytes of this V4 address.
     */
   def toMappedV6: Ipv6Address = {
@@ -208,8 +204,7 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
     Ipv6Address.fromBytes(mapped).get
   }
 
-  /**
-    * Applies the supplied mask to this address.
+  /** Applies the supplied mask to this address.
     *
     * @example {{{
     * scala> ipv4"192.168.29.1".masked(ipv4"255.255.0.0")
@@ -219,8 +214,7 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
   def masked(mask: Ipv4Address): Ipv4Address =
     Ipv4Address.fromLong(toLong & mask.toLong)
 
-  /**
-    * Computes the last address in the network identified by applying the supplied mask to this address.
+  /** Computes the last address in the network identified by applying the supplied mask to this address.
     *
     * @example {{{
     * scala> ipv4"192.168.29.1".maskedLast(ipv4"255.255.0.0")
@@ -269,8 +263,7 @@ object Ipv4Address {
     } else None
   }
 
-  /**
-    * Constructs an IPv4 address from a 4-element byte array.
+  /** Constructs an IPv4 address from a 4-element byte array.
     * Returns `Some` when array is exactly 4-bytes and `None` otherwise.
     */
   def fromBytes(bytes: Array[Byte]): Option[Ipv4Address] =
@@ -280,8 +273,7 @@ object Ipv4Address {
   private def unsafeFromBytes(bytes: Array[Byte]): Ipv4Address =
     new Ipv4Address(bytes)
 
-  /**
-    * Constructs an address from the specified 4 bytes.
+  /** Constructs an address from the specified 4 bytes.
     *
     * Each byte is represented as an `Int` to avoid having to manually call `.toByte` on each value --
     * the `toByte` call is done inside this function.
@@ -306,8 +298,7 @@ object Ipv4Address {
     unsafeFromBytes(bytes)
   }
 
-  /**
-    * Computes a mask by setting the first / left-most `n` bits high.
+  /** Computes a mask by setting the first / left-most `n` bits high.
     *
     * @example {{{
     * scala> Ipv4Address.mask(16)
@@ -385,8 +376,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
     str.toString
   }
 
-  /**
-    * Converts this address to a string of form `x:x:x:x:x:x:a.b.c.d` where
+  /** Converts this address to a string of form `x:x:x:x:x:x:a.b.c.d` where
     * each `x` represents 16-bits and `a.b.c.d` is IPv4 dotted decimal notation.
     * Consecutive 0 `x` fields are condensed with `::`.
     *
@@ -442,8 +432,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
   override def isSourceSpecificMulticast: Boolean =
     this >= Ipv6Address.SourceSpecificMulticastRangeStart && this <= Ipv6Address.SourceSpecificMulticastRangeEnd
 
-  /**
-    * Applies the supplied mask to this address.
+  /** Applies the supplied mask to this address.
     *
     * @example {{{
     * scala> ipv6"ff3b::1".masked(ipv6"fff0::")
@@ -453,8 +442,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
   def masked(mask: Ipv6Address): Ipv6Address =
     Ipv6Address.fromBigInt(toBigInt & mask.toBigInt)
 
-  /**
-    * Computes the last address in the network identified by applying the supplied mask to this address.
+  /** Computes the last address in the network identified by applying the supplied mask to this address.
     *
     * @example {{{
     * scala> ipv6"ff3b::1".maskedLast(ipv6"fff0::")
@@ -571,8 +559,7 @@ object Ipv6Address {
       case _ => None
     }
 
-  /**
-    * Constructs an IPv6 address from a 16-element byte array.
+  /** Constructs an IPv6 address from a 16-element byte array.
     * Returns `Some` when array is exactly 16-bytes and `None` otherwise.
     */
   def fromBytes(bytes: Array[Byte]): Option[Ipv6Address] =
@@ -582,8 +569,7 @@ object Ipv6Address {
   private def unsafeFromBytes(bytes: Array[Byte]): Ipv6Address =
     new Ipv6Address(bytes)
 
-  /**
-    * Constructs an address from the specified 16 bytes.
+  /** Constructs an address from the specified 16 bytes.
     *
     * Each byte is represented as an `Int` to avoid having to manually call `.toByte` on each value -- the `toByte` call is done inside this function.
     */
@@ -636,8 +622,7 @@ object Ipv6Address {
     unsafeFromBytes(bytes)
   }
 
-  /**
-    * Computes a mask by setting the first / left-most `n` bits high.
+  /** Computes a mask by setting the first / left-most `n` bits high.
     *
     * @example {{{
     * scala> Ipv6Address.mask(32)

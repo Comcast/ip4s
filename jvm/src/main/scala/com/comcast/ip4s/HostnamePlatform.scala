@@ -23,8 +23,7 @@ import cats.effect.Sync
 
 private[ip4s] trait HostnamePlatform { self: Hostname =>
 
-  /**
-    * Resolves this hostname to an ip address using the platform DNS resolver.
+  /** Resolves this hostname to an ip address using the platform DNS resolver.
     *
     * If the hostname cannot be resolved, a `None` is returned.
     *
@@ -41,8 +40,7 @@ private[ip4s] trait HostnamePlatform { self: Hostname =>
       }
     }
 
-  /**
-    * Resolves this hostname to all ip addresses known to the platform DNS resolver.
+  /** Resolves this hostname to all ip addresses known to the platform DNS resolver.
     *
     * If the hostname cannot be resolved, a `None` is returned.
     *

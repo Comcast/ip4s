@@ -18,8 +18,7 @@ package com.comcast.ip4s
 
 import cats.{Order, Show}
 
-/**
-  * An IP address of the specified type and a port number. Used to describe the source or destination of a socket.
+/** An IP address of the specified type and a port number. Used to describe the source or destination of a socket.
   */
 final case class SocketAddress[+A <: IpAddress](ip: A, port: Port) extends SocketAddressPlatform[A] {
   override def toString: String =

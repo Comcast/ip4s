@@ -18,8 +18,7 @@ package com.comcast.ip4s
 
 import cats.{Order, Show}
 
-/**
-  * Witness that the wrapped address of type `A` is a multicast address.
+/** Witness that the wrapped address of type `A` is a multicast address.
   *
   * An instance of `Multicast` is typically created by either calling `Multicast.apply` or by using
   * the `asMulticast` method on `IpAddress`.
@@ -46,8 +45,7 @@ object Multicast {
     Show.fromToString[J[A]]
 }
 
-/**
-  * Witnesses that the wrapped address of type `A` is a source specific multicast address.
+/** Witnesses that the wrapped address of type `A` is a source specific multicast address.
   *
   * An instance of `SourceSpecificMulticast` is typically created by either calling `Multicast.apply`
   * or by using the `asSourceSpecificMulticast` method on `IpAddress`.

@@ -18,8 +18,7 @@ package com.comcast.ip4s
 
 import cats.{Order, Show}
 
-/**
-  * Represents a join of a multicast group.
+/** Represents a join of a multicast group.
   *
   * This is represented as an ADT consisting of two constructors, [[AnySourceMulticastJoin]] and
   * [[SourceSpecificMulticastJoin]]. These constructors are provided as top level types to allow
@@ -41,8 +40,7 @@ sealed abstract class MulticastJoin[+A <: IpAddress] extends Product with Serial
   /** Narrows to a `SourceSpecificMulticastJoin`. */
   def asSsm: Option[SourceSpecificMulticastJoin[A]] = fold(_ => None, Some(_))
 
-  /**
-    * Returns the source address and group address. If this join is an any-source join, `None` is
+  /** Returns the source address and group address. If this join is an any-source join, `None` is
     * returned for the source. Otherwise, this join is a source specific join and `Some(src)` is
     * returned for the source.
     */

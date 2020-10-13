@@ -21,8 +21,7 @@ import scala.util.hashing.MurmurHash3
 
 import cats.{Order, Show}
 
-/**
-  * Classless Inter-Domain Routing address, which represents an IP address and its routing prefix.
+/** Classless Inter-Domain Routing address, which represents an IP address and its routing prefix.
   *
   * @param address IP address for which this CIDR refers to
   * @param prefixBits number of leading 1s in the routing mask
@@ -31,8 +30,7 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
   def copy[AA >: A <: IpAddress](address: AA = this.address, prefixBits: Int = this.prefixBits): Cidr[AA] =
     Cidr[AA](address, prefixBits)
 
-  /**
-    * Returns the routing mask.
+  /** Returns the routing mask.
     *
     * @example {{{
     * scala> Cidr(ipv4"10.11.12.13", 8).mask
@@ -43,8 +41,7 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
     */
   def mask: A = address.transform(_ => Ipv4Address.mask(prefixBits), _ => Ipv6Address.mask(prefixBits))
 
-  /**
-    * Returns the routing prefix.
+  /** Returns the routing prefix.
     *
     * Note: the routing prefix also serves as the first address in the range described by this CIDR.
     *
@@ -60,8 +57,7 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
   def prefix: A =
     address.transform(_.masked(Ipv4Address.mask(prefixBits)), _.masked(Ipv6Address.mask(prefixBits)))
 
-  /**
-    * Returns the last address in the range described by this CIDR.
+  /** Returns the last address in the range described by this CIDR.
     *
     * @example {{{
     * scala> Cidr(ipv4"10.11.12.13", 8).last
@@ -75,15 +71,13 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
   def last: A =
     address.transform(_.maskedLast(Ipv4Address.mask(prefixBits)), _.maskedLast(Ipv6Address.mask(prefixBits)))
 
-  /**
-    * Returns the number of addresses in the range described by this CIDR.
+  /** Returns the number of addresses in the range described by this CIDR.
     */
   def totalIps: BigInt = {
     BigInt(1) << (address.fold(_ => 32, _ => 128) - prefixBits)
   }
 
-  /**
-    * Returns a predicate which tests if the supplied address is in the range described by this CIDR.
+  /** Returns a predicate which tests if the supplied address is in the range described by this CIDR.
     *
     * @example {{{
     * scala> Cidr(ipv4"10.11.12.13", 8).contains(ipv4"10.100.100.100")
@@ -122,8 +116,7 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
 
 object Cidr {
 
-  /**
-    * Constructs a CIDR from the supplied IP address and prefix bit count.
+  /** Constructs a CIDR from the supplied IP address and prefix bit count.
     * Note if `prefixBits` is less than 0, the built `Cidr` will have `prefixBits` set to 0. Similarly,
     * if `prefixBits` is greater than the bit length of the address, it will be set to the bit length of the address.
     */

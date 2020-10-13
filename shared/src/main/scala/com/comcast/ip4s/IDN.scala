@@ -20,8 +20,7 @@ import scala.util.hashing.MurmurHash3
 
 import cats.{Order, Show}
 
-/**
-  * Internationalized domain name, as specified by RFC3490 and RFC5891.
+/** Internationalized domain name, as specified by RFC3490 and RFC5891.
   *
   * This type models internationalized hostnames. An IDN provides unicode labels, a unicode string form,
   * and an ASCII hostname form.

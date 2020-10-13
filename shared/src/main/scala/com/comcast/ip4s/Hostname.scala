@@ -20,8 +20,7 @@ import scala.util.hashing.MurmurHash3
 
 import cats.{Order, Show}
 
-/**
-  * RFC1123 compliant hostname.
+/** RFC1123 compliant hostname.
   *
   * A hostname contains one or more labels, where each label consists of letters A-Z, a-z, digits 0-9, or a dash.
   * A label may not start or end in a dash and may not exceed 63 characters in length. Labels are separated by
@@ -46,8 +45,7 @@ final class Hostname private (val labels: List[Hostname.Label], override val toS
 
 object Hostname {
 
-  /**
-    * Label component of a hostname.
+  /** Label component of a hostname.
     *
     * A label consists of letters A-Z, a-z, digits 0-9, or a dash. A label may not start or end in a
     * dash and may not exceed 63 characters in length.

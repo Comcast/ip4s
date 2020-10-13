@@ -18,8 +18,7 @@ package com.comcast.ip4s
 
 import cats.{Order, Show}
 
-/**
-  * A multicast join of the specified type and a port number. Used to describe UDP join of a multicast group.
+/** A multicast join of the specified type and a port number. Used to describe UDP join of a multicast group.
   */
 final case class MulticastSocketAddress[J[+x <: IpAddress] <: MulticastJoin[x], +A <: IpAddress](
     join: J[A],
