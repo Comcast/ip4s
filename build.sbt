@@ -75,7 +75,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.14")
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "29.0-jre" % "test",
+    libraryDependencies += "com.google.guava" % "guava" % "30.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
