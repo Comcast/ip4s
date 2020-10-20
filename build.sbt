@@ -21,7 +21,7 @@ ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "0.27.0-RC1")
 
 
 ThisBuild / versionIntroduced := Map(
-  "0.27.0-RC1" -> "1.4.1"
+  "0.27.0-RC1" -> "1.4.99"
 )
 
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
