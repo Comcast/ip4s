@@ -99,7 +99,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     name := "ip4s-core",
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-effect" % "2.2.0",
-      "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
+      "org.scalacheck" %%% "scalacheck" % "1.15.0" % "test"
     ),
     libraryDependencies ++= {
       if (isDotty.value) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
