@@ -73,7 +73,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
-  .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.14")
+  .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.15")
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "30.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
