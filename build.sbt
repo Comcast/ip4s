@@ -87,7 +87,12 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .dependsOn(core % "compile->compile")
 
 lazy val testKitJVM = testKit.jvm.enablePlugins(SbtOsgi)
-lazy val testKitJS = testKit.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
+lazy val testKitJS = testKit.js
+  .disablePlugins(DoctestPlugin)
+  .enablePlugins(ScalaJSBundlerPlugin)
+  .settings(
+    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
+  )
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .in(file("."))
@@ -100,8 +105,12 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies ++= {
       if (isDotty.value) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
     },
-    Compile / scalafmt / unmanagedSources := (Compile / scalafmt / unmanagedSources).value.filterNot(_.toString.endsWith("Interpolators.scala")),
-    Test / scalafmt / unmanagedSources := (Test / scalafmt / unmanagedSources).value.filterNot(_.toString.endsWith("Interpolators.scala")),
+    Compile / scalafmt / unmanagedSources := (Compile / scalafmt / unmanagedSources).value.filterNot(
+      _.toString.endsWith("Interpolators.scala")
+    ),
+    Test / scalafmt / unmanagedSources := (Test / scalafmt / unmanagedSources).value.filterNot(
+      _.toString.endsWith("Interpolators.scala")
+    )
   )
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
@@ -128,21 +137,26 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     osgiSettings
   )
 
-lazy val coreJVM = core.jvm.enablePlugins(MdocPlugin, SbtOsgi).settings(
-  pomPostProcess := { (node) =>
-    import scala.xml._
-    import scala.xml.transform._
-    def stripIf(f: Node => Boolean) = new RewriteRule {
-      override def transform(n: Node) =
-        if (f(n)) NodeSeq.Empty else n
+lazy val coreJVM = core.jvm
+  .enablePlugins(MdocPlugin, SbtOsgi)
+  .settings(
+    pomPostProcess := { (node) =>
+      import scala.xml._
+      import scala.xml.transform._
+      def stripIf(f: Node => Boolean) = new RewriteRule {
+        override def transform(n: Node) =
+          if (f(n)) NodeSeq.Empty else n
+      }
+      val stripTestScope = stripIf(n => n.label == "dependency" && (n \ "artifactId").text.startsWith("mdoc"))
+      new RuleTransformer(stripTestScope).transform(node)(0)
     }
-    val stripTestScope = stripIf(n => n.label == "dependency" && (n \ "artifactId").text.startsWith("mdoc"))
-    new RuleTransformer(stripTestScope).transform(node)(0)
-  }
-)
-lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin).settings(
-  crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
-)
+  )
+lazy val coreJS = core.js
+  .disablePlugins(DoctestPlugin)
+  .enablePlugins(ScalaJSBundlerPlugin)
+  .settings(
+    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
+  )
 
 lazy val commonSettings = Seq(
   unmanagedResources in Compile ++= {
