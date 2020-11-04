@@ -17,8 +17,7 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "0.27.0-RC1")
-
+ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "3.0.0-M1")
 
 ThisBuild / versionIntroduced := Map(
   "0.27.0-RC1" -> "1.4.99"
@@ -73,7 +72,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
-  .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.15")
+  .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.16")
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "30.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
@@ -88,9 +87,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .dependsOn(core % "compile->compile")
 
 lazy val testKitJVM = testKit.jvm.enablePlugins(SbtOsgi)
-lazy val testKitJS = testKit.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin).settings(
-  crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("0."))
-)
+lazy val testKitJS = testKit.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .in(file("."))
@@ -98,8 +95,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-core",
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-effect" % "2.2.0",
-      "org.scalacheck" %%% "scalacheck" % "1.15.0" % "test"
+      "org.typelevel" %%% "cats-effect" % "2.2.0"
     ),
     libraryDependencies ++= {
       if (isDotty.value) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
@@ -109,10 +105,15 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   )
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.scalacheck" %%% "scalacheck" % "1.15.0" % "test"
+    )
+  )
   .jsSettings(
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     npmDependencies in Compile += "punycode" -> "2.1.1",
-    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("0."))
+    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
   )
   .jvmSettings(
     mdocIn := baseDirectory.value / "src/main/docs",
