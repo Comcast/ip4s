@@ -19,41 +19,41 @@ package com.comcast.ip4s
 import scala.quoted._
 import scala.util.Try
 
-inline def (inline ctx: StringContext).ip (inline args: Any*): IpAddress =
-  ${Literals.validate(Literals.ip, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def ip (inline args: Any*): IpAddress =
+  ${Literals.validateIp('ctx, 'args)}
 
-inline def (inline ctx: StringContext).ipv4 (inline args: Any*): Ipv4Address =
-  ${Literals.validate(Literals.ipv4, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def ipv4 (inline args: Any*): Ipv4Address =
+  ${Literals.validateIpv4('ctx, 'args)}
 
-inline def (inline ctx: StringContext).ipv6 (inline args: Any*): Ipv6Address =
-  ${Literals.validate(Literals.ipv6, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def ipv6 (inline args: Any*): Ipv6Address =
+  ${Literals.validateIpv6('ctx, 'args)}
 
-inline def (inline ctx: StringContext).mip (inline args: Any*): Multicast[IpAddress] =
-  ${Literals.validate(Literals.mip, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def mip (inline args: Any*): Multicast[IpAddress] =
+  ${Literals.validateMip('ctx, 'args)}
 
-inline def (inline ctx: StringContext).mipv4 (inline args: Any*): Multicast[Ipv4Address] =
-  ${Literals.validate(Literals.mipv4, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def mipv4 (inline args: Any*): Multicast[Ipv4Address] =
+  ${Literals.validateMipv4('ctx, 'args)}
 
-inline def (inline ctx: StringContext).mipv6 (inline args: Any*): Multicast[Ipv6Address] =
-  ${Literals.validate(Literals.mipv6, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def mipv6 (inline args: Any*): Multicast[Ipv6Address] =
+  ${Literals.validateMipv6('ctx, 'args)}
 
-inline def (inline ctx: StringContext).ssmip (inline args: Any*): SourceSpecificMulticast[IpAddress] =
-  ${Literals.validate(Literals.ssmip, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def ssmip (inline args: Any*): SourceSpecificMulticast[IpAddress] =
+  ${Literals.validateSsmip('ctx, 'args)}
 
-inline def (inline ctx: StringContext).ssmipv4 (inline args: Any*): SourceSpecificMulticast[Ipv4Address] =
-  ${Literals.validate(Literals.ssmipv4, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def ssmipv4 (inline args: Any*): SourceSpecificMulticast[Ipv4Address] =
+  ${Literals.validateSsmipv4('ctx, 'args)}
 
-inline def (inline ctx: StringContext).ssmipv6 (inline args: Any*): SourceSpecificMulticast[Ipv6Address] =
-  ${Literals.validate(Literals.ssmipv6, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def ssmipv6 (inline args: Any*): SourceSpecificMulticast[Ipv6Address] =
+  ${Literals.validateSsmipv6('ctx, 'args)}
 
-inline def (inline ctx: StringContext).port (inline args: Any*): Port =
-  ${Literals.validate(Literals.port, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def port (inline args: Any*): Port =
+  ${Literals.validatePort('ctx, 'args)}
 
-inline def (inline ctx: StringContext).host (inline args: Any*): Hostname =
-  ${Literals.validate(Literals.host, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def host (inline args: Any*): Hostname =
+  ${Literals.validateHost('ctx, 'args)}
 
-inline def (inline ctx: StringContext).idn (inline args: Any*): IDN =
-  ${Literals.validate(Literals.idn, 'ctx, 'args)}
+extension (inline ctx: StringContext) inline def idn (inline args: Any*): IDN =
+  ${Literals.validateIdn('ctx, 'args)}
 
 object Literals {
 
@@ -61,6 +61,42 @@ object Literals {
     def validate(s: String): Option[String]
     def build(s: String)(using QuoteContext): Expr[A]
   }
+
+  def validateIp(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[IpAddress] =
+    validate(ip, strCtxExpr, argsExpr)
+
+  def validateIpv4(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[Ipv4Address] =
+    validate(ipv4, strCtxExpr, argsExpr)
+
+  def validateIpv6(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[Ipv6Address] =
+    validate(ipv6, strCtxExpr, argsExpr)
+
+  def validateMip(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[Multicast[IpAddress]] =
+    validate(mip, strCtxExpr, argsExpr)
+
+  def validateMipv4(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[Multicast[Ipv4Address]] =
+    validate(mipv4, strCtxExpr, argsExpr)
+
+  def validateMipv6(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[Multicast[Ipv6Address]] =
+    validate(mipv6, strCtxExpr, argsExpr)
+
+  def validateSsmip(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[SourceSpecificMulticast[IpAddress]] =
+    validate(ssmip, strCtxExpr, argsExpr)
+
+  def validateSsmipv4(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[SourceSpecificMulticast[Ipv4Address]] =
+    validate(ssmipv4, strCtxExpr, argsExpr)
+
+  def validateSsmipv6(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[SourceSpecificMulticast[Ipv6Address]] =
+    validate(ssmipv6, strCtxExpr, argsExpr)
+
+  def validatePort(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[Port] =
+    validate(port, strCtxExpr, argsExpr)
+
+  def validateHost(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[Hostname] =
+    validate(host, strCtxExpr, argsExpr)
+
+  def validateIdn(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[IDN] =
+    validate(idn, strCtxExpr, argsExpr)
 
   def validate[A](validator: Validator[A], strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using QuoteContext): Expr[A] = {
     strCtxExpr.unlift match {
