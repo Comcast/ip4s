@@ -140,7 +140,9 @@ lazy val coreJVM = core.jvm.enablePlugins(MdocPlugin, SbtOsgi).settings(
     new RuleTransformer(stripTestScope).transform(node)(0)
   }
 )
-lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin)
+lazy val coreJS = core.js.disablePlugins(DoctestPlugin).enablePlugins(ScalaJSBundlerPlugin).settings(
+  crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
+)
 
 lazy val commonSettings = Seq(
   unmanagedResources in Compile ++= {
