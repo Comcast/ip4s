@@ -20,7 +20,7 @@ ThisBuild / developers ++= List(
 ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "3.0.0-M1")
 
 ThisBuild / versionIntroduced := Map(
-  "0.27.0-RC1" -> "1.4.99"
+  "3.0.0-M1" -> "1.4.99"
 )
 
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
