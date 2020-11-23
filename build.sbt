@@ -59,9 +59,9 @@ ThisBuild / doctestTestFramework := DoctestTestFramework.ScalaCheck
 
 lazy val root = project
   .in(file("."))
+  .enablePlugins(NoPublishPlugin)
   .aggregate(coreJVM, coreJS, testKitJVM, testKitJS)
   .settings(commonSettings)
-  .settings(noPublishSettings)
 
 lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .in(file("./test-kit"))
@@ -72,7 +72,10 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
-  .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.18")
+  .settings(libraryDependencies ++= Seq(
+    "org.scalacheck" %%% "scalacheck" % "1.15.1",
+    "org.scalameta" %%% "munit-scalacheck" % "0.7.18" % Test
+  ))
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "30.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
@@ -114,11 +117,6 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   )
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
-  .settings(
-    libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.15.1" % "test"
-    )
-  )
   .jsSettings(
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     npmDependencies in Compile += "punycode" -> "2.1.1",
