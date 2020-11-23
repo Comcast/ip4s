@@ -72,12 +72,10 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
-  .settings(
-    libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.15.1",
-      "org.scalameta" %%% "munit-scalacheck" % "0.7.18" % Test
-    )
-  )
+  .settings(libraryDependencies ++= Seq(
+    "org.scalacheck" %%% "scalacheck" % "1.15.1",
+    "org.scalameta" %%% "munit-scalacheck" % "0.7.18" % Test
+  ))
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "30.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
@@ -96,7 +94,8 @@ lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
+    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3.")),
+    unusedCompileDependenciesFilter -= moduleFilter("org.scalacheck", "scalacheck")
   )
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
@@ -113,7 +112,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     ),
     Test / scalafmt / unmanagedSources := (Test / scalafmt / unmanagedSources).value.filterNot(
       _.toString.endsWith("Interpolators.scala")
-    )
+    ),
+    unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-core"),
+    unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-effect")
   )
   .jvmSettings(
     libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.2.0"
@@ -143,7 +144,8 @@ lazy val coreJS = core.js
   .settings(
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     npmDependencies in Compile += "punycode" -> "2.1.1",
-    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filterNot(_.startsWith("3."))
+    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filterNot(_.startsWith("3.")),
+    unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-effect")
   )
 
 lazy val docs = project
@@ -165,3 +167,4 @@ lazy val commonSettings = Seq(
   scalafmtOnCompile := true,
   initialCommands := "import com.comcast.ip4s._"
 )
+
