@@ -102,9 +102,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-core",
-    libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-effect" % "2.2.0"
-    ),
+    libraryDependencies += "org.typelevel" %%% "cats-core" % "2.2.0",
     libraryDependencies ++= {
       if (isDotty.value) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
     },
@@ -115,16 +113,18 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
       _.toString.endsWith("Interpolators.scala")
     )
   )
+  .jvmSettings(
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.2.0"
+  )
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
-  .jsSettings(
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    npmDependencies in Compile += "punycode" -> "2.1.1",
-    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
+  .settings(
+    libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.1" % Test
   )
-  .jvmSettings(
-    mdocIn := baseDirectory.value / "src/main/docs",
-    mdocOut := baseDirectory.value / "../docs",
+
+lazy val coreJVM = core.jvm
+  .enablePlugins(SbtOsgi)
+  .settings(
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
@@ -135,25 +135,23 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     osgiSettings
   )
 
-lazy val coreJVM = core.jvm
-  .enablePlugins(MdocPlugin, SbtOsgi)
-  .settings(
-    pomPostProcess := { (node) =>
-      import scala.xml._
-      import scala.xml.transform._
-      def stripIf(f: Node => Boolean) = new RewriteRule {
-        override def transform(n: Node) =
-          if (f(n)) NodeSeq.Empty else n
-      }
-      val stripTestScope = stripIf(n => n.label == "dependency" && (n \ "artifactId").text.startsWith("mdoc"))
-      new RuleTransformer(stripTestScope).transform(node)(0)
-    }
-  )
 lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
+    npmDependencies in Compile += "punycode" -> "2.1.1",
+    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filterNot(_.startsWith("3."))
+  )
+
+lazy val docs = project
+  .in(file("docs"))
+  .enablePlugins(MdocPlugin)
+  .dependsOn(coreJVM)
+  .settings(
+    mdocIn := baseDirectory.value / "src",
+    mdocOut := baseDirectory.value / "../docs",
+    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filter(_.startsWith("2."))
   )
 
 lazy val commonSettings = Seq(
@@ -165,3 +163,4 @@ lazy val commonSettings = Seq(
   scalafmtOnCompile := true,
   initialCommands := "import com.comcast.ip4s._"
 )
+
