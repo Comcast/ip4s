@@ -58,7 +58,7 @@ jobs:
       - run: sbt ++${{ matrix.scala }} ci
 
       - name: Compress target directories
-        run: tar cf targets.tar target docs/target test-kit/js/target js/target test-kit/jvm/target jvm/target project/target
+        run: tar cf targets.tar target test-kit/js/target js/target test-kit/jvm/target jvm/target project/target
 
       - name: Upload target directories
         uses: actions/upload-artifact@v2
