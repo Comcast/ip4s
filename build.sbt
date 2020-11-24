@@ -57,11 +57,11 @@ ThisBuild / strictSemVer := false
 
 ThisBuild / doctestTestFramework := DoctestTestFramework.ScalaCheck
 
-ThisBuild / scalacOptions := (ThisBuild / scalacOptions).value.filterNot(_ == "-Xfatal-warnings")
-
 ThisBuild / scalafmtOnCompile := true
 
 ThisBuild / initialCommands := "import com.comcast.ip4s._"
+
+ThisBuild / fatalWarningsInCI := false
 
 lazy val root = project
   .in(file("."))
