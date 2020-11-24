@@ -57,11 +57,19 @@ ThisBuild / strictSemVer := false
 
 ThisBuild / doctestTestFramework := DoctestTestFramework.ScalaCheck
 
+ThisBuild / scalacOptions := (ThisBuild / scalacOptions).value.filterNot(_ == "-Xfatal-warnings")
+
+ThisBuild / scalafmtOnCompile := true
+
+ThisBuild / initialCommands := "import com.comcast.ip4s._"
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(NoPublishPlugin)
   .aggregate(coreJVM, coreJS, testKitJVM, testKitJS)
-  .settings(commonSettings)
+  .settings(
+    mimaPreviousArtifacts := Set.empty // TODO Remove when NoPublishPlugin does this correctly
+  )
 
 lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .in(file("./test-kit"))
@@ -72,10 +80,12 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
-  .settings(libraryDependencies ++= Seq(
-    "org.scalacheck" %%% "scalacheck" % "1.15.1",
-    "org.scalameta" %%% "munit-scalacheck" % "0.7.18" % Test
-  ))
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.scalacheck" %%% "scalacheck" % "1.15.1",
+      "org.scalameta" %%% "munit-scalacheck" % "0.7.18" % Test
+    )
+  )
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "30.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
@@ -160,11 +170,7 @@ lazy val docs = project
 
 lazy val commonSettings = Seq(
   unmanagedResources in Compile ++= {
-    val base = baseDirectory.value
+    val base = baseDirectory.value / ".."
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
-  },
-  scalacOptions := scalacOptions.value.filterNot(_ == "-Xfatal-warnings"),
-  scalafmtOnCompile := true,
-  initialCommands := "import com.comcast.ip4s._"
+  }
 )
-
