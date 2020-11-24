@@ -259,7 +259,7 @@ On the JVM, a `SocketAddress` can be converted to a `java.net.InetSocketAddress`
 
 ```scala
 val u = t.toInetSocketAddress
-// u: java.net.InetSocketAddress = /[0:0:0:0:0:0:0:1]:5555
+// u: java.net.InetSocketAddress = /0:0:0:0:0:0:0:1:5555
 ```
 
 ## Multicast Socket Addresses
@@ -301,12 +301,12 @@ import cats.effect.IO
 val home = host"localhost"
 // home: Hostname = localhost
 val homeIp = home.resolve[IO]
-// homeIp: IO[Option[IpAddress]] = IO$1249038588
+// homeIp: IO[Option[IpAddress]] = IO$875702114
 homeIp.unsafeRunSync()
 // res4: Option[IpAddress] = Some(127.0.0.1)
 
 val homeIps = home.resolveAll[IO]
-// homeIps: IO[Option[cats.data.NonEmptyList[IpAddress]]] = IO$1994639181
+// homeIps: IO[Option[cats.data.NonEmptyList[IpAddress]]] = IO$835332104
 homeIps.unsafeRunSync()
 // res5: Option[cats.data.NonEmptyList[IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
 ```

@@ -57,11 +57,19 @@ ThisBuild / strictSemVer := false
 
 ThisBuild / doctestTestFramework := DoctestTestFramework.ScalaCheck
 
+ThisBuild / scalafmtOnCompile := true
+
+ThisBuild / initialCommands := "import com.comcast.ip4s._"
+
+ThisBuild / fatalWarningsInCI := false
+
 lazy val root = project
   .in(file("."))
+  .enablePlugins(NoPublishPlugin)
   .aggregate(coreJVM, coreJS, testKitJVM, testKitJS)
-  .settings(commonSettings)
-  .settings(noPublishSettings)
+  .settings(
+    mimaPreviousArtifacts := Set.empty // TODO Remove when NoPublishPlugin does this correctly
+  )
 
 lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .in(file("./test-kit"))
@@ -72,7 +80,12 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
-  .settings(libraryDependencies += "org.scalameta" %%% "munit-scalacheck" % "0.7.18")
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.scalacheck" %%% "scalacheck" % "1.15.1",
+      "org.scalameta" %%% "munit-scalacheck" % "0.7.18" % Test
+    )
+  )
   .jvmSettings(
     libraryDependencies += "com.google.guava" % "guava" % "30.0-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
@@ -91,7 +104,8 @@ lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
+    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3.")),
+    unusedCompileDependenciesFilter -= moduleFilter("org.scalacheck", "scalacheck")
   )
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
@@ -99,9 +113,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-core",
-    libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-effect" % "2.2.0"
-    ),
+    libraryDependencies += "org.typelevel" %%% "cats-core" % "2.2.0",
     libraryDependencies ++= {
       if (isDotty.value) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
     },
@@ -110,23 +122,22 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     ),
     Test / scalafmt / unmanagedSources := (Test / scalafmt / unmanagedSources).value.filterNot(
       _.toString.endsWith("Interpolators.scala")
-    )
+    ),
+    unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-core"),
+    unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-effect")
+  )
+  .jvmSettings(
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.2.0"
   )
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(
-    libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.15.1" % "test"
-    )
+    libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.1" % Test
   )
-  .jsSettings(
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    npmDependencies in Compile += "punycode" -> "2.1.1",
-    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
-  )
-  .jvmSettings(
-    mdocIn := baseDirectory.value / "src/main/docs",
-    mdocOut := baseDirectory.value / "../docs",
+
+lazy val coreJVM = core.jvm
+  .enablePlugins(SbtOsgi)
+  .settings(
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
@@ -137,33 +148,30 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     osgiSettings
   )
 
-lazy val coreJVM = core.jvm
-  .enablePlugins(MdocPlugin, SbtOsgi)
-  .settings(
-    pomPostProcess := { (node) =>
-      import scala.xml._
-      import scala.xml.transform._
-      def stripIf(f: Node => Boolean) = new RewriteRule {
-        override def transform(n: Node) =
-          if (f(n)) NodeSeq.Empty else n
-      }
-      val stripTestScope = stripIf(n => n.label == "dependency" && (n \ "artifactId").text.startsWith("mdoc"))
-      new RuleTransformer(stripTestScope).transform(node)(0)
-    }
-  )
 lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3."))
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
+    npmDependencies in Compile += "punycode" -> "2.1.1",
+    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filterNot(_.startsWith("3.")),
+    unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-effect")
+  )
+
+lazy val docs = project
+  .in(file("docs"))
+  .enablePlugins(MdocPlugin)
+  .dependsOn(coreJVM)
+  .settings(
+    mdocIn := baseDirectory.value / "src",
+    mdocOut := baseDirectory.value / "../docs",
+    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filter(_.startsWith("2.")),
+    githubWorkflowArtifactUpload := false
   )
 
 lazy val commonSettings = Seq(
   unmanagedResources in Compile ++= {
-    val base = baseDirectory.value
+    val base = baseDirectory.value / ".."
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
-  },
-  scalacOptions := scalacOptions.value.filterNot(_ == "-Xfatal-warnings"),
-  scalafmtOnCompile := true,
-  initialCommands := "import com.comcast.ip4s._"
+  }
 )
