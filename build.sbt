@@ -165,7 +165,8 @@ lazy val docs = project
   .settings(
     mdocIn := baseDirectory.value / "src",
     mdocOut := baseDirectory.value / "../docs",
-    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filter(_.startsWith("2."))
+    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filter(_.startsWith("2.")),
+    githubWorkflowArtifactUpload := false
   )
 
 lazy val commonSettings = Seq(
