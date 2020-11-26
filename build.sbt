@@ -113,7 +113,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "ip4s-core",
-    libraryDependencies += "org.typelevel" %%% "cats-core" % "2.2.0",
+    libraryDependencies += "org.typelevel" %%% "cats-core" % "2.3.0",
     libraryDependencies ++= {
       if (isDotty.value) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
     },
