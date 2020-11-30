@@ -17,30 +17,16 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "3.0.0-M1")
+ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "3.0.0-M1", "3.0.0-M2")
 
 ThisBuild / versionIntroduced := Map(
+  "3.0.0-M1" -> "1.4.99",
   "3.0.0-M1" -> "1.4.99"
 )
 
-ThisBuild / githubWorkflowPublishTargetBranches := Seq(
-  RefPredicate.Equals(Ref.Branch("main")),
-  RefPredicate.StartsWith(Ref.Tag("v"))
-)
-ThisBuild / githubWorkflowEnv ++= Map(
-  "SONATYPE_USERNAME" -> s"$${{ secrets.SONATYPE_USERNAME }}",
-  "SONATYPE_PASSWORD" -> s"$${{ secrets.SONATYPE_PASSWORD }}",
-  "PGP_SECRET" -> s"$${{ secrets.PGP_SECRET }}"
-)
-ThisBuild / githubWorkflowTargetTags += "v*"
+ThisBuild / spiewakCiReleaseSnapshots := true
 
-ThisBuild / githubWorkflowPublishPreamble +=
-  WorkflowStep.Run(
-    List("echo $PGP_SECRET | base64 -d | gpg --import"),
-    name = Some("Import signing key")
-  )
-
-ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("release")))
+ThisBuild / spiewakMainBranches := List("main")
 
 ThisBuild / homepage := Some(url("https://github.com/comcast/ip4s"))
 
@@ -65,11 +51,8 @@ ThisBuild / fatalWarningsInCI := false
 
 lazy val root = project
   .in(file("."))
-  .enablePlugins(NoPublishPlugin)
+  .enablePlugins(NoPublishPlugin, SonatypeCiRelease)
   .aggregate(coreJVM, coreJS, testKitJVM, testKitJS)
-  .settings(
-    mimaPreviousArtifacts := Set.empty // TODO Remove when NoPublishPlugin does this correctly
-  )
 
 lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .in(file("./test-kit"))
@@ -104,7 +87,6 @@ lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    crossScalaVersions := crossScalaVersions.value.filterNot(_.startsWith("3.")),
     unusedCompileDependenciesFilter -= moduleFilter("org.scalacheck", "scalacheck")
   )
 
@@ -154,7 +136,6 @@ lazy val coreJS = core.js
   .settings(
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     npmDependencies in Compile += "punycode" -> "2.1.1",
-    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filterNot(_.startsWith("3.")),
     unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-effect")
   )
 
