@@ -127,7 +127,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-effect")
   )
   .jvmSettings(
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.2.0"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.3.0"
   )
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
