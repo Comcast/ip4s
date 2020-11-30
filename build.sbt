@@ -21,7 +21,7 @@ ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "3.0.0-M1", "3.0.0-M
 
 ThisBuild / versionIntroduced := Map(
   "3.0.0-M1" -> "1.4.99",
-  "3.0.0-M1" -> "1.4.99"
+  "3.0.0-M2" -> "1.4.99"
 )
 
 ThisBuild / spiewakCiReleaseSnapshots := true
