@@ -51,7 +51,7 @@ ThisBuild / fatalWarningsInCI := false
 
 lazy val root = project
   .in(file("."))
-  .enablePlugins(NoPublishPlugin, SonatypeCiRelease)
+  .enablePlugins(NoPublishPlugin, SonatypeCiReleasePlugin)
   .aggregate(coreJVM, coreJS, testKitJVM, testKitJS)
 
 lazy val testKit = crossProject(JVMPlatform, JSPlatform)
@@ -105,6 +105,12 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     Test / scalafmt / unmanagedSources := (Test / scalafmt / unmanagedSources).value.filterNot(
       _.toString.endsWith("Interpolators.scala")
     ),
+    Compile / unmanagedSourceDirectories ++= {
+      val major = if (isDotty.value) "-3" else "-2"
+      List(CrossType.Pure, CrossType.Full).flatMap(
+        _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
+      )
+    },
     unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-core"),
     unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-effect")
   )
