@@ -17,11 +17,11 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "3.0.0-M1", "3.0.0-M2")
+ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "3.0.0-M2", "3.0.0-M3")
 
 ThisBuild / versionIntroduced := Map(
-  "3.0.0-M1" -> "1.4.99",
-  "3.0.0-M2" -> "1.4.99"
+  "3.0.0-M2" -> "1.4.99",
+  "3.0.0-M3" -> "1.4.99"
 )
 
 ThisBuild / spiewakCiReleaseSnapshots := true
@@ -65,8 +65,8 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.15.1",
-      "org.scalameta" %%% "munit-scalacheck" % "0.7.19" % Test
+      "org.scalacheck" %%% "scalacheck" % "1.15.2",
+      "org.scalameta" %%% "munit-scalacheck" % "0.7.20" % Test
     )
   )
   .jvmSettings(
@@ -99,6 +99,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies ++= {
       if (isDotty.value) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
     },
+    scalacOptions := scalacOptions.value.filterNot(_ == "-source:3.0-migration"),
     Compile / scalafmt / unmanagedSources := (Compile / scalafmt / unmanagedSources).value.filterNot(
       _.toString.endsWith("Interpolators.scala")
     ),
@@ -120,7 +121,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(
-    libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.1" % Test
+    libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.2" % Test
   )
 
 lazy val coreJVM = core.jvm
