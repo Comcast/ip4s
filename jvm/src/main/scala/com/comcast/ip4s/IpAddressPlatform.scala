@@ -24,6 +24,13 @@ private[ip4s] trait IpAddressPlatform {
   def toInetAddress: InetAddress
 }
 
+private[ip4s] trait IpAddressCompanionPlatform {
+
+  /** Converts the supplied `InetAddress` to an `IpAddress`. */
+  def fromInetAddress(address: InetAddress): IpAddress =
+    IpAddress.fromBytes(address.getAddress).get
+}
+
 private[ip4s] trait Ipv4AddressPlatform extends IpAddressPlatform {
   protected val bytes: Array[Byte]
 
@@ -31,9 +38,23 @@ private[ip4s] trait Ipv4AddressPlatform extends IpAddressPlatform {
     InetAddress.getByAddress(bytes).asInstanceOf[Inet4Address]
 }
 
+private[ip4s] trait Ipv4AddressCompanionPlatform {
+
+  /** Converts the supplied `Inet4Address` to an `Ipv4Address`. */
+  def fromInet4Address(address: Inet4Address): Ipv4Address =
+    Ipv4Address.fromBytes(address.getAddress).get
+}
+
 private[ip4s] trait Ipv6AddressPlatform extends IpAddressPlatform {
   protected val bytes: Array[Byte]
 
   override def toInetAddress: Inet6Address =
     InetAddress.getByAddress(bytes).asInstanceOf[Inet6Address]
+}
+
+private[ip4s] trait Ipv6AddressCompanionPlatform {
+
+  /** Converts the supplied `Inet6Address` to an `Ipv6Address`. */
+  def fromInet6Address(address: Inet6Address): Ipv6Address =
+    Ipv6Address.fromBytes(address.getAddress).get
 }

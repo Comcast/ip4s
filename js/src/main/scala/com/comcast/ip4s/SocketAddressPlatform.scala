@@ -17,3 +17,4 @@
 package com.comcast.ip4s
 
 private[ip4s] trait SocketAddressPlatform[+A <: IpAddress]
+private[ip4s] trait SocketAddressCompanionPlatform

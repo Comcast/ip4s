@@ -24,3 +24,10 @@ private[ip4s] trait SocketAddressPlatform[+A <: IpAddress] {
 
   def toInetSocketAddress: InetSocketAddress = new InetSocketAddress(ip.toInetAddress, port.value)
 }
+
+private[ip4s] trait SocketAddressCompanionPlatform {
+
+  /** Converts an `InetSocketAddress` to a `SocketAddress[IpAddress]`. */
+  def fromInetSocketAddress(address: InetSocketAddress): SocketAddress[IpAddress] =
+    SocketAddress(IpAddress.fromInetAddress(address.getAddress), Port(address.getPort).get)
+}

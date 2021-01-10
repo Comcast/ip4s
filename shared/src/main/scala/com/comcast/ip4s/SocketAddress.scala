@@ -28,7 +28,7 @@ final case class SocketAddress[+A <: IpAddress](ip: A, port: Port) extends Socke
     }
 }
 
-object SocketAddress {
+object SocketAddress extends SocketAddressCompanionPlatform {
   def fromString(value: String): Option[SocketAddress[IpAddress]] = fromString4(value) orElse fromString6(value)
 
   private val V4Pattern = """([^:]+):(\d+)""".r

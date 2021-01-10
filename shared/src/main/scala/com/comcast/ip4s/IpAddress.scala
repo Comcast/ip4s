@@ -116,7 +116,7 @@ sealed abstract class IpAddress extends IpAddressPlatform with Ordered[IpAddress
   }
 }
 
-object IpAddress {
+object IpAddress extends IpAddressCompanionPlatform {
 
   /** Parses an IP address from a string, either in dotted decimal notation or in RFC4291 notation. */
   def apply(value: String): Option[IpAddress] =
@@ -225,7 +225,7 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
     Ipv4Address.fromLong(toLong & mask.toLong | ~mask.toLong)
 }
 
-object Ipv4Address {
+object Ipv4Address extends Ipv4AddressCompanionPlatform {
 
   /** First IP address in the IPv4 multicast range. */
   val MulticastRangeStart: Ipv4Address = fromBytes(224, 0, 0, 0)
@@ -453,7 +453,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
     Ipv6Address.fromBigInt(toBigInt & mask.toBigInt | ~mask.toBigInt)
 }
 
-object Ipv6Address {
+object Ipv6Address extends Ipv6AddressCompanionPlatform {
 
   /** First IP address in the IPv6 multicast range. */
   val MulticastRangeStart: Ipv6Address =

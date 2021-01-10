@@ -17,7 +17,10 @@
 package com.comcast.ip4s
 
 private[ip4s] trait IpAddressPlatform
+private[ip4s] trait IpAddressCompanionPlatform
 
 private[ip4s] trait Ipv4AddressPlatform extends IpAddressPlatform
+private[ip4s] trait Ipv4AddressCompanionPlatform
 
 private[ip4s] trait Ipv6AddressPlatform extends IpAddressPlatform
+private[ip4s] trait Ipv6AddressCompanionPlatform
