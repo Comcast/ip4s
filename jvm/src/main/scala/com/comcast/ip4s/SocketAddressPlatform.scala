@@ -16,16 +16,30 @@
 
 package com.comcast.ip4s
 
+import cats.Applicative
+import cats.syntax.all._
+
 import java.net.InetSocketAddress
 
-private[ip4s] trait SocketAddressPlatform[+A <: IpAddress] {
-  val ip: A
+private[ip4s] trait SocketAddressPlatform[+A <: Host] {
+  val host: A
   val port: Port
 
-  def toInetSocketAddress: InetSocketAddress = new InetSocketAddress(ip.toInetAddress, port.value)
+  def toInetSocketAddress(implicit ev: A <:< IpAddress): InetSocketAddress =
+    new InetSocketAddress(host.toInetAddress, port.value)
 }
 
 private[ip4s] trait SocketAddressCompanionPlatform {
+  implicit class ResolveOps(private val self: SocketAddress[Host]) {
+
+    /** Resolves this `SocketAddress[Hostname]` to a `SocketAddress[IpAddress]`. */
+    def resolve[F[_]: Dns: Applicative]: F[SocketAddress[IpAddress]] =
+      self.host match {
+        case ip: IpAddress      => Applicative[F].pure(SocketAddress(ip, self.port))
+        case hostname: Hostname => hostname.resolve[F].map(ip => SocketAddress(ip, self.port))
+        case idn: IDN           => idn.hostname.resolve[F].map(ip => SocketAddress(ip, self.port))
+      }
+  }
 
   /** Converts an `InetSocketAddress` to a `SocketAddress[IpAddress]`. */
   def fromInetSocketAddress(address: InetSocketAddress): SocketAddress[IpAddress] =

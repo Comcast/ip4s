@@ -20,11 +20,11 @@ import cats.{Order, Show}
 
 /** An IP address of the specified type and a port number. Used to describe the source or destination of a socket.
   */
-final case class SocketAddress[+A <: IpAddress](ip: A, port: Port) extends SocketAddressPlatform[A] {
+final case class SocketAddress[+A <: Host](host: A, port: Port) extends SocketAddressPlatform[A] {
   override def toString: String =
-    ip match {
-      case _: Ipv4Address => s"$ip:$port"
-      case _: Ipv6Address => s"[$ip]:$port"
+    host match {
+      case _: Ipv6Address => s"[$host]:$port"
+      case _              => s"$host:$port"
     }
 }
 
@@ -53,8 +53,7 @@ object SocketAddress extends SocketAddressCompanionPlatform {
       case _ => None
     }
 
-  implicit def order[A <: IpAddress]: Order[SocketAddress[A]] =
-    Order.fromOrdering(SocketAddress.ordering[A])
-  implicit def ordering[A <: IpAddress]: Ordering[SocketAddress[A]] = Ordering.by(x => (x.ip, x.port))
-  implicit def show[A <: IpAddress]: Show[SocketAddress[A]] = Show.fromToString[SocketAddress[A]]
+  implicit def order[A <: Host]: Order[SocketAddress[A]] = Order.fromOrdering(SocketAddress.ordering[A])
+  implicit def ordering[A <: Host]: Ordering[SocketAddress[A]] = Ordering.by(x => (x.host: Host, x.port))
+  implicit def show[A <: Host]: Show[SocketAddress[A]] = Show.fromToString[SocketAddress[A]]
 }

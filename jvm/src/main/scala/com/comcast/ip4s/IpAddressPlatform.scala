@@ -29,6 +29,10 @@ private[ip4s] trait IpAddressCompanionPlatform {
   /** Converts the supplied `InetAddress` to an `IpAddress`. */
   def fromInetAddress(address: InetAddress): IpAddress =
     IpAddress.fromBytes(address.getAddress).get
+
+  /** Gets an IP address repesenting the loopback interface. */
+  def loopback[F[_]](implicit F: Dns[F]): F[IpAddress] =
+    F.loopback
 }
 
 private[ip4s] trait Ipv4AddressPlatform extends IpAddressPlatform {

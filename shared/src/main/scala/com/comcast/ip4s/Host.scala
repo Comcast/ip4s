@@ -18,6 +18,109 @@ package com.comcast.ip4s
 
 import cats.{Order, Show}
 
+import scala.util.hashing.MurmurHash3
+
+/** ADT representing either an `IpAddress`, `Hostname`, or `IDN`. */
+sealed trait Host extends Ordered[Host] {
+
+  def compare(that: Host): Int =
+    this match {
+      case x: Ipv4Address =>
+        that match {
+          case y: Ipv4Address => IpAddress.compareBytes(x, y)
+          case y: Ipv6Address => IpAddress.compareBytes(x.toCompatV6, y)
+          case _              => -1
+        }
+      case x: Ipv6Address =>
+        that match {
+          case y: Ipv4Address => IpAddress.compareBytes(x, y.toCompatV6)
+          case y: Ipv6Address => IpAddress.compareBytes(x, y)
+          case _              => -1
+        }
+      case x: Hostname =>
+        that match {
+          case _: Ipv4Address => 1
+          case _: Ipv6Address => 1
+          case y: Hostname    => x.toString.compare(y.toString)
+          case y: IDN         => x.toString.compare(y.hostname.toString)
+        }
+      case x: IDN =>
+        that match {
+          case _: Ipv4Address => 1
+          case _: Ipv6Address => 1
+          case y: Hostname    => x.hostname.toString.compare(y.toString)
+          case y: IDN         => x.hostname.toString.compare(y.hostname.toString)
+        }
+    }
+}
+
+object Host {
+  implicit def show: Show[Host] = Show.fromToString[Host]
+  implicit def order: Order[Host] = Order.fromComparable[Host]
+  implicit def ordering: Ordering[Host] = Ordering.ordered[Host]
+}
+
+/** RFC1123 compliant hostname.
+  *
+  * A hostname contains one or more labels, where each label consists of letters A-Z, a-z, digits 0-9, or a dash.
+  * A label may not start or end in a dash and may not exceed 63 characters in length. Labels are separated by
+  * periods and the overall hostname must not exceed 253 characters in length.
+  */
+final class Hostname private (val labels: List[Hostname.Label], override val toString: String)
+    extends HostnamePlatform
+    with Host {
+
+  /** Converts this hostname to lower case. */
+  def normalized: Hostname =
+    new Hostname(labels.map(l => new Hostname.Label(l.toString.toLowerCase)), toString.toLowerCase)
+
+  override def hashCode: Int = MurmurHash3.stringHash(toString, "Hostname".hashCode)
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: Hostname => toString == that.toString
+      case _              => false
+    }
+}
+
+object Hostname {
+
+  /** Label component of a hostname.
+    *
+    * A label consists of letters A-Z, a-z, digits 0-9, or a dash. A label may not start or end in a
+    * dash and may not exceed 63 characters in length.
+    */
+  final class Label private[Hostname] (override val toString: String) extends Serializable with Ordered[Label] {
+    def compare(that: Label): Int = toString.compare(that.toString)
+    override def hashCode: Int = MurmurHash3.stringHash(toString, "Label".hashCode)
+    override def equals(other: Any): Boolean =
+      other match {
+        case that: Label => toString == that.toString
+        case _           => false
+      }
+  }
+
+  private val Pattern =
+    """[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*""".r
+
+  /** Constructs a `Hostname` from a string. */
+  def apply(value: String): Option[Hostname] =
+    value.size match {
+      case 0            => None
+      case i if i > 253 => None
+      case _ =>
+        value match {
+          case Pattern(_*) =>
+            val labels = value
+              .split('.')
+              .iterator
+              .map(new Label(_))
+              .toList
+            if (labels.isEmpty) None else Option(new Hostname(labels, value))
+          case _ => None
+        }
+    }
+}
+
 sealed trait IpVersion
 object IpVersion {
   case object V4 extends IpVersion
@@ -44,7 +147,7 @@ object IpVersion {
   * If using `IpAddress` on the JVM, you can call `toInetAddress` to convert the address to a `java.net.InetAddress`, for use
   * with networking libraries. This method does not exist on the Scala.js version.
   */
-sealed abstract class IpAddress extends IpAddressPlatform with Ordered[IpAddress] with Serializable {
+sealed abstract class IpAddress extends IpAddressPlatform with Host with Serializable {
   protected val bytes: Array[Byte]
 
   /** Converts this address to a network order byte array of either 4 or 16 bytes. */
@@ -99,21 +202,6 @@ sealed abstract class IpAddress extends IpAddressPlatform with Ordered[IpAddress
     }
 
   override def hashCode: Int = java.util.Arrays.hashCode(bytes)
-
-  override def compare(that: IpAddress): Int = {
-    this match {
-      case x: Ipv4Address =>
-        that match {
-          case y: Ipv4Address => IpAddress.compareBytes(x, y)
-          case y: Ipv6Address => IpAddress.compareBytes(x.toCompatV6, y)
-        }
-      case x: Ipv6Address =>
-        that match {
-          case y: Ipv4Address => IpAddress.compareBytes(x, y.toCompatV6)
-          case y: Ipv6Address => IpAddress.compareBytes(x, y)
-        }
-    }
-  }
 }
 
 object IpAddress extends IpAddressCompanionPlatform {
@@ -126,7 +214,7 @@ object IpAddress extends IpAddressCompanionPlatform {
   def fromBytes(bytes: Array[Byte]): Option[IpAddress] =
     Ipv4Address.fromBytes(bytes) orElse Ipv6Address.fromBytes(bytes)
 
-  private def compareBytes(x: IpAddress, y: IpAddress): Int = {
+  private[ip4s] def compareBytes(x: IpAddress, y: IpAddress): Int = {
     var i, result = 0
     val xb = x.bytes
     val yb = y.bytes
@@ -138,9 +226,8 @@ object IpAddress extends IpAddressCompanionPlatform {
     result
   }
 
-  implicit def order[A <: IpAddress]: Order[A] = Order.fromOrdering(IpAddress.ordering[A])
-  implicit def ordering[A <: IpAddress]: Ordering[A] = _.compare(_)
-  implicit def show[A <: IpAddress]: Show[A] = Show.fromToString[A]
+  // implicit def order[A <: IpAddress]: Order[A] = Order.fromOrdering(IpAddress.ordering[A])
+  implicit def ordering[A <: IpAddress]: Ordering[A] = Ordering.ordered[A]
 }
 
 /** Representation of an IPv4 address that works on both the JVM and Scala.js. */
@@ -638,4 +725,78 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
         else (BigInt(-1L) << 64) | BigInt(~(-1L >>> (b - 64)))
       }
   }
+}
+
+/** Internationalized domain name, as specified by RFC3490 and RFC5891.
+  *
+  * This type models internationalized hostnames. An IDN provides unicode labels, a unicode string form,
+  * and an ASCII hostname form.
+  *
+  * A well formed IDN consists of one or more labels separated by dots. Each label may contain unicode characters
+  * as long as the converted ASCII form meets the requirements of RFC1123 (e.g., 63 or fewer characters and no
+  * leading or trailing dash). A dot is represented as an ASCII period or one of the unicode dots: full stop,
+  * ideographic full stop, fullwidth full stop, halfwidth ideographic full stop.
+  *
+  * The `toString` method returns the IDN in the form in which it was constructed. Sometimes it is useful to
+  * normalize the IDN -- converting all dots to an ASCII period and converting all labels to lowercase.
+  *
+  * Note: equality and comparison of IDNs is case-sensitive. Consider comparing normalized toString values
+  * for a more lenient notion of equality.
+  */
+final class IDN private (val labels: List[IDN.Label], val hostname: Hostname, override val toString: String)
+    extends Host {
+
+  /** Converts this IDN to lower case and replaces dots with ASCII periods. */
+  def normalized: IDN = {
+    val newLabels = labels.map(l => new IDN.Label(l.toString.toLowerCase))
+    new IDN(newLabels, hostname.normalized, newLabels.toList.mkString("."))
+  }
+
+  override def hashCode: Int = MurmurHash3.stringHash(toString, "IDN".hashCode)
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: IDN => toString == that.toString
+      case _         => false
+    }
+}
+
+object IDN extends IDNCompanionPlatform {
+
+  /** Label component of an IDN. */
+  final class Label private[IDN] (override val toString: String) extends Serializable with Ordered[Label] {
+    def compare(that: Label): Int = toString.compare(that.toString)
+    override def hashCode: Int = MurmurHash3.stringHash(toString, "Label".hashCode)
+    override def equals(other: Any): Boolean =
+      other match {
+        case that: Label => toString == that.toString
+        case _           => false
+      }
+  }
+
+  private val DotPattern = "[\\.\u002e\u3002\uff0e\uff61]"
+
+  /** Constructs a `IDN` from a string. */
+  def apply(value: String): Option[IDN] =
+    value.size match {
+      case 0 => None
+      case _ =>
+        val labels = value
+          .split(DotPattern)
+          .iterator
+          .map(new Label(_))
+          .toList
+        Option(labels).filterNot(_.isEmpty).flatMap { ls =>
+          val hostname = toAscii(value).flatMap(Hostname(_))
+          hostname.map(h => new IDN(ls, h, value))
+        }
+    }
+
+  /** Converts the supplied (ASCII) hostname in to an IDN. */
+  def fromHostname(hostname: Hostname): IDN = {
+    val labels =
+      hostname.labels.map(l => new Label(toUnicode(l.toString)))
+    new IDN(labels, hostname, labels.toList.mkString("."))
+  }
+
+  implicit val show: Show[IDN] = Show.fromToString[IDN]
 }

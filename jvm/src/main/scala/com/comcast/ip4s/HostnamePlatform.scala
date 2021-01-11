@@ -16,37 +16,26 @@
 
 package com.comcast.ip4s
 
-import java.net.{InetAddress, UnknownHostException}
-
-import cats.effect.Sync
-
 private[ip4s] trait HostnamePlatform { self: Hostname =>
+
+  /** Resolves this hostname to an ip address using the platform DNS resolver.
+    *
+    * If the hostname cannot be resolved, the effect fails with a `java.net.UnknownHostException`.
+    */
+  def resolve[F[_]: Dns]: F[IpAddress] =
+    Dns[F].resolve(self)
 
   /** Resolves this hostname to an ip address using the platform DNS resolver.
     *
     * If the hostname cannot be resolved, a `None` is returned.
     */
-  def resolve[F[_]: Sync]: F[Option[IpAddress]] =
-    Sync[F].blocking {
-      try {
-        val addr = InetAddress.getByName(self.toString)
-        IpAddress.fromBytes(addr.getAddress)
-      } catch {
-        case _: UnknownHostException => None
-      }
-    }
+  def resolveOption[F[_]: Dns]: F[Option[IpAddress]] =
+    Dns[F].resolveOption(self)
 
   /** Resolves this hostname to all ip addresses known to the platform DNS resolver.
     *
     * If the hostname cannot be resolved, an empty list is returned.
     */
-  def resolveAll[F[_]: Sync]: F[List[IpAddress]] =
-    Sync[F].blocking {
-      try {
-        val addrs = InetAddress.getAllByName(self.toString)
-        addrs.toList.flatMap(addr => IpAddress.fromBytes(addr.getAddress))
-      } catch {
-        case _: UnknownHostException => Nil
-      }
-    }
+  def resolveAll[F[_]: Dns]: F[List[IpAddress]] =
+    Dns[F].resolveAll(self)
 }
