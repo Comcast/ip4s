@@ -16,4 +16,4 @@
 
 package com.comcast.ip4s
 
-private[ip4s] trait HostnamePlatform
+private[ip4s] trait HostPlatform

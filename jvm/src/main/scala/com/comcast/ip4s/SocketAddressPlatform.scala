@@ -36,8 +36,8 @@ private[ip4s] trait SocketAddressCompanionPlatform {
     def resolve[F[_]: Dns: Applicative]: F[SocketAddress[IpAddress]] =
       self.host match {
         case ip: IpAddress      => Applicative[F].pure(SocketAddress(ip, self.port))
-        case hostname: Hostname => hostname.resolve[F].map(ip => SocketAddress(ip, self.port))
-        case idn: IDN           => idn.hostname.resolve[F].map(ip => SocketAddress(ip, self.port))
+        case hostname: Hostname => Dns[F].resolve(hostname).map(ip => SocketAddress(ip, self.port))
+        case idn: IDN           => Dns[F].resolve(idn.hostname).map(ip => SocketAddress(ip, self.port))
       }
   }
 

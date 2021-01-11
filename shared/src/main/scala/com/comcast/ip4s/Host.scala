@@ -21,7 +21,7 @@ import cats.{Order, Show}
 import scala.util.hashing.MurmurHash3
 
 /** ADT representing either an `IpAddress`, `Hostname`, or `IDN`. */
-sealed trait Host extends Ordered[Host] {
+sealed trait Host extends HostPlatform with Ordered[Host] {
 
   def compare(that: Host): Int =
     this match {
@@ -66,9 +66,7 @@ object Host {
   * A label may not start or end in a dash and may not exceed 63 characters in length. Labels are separated by
   * periods and the overall hostname must not exceed 253 characters in length.
   */
-final class Hostname private (val labels: List[Hostname.Label], override val toString: String)
-    extends HostnamePlatform
-    with Host {
+final class Hostname private (val labels: List[Hostname.Label], override val toString: String) extends Host {
 
   /** Converts this hostname to lower case. */
   def normalized: Hostname =
