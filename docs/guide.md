@@ -248,7 +248,7 @@ Like we saw with `CIDR` and `MulticastJoin`, `SocketAddress` is polymorphic in a
 val s = SocketAddress(ipv4"127.0.0.1", port"5555")
 // s: SocketAddress[Ipv4Address] = 127.0.0.1:5555
 val s1 = SocketAddress.fromString(s.toString)
-// s1: Option[SocketAddress[IpAddress]] = Some(127.0.0.1:5555)
+// s1: Option[SocketAddress[Host]] = Some(127.0.0.1:5555)
 val t = SocketAddress(ipv6"::1", port"5555")
 // t: SocketAddress[Ipv6Address] = [::1]:5555
 val t1 = SocketAddress.fromString6(t.toString)
@@ -296,19 +296,19 @@ On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolve
 
 ```scala
 import com.comcast.ip4s._
-import cats.effect.IO
+import cats.effect.IO, cats.effect.unsafe.implicits.global
 
 val home = host"localhost"
 // home: Hostname = localhost
 val homeIp = home.resolve[IO]
-// homeIp: IO[Option[IpAddress]] = IO$875702114
+// homeIp: IO[IpAddress] = IO(...)
 homeIp.unsafeRunSync()
-// res4: Option[IpAddress] = Some(127.0.0.1)
+// res4: IpAddress = 127.0.0.1
 
 val homeIps = home.resolveAll[IO]
-// homeIps: IO[Option[cats.data.NonEmptyList[IpAddress]]] = IO$835332104
+// homeIps: IO[List[IpAddress]] = IO(...)
 homeIps.unsafeRunSync()
-// res5: Option[cats.data.NonEmptyList[IpAddress]] = Some(NonEmptyList(127.0.0.1, ::1))
+// res5: List[IpAddress] = List(127.0.0.1, ::1)
 ```
 
 # Internationalized Domain Names
@@ -325,4 +325,17 @@ val emojiRegistrar = idn"i❤.ws"
 // emojiRegistrar: IDN = i❤.ws
 emojiRegistrar.hostname
 // res7: Hostname = xn--i-7iq.ws
+```
+
+# Hosts
+
+The `Host` type is a common supertype of `IpAddress`, `Hostname`, and `IDN`.
+
+```scala
+val hosts = List(ip"127.255.255.255", home, emojiRegistrar)
+// hosts: List[Host] = List(127.255.255.255, localhost, i❤.ws)
+
+import cats.syntax.all._
+val hostIps = hosts.traverse(_.resolve[IO]).unsafeRunSync()
+// hostIps: List[IpAddress] = List(127.255.255.255, 127.0.0.1, 132.148.137.119)
 ```

@@ -242,7 +242,7 @@ On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolve
 
 ```scala mdoc:reset:to-string
 import com.comcast.ip4s._
-import cats.effect.IO
+import cats.effect.IO, cats.effect.unsafe.implicits.global
 
 val home = host"localhost"
 val homeIp = home.resolve[IO]
@@ -262,4 +262,15 @@ unicodeComcast.hostname
 
 val emojiRegistrar = idn"i❤.ws"
 emojiRegistrar.hostname
+```
+
+# Hosts
+
+The `Host` type is a common supertype of `IpAddress`, `Hostname`, and `IDN`.
+
+```scala mdoc:to-string
+val hosts = List(ip"127.0.0.255", home, emojiRegistrar)
+
+import cats.syntax.all._
+val hostIps = hosts.traverse(_.resolve[IO]).unsafeRunSync()
 ```
