@@ -29,12 +29,17 @@ final case class SocketAddress[+A <: Host](host: A, port: Port) extends SocketAd
 }
 
 object SocketAddress extends SocketAddressCompanionPlatform {
-  def fromString(value: String): Option[SocketAddress[IpAddress]] = fromString4(value) orElse fromString6(value)
+  def fromString(value: String): Option[SocketAddress[Host]] =
+    fromStringIp(value) orElse fromStringHostname(value) orElse fromStringIDN(value)
 
-  private val V4Pattern = """([^:]+):(\d+)""".r
+  def fromStringIp(value: String): Option[SocketAddress[IpAddress]] =
+    fromString4(value) orElse fromString6(value)
+
+  private val UnescapedPattern = """([^:]+):(\d+)""".r
+
   def fromString4(value: String): Option[SocketAddress[Ipv4Address]] =
     value match {
-      case V4Pattern(ip, port) =>
+      case UnescapedPattern(ip, port) =>
         for {
           addr <- Ipv4Address(ip)
           prt <- Port.fromString(port)
@@ -50,6 +55,26 @@ object SocketAddress extends SocketAddressCompanionPlatform {
           addr <- Ipv6Address(ip)
           prt <- Port.fromString(port)
         } yield SocketAddress(addr, prt)
+      case _ => None
+    }
+
+  def fromStringHostname(value: String): Option[SocketAddress[Hostname]] =
+    value match {
+      case UnescapedPattern(s, port) =>
+        for {
+          hostname <- Hostname(s)
+          prt <- Port.fromString(port)
+        } yield SocketAddress(hostname, prt)
+      case _ => None
+    }
+
+  def fromStringIDN(value: String): Option[SocketAddress[IDN]] =
+    value match {
+      case UnescapedPattern(s, port) =>
+        for {
+          idn <- IDN(s)
+          prt <- Port.fromString(port)
+        } yield SocketAddress(idn, prt)
       case _ => None
     }
 
