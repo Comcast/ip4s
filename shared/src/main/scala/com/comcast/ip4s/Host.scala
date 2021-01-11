@@ -57,7 +57,7 @@ sealed trait Host extends Ordered[Host] {
 object Host {
   implicit def show: Show[Host] = Show.fromToString[Host]
   implicit def order: Order[Host] = Order.fromComparable[Host]
-  implicit def ordering: Ordering[Host] = Ordering.ordered[Host]
+  implicit def ordering: Ordering[Host] = _.compare(_)
 }
 
 /** RFC1123 compliant hostname.
@@ -226,8 +226,8 @@ object IpAddress extends IpAddressCompanionPlatform {
     result
   }
 
-  // implicit def order[A <: IpAddress]: Order[A] = Order.fromOrdering(IpAddress.ordering[A])
-  implicit def ordering[A <: IpAddress]: Ordering[A] = Ordering.ordered[A]
+  implicit def order[A <: IpAddress]: Order[A] = Order.fromOrdering(IpAddress.ordering[A])
+  implicit def ordering[A <: IpAddress]: Ordering[A] = _.compare(_)
 }
 
 /** Representation of an IPv4 address that works on both the JVM and Scala.js. */
