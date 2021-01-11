@@ -55,6 +55,9 @@ sealed trait Host extends HostPlatform with Ordered[Host] {
 }
 
 object Host {
+  def apply(string: String): Option[Host] =
+    IpAddress(string) orElse Hostname(string) orElse IDN(string)
+
   implicit def show: Show[Host] = Show.fromToString[Host]
   implicit def order: Order[Host] = Order.fromComparable[Host]
   implicit def ordering: Ordering[Host] = _.compare(_)
