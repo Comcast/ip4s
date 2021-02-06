@@ -33,7 +33,7 @@ class Ipv6AddressJvmTest extends BaseTestSuite {
         val bytes = bytesList.toArray
         val str =
           InetAddresses.toAddrString(InetAddress.getByAddress(bytes))
-        assertEquals(Ipv6Address(str).map(_.toString), Some(str))
+        assertEquals(Ipv6Address.fromString(str).map(_.toString), Some(str))
       }
     }
   }

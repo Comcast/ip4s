@@ -23,26 +23,26 @@ import Arbitraries._
 
 class Ipv6AddressTest extends BaseTestSuite {
   test("parsing from string - does not parse the empty string") {
-    assertEquals(Ipv6Address(""), None)
+    assertEquals(Ipv6Address.fromString(""), None)
   }
 
   test("parsing from string - does not parse white space string") {
-    assertEquals(Ipv6Address(" "), None)
+    assertEquals(Ipv6Address.fromString(" "), None)
   }
 
   test("parsing from string - does not parse a single :") {
-    assertEquals(Ipv6Address(":"), None)
-    assertEquals(Ipv6Address(" : "), None)
+    assertEquals(Ipv6Address.fromString(":"), None)
+    assertEquals(Ipv6Address.fromString(" : "), None)
   }
   test("parsing from string - does parse ::") {
-    assertEquals(Ipv6Address("::").isDefined, true)
-    assertEquals(Ipv6Address(" :: ").isDefined, true)
+    assertEquals(Ipv6Address.fromString("::").isDefined, true)
+    assertEquals(Ipv6Address.fromString(" :: ").isDefined, true)
   }
 
   test("parsing from string - supports mixed strings") {
     forAll { (v4: Ipv4Address) =>
-      assertEquals(Ipv6Address("::" + v4), Some(v4.toCompatV6))
-      assertEquals(Ipv6Address("::ffff:" + v4), Some(v4.toMappedV6))
+      assertEquals(Ipv6Address.fromString("::" + v4), Some(v4.toCompatV6))
+      assertEquals(Ipv6Address.fromString("::ffff:" + v4), Some(v4.toMappedV6))
     }
   }
 
@@ -61,7 +61,7 @@ class Ipv6AddressTest extends BaseTestSuite {
       if (bytesList.size == 16) {
         val bytes = bytesList.toArray
         val addr = Ipv6Address.fromBytes(bytes).get
-        assertEquals(Ipv6Address(addr.toUncondensedString), Some(addr))
+        assertEquals(Ipv6Address.fromString(addr.toUncondensedString), Some(addr))
       }
     }
   }
@@ -78,7 +78,7 @@ class Ipv6AddressTest extends BaseTestSuite {
       if (bytesList.size == 16) {
         val bytes = bytesList.toArray
         val addr = Ipv6Address.fromBytes(bytes).get
-        assertEquals(Ipv6Address(addr.toMixedString), Some(addr))
+        assertEquals(Ipv6Address.fromString(addr.toMixedString), Some(addr))
       }
     }
   }
@@ -102,12 +102,18 @@ class Ipv6AddressTest extends BaseTestSuite {
   }
 
   test("support computing next IP") {
-    assertEquals(Ipv6Address("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff").map(_.next), Ipv6Address("::"))
+    assertEquals(
+      Ipv6Address.fromString("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff").map(_.next),
+      Ipv6Address.fromString("::")
+    )
     forAll { (ip: Ipv6Address) => assertEquals(ip.next, Ipv6Address.fromBigInt(ip.toBigInt + 1)) }
   }
 
   test("support computing previous IP") {
-    assertEquals(Ipv6Address("::").map(_.previous), Ipv6Address("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"))
+    assertEquals(
+      Ipv6Address.fromString("::").map(_.previous),
+      Ipv6Address.fromString("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
+    )
     forAll { (ip: Ipv6Address) => assertEquals(ip.previous, Ipv6Address.fromBigInt(ip.toBigInt - 1)) }
   }
 }

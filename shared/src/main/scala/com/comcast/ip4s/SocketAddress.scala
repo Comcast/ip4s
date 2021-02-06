@@ -41,7 +41,7 @@ object SocketAddress extends SocketAddressCompanionPlatform {
     value match {
       case UnescapedPattern(ip, port) =>
         for {
-          addr <- Ipv4Address(ip)
+          addr <- Ipv4Address.fromString(ip)
           prt <- Port.fromString(port)
         } yield SocketAddress(addr, prt)
       case _ => None
@@ -52,7 +52,7 @@ object SocketAddress extends SocketAddressCompanionPlatform {
     value match {
       case V6Pattern(ip, port) =>
         for {
-          addr <- Ipv6Address(ip)
+          addr <- Ipv6Address.fromString(ip)
           prt <- Port.fromString(port)
         } yield SocketAddress(addr, prt)
       case _ => None
@@ -62,7 +62,7 @@ object SocketAddress extends SocketAddressCompanionPlatform {
     value match {
       case UnescapedPattern(s, port) =>
         for {
-          hostname <- Hostname(s)
+          hostname <- Hostname.fromString(s)
           prt <- Port.fromString(port)
         } yield SocketAddress(hostname, prt)
       case _ => None
@@ -72,7 +72,7 @@ object SocketAddress extends SocketAddressCompanionPlatform {
     value match {
       case UnescapedPattern(s, port) =>
         for {
-          idn <- IDN(s)
+          idn <- IDN.fromString(s)
           prt <- Port.fromString(port)
         } yield SocketAddress(idn, prt)
       case _ => None

@@ -45,7 +45,7 @@ object Arbitraries {
   implicit def cidrArbitrary[A <: IpAddress](implicit arbIp: Arbitrary[A]): Arbitrary[Cidr[A]] =
     Arbitrary(cidrGenerator(arbIp.arbitrary))
 
-  val portGenerator: Gen[Port] = Gen.chooseNum(0, 65535).map(Port(_).get)
+  val portGenerator: Gen[Port] = Gen.chooseNum(0, 65535).map(Port.fromInt(_).get)
 
   implicit val portArbitrary: Arbitrary[Port] = Arbitrary(portGenerator)
 
@@ -117,7 +117,7 @@ object Arbitraries {
       numLabels <- Gen.chooseNum(1, 5)
       labels <- Gen.listOfN(numLabels, genLabel)
       if labels.foldLeft(0)(_ + _.size) < (253 - (numLabels - 1))
-    } yield Hostname(labels.mkString(".")).get
+    } yield Hostname.fromString(labels.mkString(".")).get
   }
 
   implicit val hostnameArbitrary: Arbitrary[Hostname] = Arbitrary(hostnameGenerator)
@@ -136,7 +136,7 @@ object Arbitraries {
       numLabels <- Gen.chooseNum(1, 5)
       labels <- Gen.listOfN(numLabels, genLabel)
       dot <- Gen.oneOf('.', '\u002e', '\u3002', '\uff0e', '\uff61')
-      idn = IDN(labels.mkString(dot.toString)) if idn.isDefined
+      idn = IDN.fromString(labels.mkString(dot.toString)) if idn.isDefined
     } yield idn.get
   }
 

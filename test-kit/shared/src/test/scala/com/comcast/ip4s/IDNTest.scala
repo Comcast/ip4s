@@ -26,25 +26,25 @@ class IDNTest extends BaseTestSuite {
       val representable = h.labels.forall(l => !l.toString.toLowerCase.startsWith("xn--"))
       if (representable) {
         assertEquals(i.hostname, h)
-        assertEquals(IDN(h.toString), Some(i))
+        assertEquals(IDN.fromString(h.toString), Some(i))
       }
     }
   }
 
   test("roundtrip through string") {
-    forAll { (i: IDN) => assertEquals(IDN(i.toString), Some(i)) }
+    forAll { (i: IDN) => assertEquals(IDN.fromString(i.toString), Some(i)) }
   }
 
   test("allow access to labels") {
-    forAll { (i: IDN) => assertEquals(IDN(i.labels.toList.mkString(".")).map(_.labels), Some(i.labels)) }
+    forAll { (i: IDN) => assertEquals(IDN.fromString(i.labels.toList.mkString(".")).map(_.labels), Some(i.labels)) }
   }
 
   test("require overall ascii length be less than 254 chars") {
     forAll { (i: IDN) =>
       val istr = i.toString
       val i2 = istr + "." + istr
-      val expected = if (i.hostname.toString.length > (253 / 2)) None else Some(IDN(i2).get)
-      assertEquals(IDN(i2), expected)
+      val expected = if (i.hostname.toString.length > (253 / 2)) None else Some(IDN.fromString(i2).get)
+      assertEquals(IDN.fromString(i2), expected)
     }
   }
 
@@ -53,7 +53,7 @@ class IDNTest extends BaseTestSuite {
       val str = i.toString
       val suffix = new String(Array.fill(63)(str.last))
       val tooLong = str + suffix
-      assertEquals(IDN(tooLong), None)
+      assertEquals(IDN.fromString(tooLong), None)
     }
   }
 
@@ -62,7 +62,7 @@ class IDNTest extends BaseTestSuite {
       val str = i.toString
       // Note: simply appending a dash to final label doesn't guarantee the ASCII encoded label ends with a dash
       val disallowed = str + ".a-"
-      assertEquals(IDN(disallowed), None)
+      assertEquals(IDN.fromString(disallowed), None)
     }
   }
 
@@ -70,13 +70,13 @@ class IDNTest extends BaseTestSuite {
     forAll { (i: IDN) =>
       val str = i.toString
       val disallowed = "-a." + str
-      assertEquals(IDN(disallowed), None)
+      assertEquals(IDN.fromString(disallowed), None)
     }
   }
 
   test("support normalization") {
     forAll { (i: IDN) =>
-      assertEquals(i.normalized, IDN(i.labels.map(_.toString.toLowerCase).toList.mkString(".")).get)
+      assertEquals(i.normalized, IDN.fromString(i.labels.map(_.toString.toLowerCase).toList.mkString(".")).get)
     }
   }
 }
