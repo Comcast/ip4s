@@ -21,19 +21,19 @@ import Arbitraries._
 
 class HostnameTest extends BaseTestSuite {
   test("roundtrip through string") {
-    forAll { (h: Hostname) => assertEquals(Hostname(h.toString), Some(h)) }
+    forAll { (h: Hostname) => assertEquals(Hostname.fromString(h.toString), Some(h)) }
   }
 
   test("allow access to labels") {
-    forAll { (h: Hostname) => assertEquals(Hostname(h.labels.toList.mkString(".")), Some(h)) }
+    forAll { (h: Hostname) => assertEquals(Hostname.fromString(h.labels.toList.mkString(".")), Some(h)) }
   }
 
   test("require overall length be less than 254 chars") {
     forAll { (h: Hostname) =>
       val hstr = h.toString
       val h2 = hstr + "." + hstr
-      val expected = if (h2.length > 253) None else Some(Hostname(h2).get)
-      assertEquals(Hostname(h2), expected)
+      val expected = if (h2.length > 253) None else Some(Hostname.fromString(h2).get)
+      assertEquals(Hostname.fromString(h2), expected)
     }
   }
 
@@ -42,7 +42,7 @@ class HostnameTest extends BaseTestSuite {
       val hstr = h.toString
       val suffix = new String(Array.fill(63)(hstr.last))
       val tooLong = hstr + suffix
-      assertEquals(Hostname(tooLong), None)
+      assertEquals(Hostname.fromString(tooLong), None)
     }
   }
 
@@ -50,7 +50,7 @@ class HostnameTest extends BaseTestSuite {
     forAll { (h: Hostname) =>
       val hstr = h.toString
       val disallowed = hstr + "-"
-      assertEquals(Hostname(disallowed), None)
+      assertEquals(Hostname.fromString(disallowed), None)
     }
   }
 
@@ -58,7 +58,7 @@ class HostnameTest extends BaseTestSuite {
     forAll { (h: Hostname) =>
       val hstr = h.toString
       val disallowed = "-" + hstr
-      assertEquals(Hostname(disallowed), None)
+      assertEquals(Hostname.fromString(disallowed), None)
     }
   }
 }

@@ -23,11 +23,11 @@ import Arbitraries._
 
 class Ipv4AddressTest extends BaseTestSuite {
   test("parsing from string - does not parse the empty string") {
-    assertEquals(Ipv4Address.apply(""), None)
+    assertEquals(Ipv4Address.fromString(""), None)
   }
 
   test("parsing from string - does not parse white space string") {
-    assertEquals(Ipv4Address.apply(" "), None)
+    assertEquals(Ipv4Address.fromString(" "), None)
   }
 
   test("roundtrip through string") {
@@ -35,7 +35,7 @@ class Ipv4AddressTest extends BaseTestSuite {
       if (bytesList.size == 4) {
         val bytes = bytesList.toArray
         val addr = Ipv4Address.fromBytes(bytes).get
-        assertEquals(Ipv4Address(addr.toString), Some(addr))
+        assertEquals(Ipv4Address.fromString(addr.toString), Some(addr))
       }
     }
   }
@@ -59,12 +59,12 @@ class Ipv4AddressTest extends BaseTestSuite {
   }
 
   test("support computing next IP") {
-    assertEquals(Ipv4Address("255.255.255.255").map(_.next), Ipv4Address("0.0.0.0"))
+    assertEquals(Ipv4Address.fromString("255.255.255.255").map(_.next), Ipv4Address.fromString("0.0.0.0"))
     forAll { (ip: Ipv4Address) => assertEquals(ip.next, Ipv4Address.fromLong(ip.toLong + 1)) }
   }
 
   test("support computing previous IP") {
-    assertEquals(Ipv4Address("0.0.0.0").map(_.previous), Ipv4Address("255.255.255.255"))
+    assertEquals(Ipv4Address.fromString("0.0.0.0").map(_.previous), Ipv4Address.fromString("255.255.255.255"))
     forAll { (ip: Ipv4Address) => assertEquals(ip.previous, Ipv4Address.fromLong(ip.toLong - 1)) }
   }
 }
