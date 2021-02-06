@@ -23,7 +23,7 @@ import cats.{Order, Show}
 
 /** TCP or UDP port number. */
 final class Port private (val value: Int) extends Product with Serializable with Ordered[Port] {
-  def copy(value: Int): Option[Port] = Port(value)
+  def copy(value: Int): Option[Port] = Port.fromInt(value)
   def compare(that: Port): Int = value.compare(that.value)
   override def toString: String = value.toString
   override def hashCode: Int = MurmurHash3.productHash(this, productPrefix.hashCode)
@@ -42,11 +42,11 @@ object Port {
   val MinValue: Int = 0
   val MaxValue: Int = 65535
 
-  def apply(value: Int): Option[Port] =
+  def fromInt(value: Int): Option[Port] =
     if (value >= MinValue && value <= MaxValue) Some(new Port(value)) else None
 
   def fromString(value: String): Option[Port] =
-    Try(value.toInt).toOption.flatMap(apply)
+    Try(value.toInt).toOption.flatMap(fromInt)
 
   def unapply(p: Port): Option[Int] = Some(p.value)
 

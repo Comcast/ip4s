@@ -55,8 +55,8 @@ sealed trait Host extends HostPlatform with Ordered[Host] {
 }
 
 object Host {
-  def apply(string: String): Option[Host] =
-    IpAddress(string) orElse Hostname(string) orElse IDN(string)
+  def fromString(string: String): Option[Host] =
+    IpAddress.fromString(string) orElse Hostname.fromString(string) orElse IDN.fromString(string)
 
   implicit def show: Show[Host] = Show.fromToString[Host]
   implicit def order: Order[Host] = Order.fromComparable[Host]
@@ -104,7 +104,7 @@ object Hostname {
     """[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*""".r
 
   /** Constructs a `Hostname` from a string. */
-  def apply(value: String): Option[Hostname] =
+  def fromString(value: String): Option[Hostname] =
     value.size match {
       case 0            => None
       case i if i > 253 => None
@@ -164,14 +164,14 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
   def isMulticast: Boolean
 
   /** Converts this address to a multicast address, as long as it is in the multicast address range. */
-  def asMulticast: Option[Multicast[this.type]] = Multicast(this)
+  def asMulticast: Option[Multicast[this.type]] = Multicast.fromIpAddress(this)
 
   /** Returns true if this address is in the source specific multicast range. */
   def isSourceSpecificMulticast: Boolean
 
   /** Converts this address to a source specific multicast address, as long as it is in the source specific multicast address range. */
   def asSourceSpecificMulticast: Option[SourceSpecificMulticast[this.type]] =
-    SourceSpecificMulticast(this)
+    SourceSpecificMulticast.fromIpAddress(this)
 
   /** Narrows this address to an Ipv4Address if that is the underlying type. */
   def asIpv4: Option[Ipv4Address] = fold(Some(_), _ => None)
@@ -208,8 +208,8 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
 object IpAddress extends IpAddressCompanionPlatform {
 
   /** Parses an IP address from a string, either in dotted decimal notation or in RFC4291 notation. */
-  def apply(value: String): Option[IpAddress] =
-    Ipv4Address(value) orElse Ipv6Address(value)
+  def fromString(value: String): Option[IpAddress] =
+    Ipv4Address.fromString(value) orElse Ipv6Address.fromString(value)
 
   /** Constructs an IP address from either a 4-element byte array or a 16-element byte array. Any other size array results in a `None`. */
   def fromBytes(bytes: Array[Byte]): Option[IpAddress] =
@@ -329,7 +329,7 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
     fromBytes(232, 255, 255, 255)
 
   /** Parses an IPv4 address from a dotted-decimal string, returning `None` if the string is not a valid IPv4 address. */
-  def apply(value: String): Option[Ipv4Address] = {
+  def fromString(value: String): Option[Ipv4Address] = {
     val trimmed = value.trim
     val fields = trimmed.split('.')
     if (fields.length == 4) {
@@ -560,7 +560,7 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
     fromBytes(255, 63, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255)
 
   /** Parses an IPv6 address from a string in RFC4291 notation, returning `None` if the string is not a valid IPv6 address. */
-  def apply(value: String): Option[Ipv6Address] =
+  def fromString(value: String): Option[Ipv6Address] =
     fromNonMixedString(value) orElse fromMixedString(value)
 
   private def fromNonMixedString(value: String): Option[Ipv6Address] = {
@@ -634,7 +634,7 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
       case MixedStringFormat(prefix, v4Str) =>
         for {
           pfx <- fromNonMixedString(prefix + "0:0")
-          v4 <- Ipv4Address(v4Str)
+          v4 <- Ipv4Address.fromString(v4Str)
         } yield {
           val bytes = pfx.toBytes
           val v4bytes = v4.toBytes
@@ -777,7 +777,7 @@ object IDN extends IDNCompanionPlatform {
   private val DotPattern = "[\\.\u002e\u3002\uff0e\uff61]"
 
   /** Constructs a `IDN` from a string. */
-  def apply(value: String): Option[IDN] =
+  def fromString(value: String): Option[IDN] =
     value.size match {
       case 0 => None
       case _ =>
@@ -787,7 +787,7 @@ object IDN extends IDNCompanionPlatform {
           .map(new Label(_))
           .toList
         Option(labels).filterNot(_.isEmpty).flatMap { ls =>
-          val hostname = toAscii(value).flatMap(Hostname(_))
+          val hostname = toAscii(value).flatMap(Hostname.fromString)
           hostname.map(h => new IDN(ls, h, value))
         }
     }

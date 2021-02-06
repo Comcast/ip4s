@@ -43,5 +43,5 @@ private[ip4s] trait SocketAddressCompanionPlatform {
 
   /** Converts an `InetSocketAddress` to a `SocketAddress[IpAddress]`. */
   def fromInetSocketAddress(address: InetSocketAddress): SocketAddress[IpAddress] =
-    SocketAddress(IpAddress.fromInetAddress(address.getAddress), Port(address.getPort).get)
+    SocketAddress(IpAddress.fromInetAddress(address.getAddress), Port.fromInt(address.getPort).get)
 }

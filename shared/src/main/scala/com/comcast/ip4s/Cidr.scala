@@ -127,13 +127,13 @@ object Cidr {
   }
 
   /** Constructs a CIDR from a string of the form `ip/prefixBits`. */
-  def fromString(value: String): Option[Cidr[IpAddress]] = fromStringGeneral(value, IpAddress.apply)
+  def fromString(value: String): Option[Cidr[IpAddress]] = fromStringGeneral(value, IpAddress.fromString)
 
   /** Constructs a CIDR from a string of the form `ipv4/prefixBits`. */
-  def fromString4(value: String): Option[Cidr[Ipv4Address]] = fromStringGeneral(value, Ipv4Address.apply)
+  def fromString4(value: String): Option[Cidr[Ipv4Address]] = fromStringGeneral(value, Ipv4Address.fromString)
 
   /** Constructs a CIDR from a string of the form `ipv6/prefixBits`. */
-  def fromString6(value: String): Option[Cidr[Ipv6Address]] = fromStringGeneral(value, Ipv6Address.apply)
+  def fromString6(value: String): Option[Cidr[Ipv6Address]] = fromStringGeneral(value, Ipv6Address.fromString)
 
   private val CidrPattern = """([^/]+)/(\d+)""".r
   private def fromStringGeneral[A <: IpAddress](value: String, parseAddress: String => Option[A]): Option[Cidr[A]] =

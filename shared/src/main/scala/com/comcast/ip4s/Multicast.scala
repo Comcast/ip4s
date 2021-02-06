@@ -33,7 +33,7 @@ object Multicast {
   }
 
   /** Constructs a multicast IP address. Returns `None` is the supplied address is not in the valid multicast range. */
-  def apply[A <: IpAddress](address: A): Option[Multicast[A]] =
+  def fromIpAddress[A <: IpAddress](address: A): Option[Multicast[A]] =
     if (address.isSourceSpecificMulticast) Some(SourceSpecificMulticast.unsafeCreate(address))
     else if (address.isMulticast) Some(DefaultMulticast(address))
     else None
@@ -60,7 +60,7 @@ object SourceSpecificMulticast {
   }
 
   /** Constructs a source specific multicast IP address. Returns `None` is the supplied address is not in the valid source specific multicast range. */
-  def apply[A <: IpAddress](address: A): Option[SourceSpecificMulticast[A]] =
+  def fromIpAddress[A <: IpAddress](address: A): Option[SourceSpecificMulticast[A]] =
     if (address.isSourceSpecificMulticast) Some(new DefaultSourceSpecificMulticast(address)) else None
 
   private[ip4s] def unsafeCreate[A <: IpAddress](address: A): SourceSpecificMulticast[A] =

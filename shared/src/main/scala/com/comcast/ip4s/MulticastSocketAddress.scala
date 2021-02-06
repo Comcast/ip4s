@@ -52,11 +52,11 @@ object MulticastSocketAddress {
 
   private val V4Pattern = """(?:([^@]+)@)?([^:]+):(\d+)""".r
   def fromString4(value: String): Option[MulticastSocketAddress[MulticastJoin, Ipv4Address]] =
-    fromStringGeneric(value, V4Pattern, Ipv4Address(_))
+    fromStringGeneric(value, V4Pattern, Ipv4Address.fromString)
 
   private val V6Pattern = """(?:\[([^\]]+)\]@)?\[([^\]]+)\]:(\d+)""".r
   def fromString6(value: String): Option[MulticastSocketAddress[MulticastJoin, Ipv6Address]] =
-    fromStringGeneric(value, V6Pattern, Ipv6Address(_))
+    fromStringGeneric(value, V6Pattern, Ipv6Address.fromString)
 
   def anySourceFromString(value: String): Option[MulticastSocketAddress[AnySourceMulticastJoin, IpAddress]] =
     anySourceFromString4(value) orElse anySourceFromString6(value)
