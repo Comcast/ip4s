@@ -296,17 +296,23 @@ On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolve
 
 ```scala
 import com.comcast.ip4s._
-import cats.effect.IO, cats.effect.unsafe.implicits.global
+import cats.effect.{Blocker, ContextShift, IO}
+import scala.concurrent.ExecutionContext.global
+
+implicit val csIO: ContextShift[IO] = IO.contextShift(global)
+// csIO: ContextShift[IO] = cats.effect.internals.IOContextShift@19b16a83
+implicit val blocker: Blocker = Blocker.liftExecutionContext(global)
+// blocker: Blocker = cats.effect.Blocker@374ab176
 
 val home = host"localhost"
 // home: Hostname = localhost
 val homeIp = home.resolve[IO]
-// homeIp: IO[IpAddress] = IO(...)
+// homeIp: IO[IpAddress] = IO$1547343594
 homeIp.unsafeRunSync()
 // res4: IpAddress = 127.0.0.1
 
 val homeIps = home.resolveAll[IO]
-// homeIps: IO[List[IpAddress]] = IO(...)
+// homeIps: IO[List[IpAddress]] = IO$1357082313
 homeIps.unsafeRunSync()
 // res5: List[IpAddress] = List(127.0.0.1, ::1)
 ```

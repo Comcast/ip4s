@@ -242,7 +242,11 @@ On the JVM, hostnames can be resolved to IP addresses via `resolve` and `resolve
 
 ```scala mdoc:reset:to-string
 import com.comcast.ip4s._
-import cats.effect.IO, cats.effect.unsafe.implicits.global
+import cats.effect.{Blocker, ContextShift, IO}
+import scala.concurrent.ExecutionContext.global
+
+implicit val csIO: ContextShift[IO] = IO.contextShift(global)
+implicit val blocker: Blocker = Blocker.liftExecutionContext(global)
 
 val home = host"localhost"
 val homeIp = home.resolve[IO]

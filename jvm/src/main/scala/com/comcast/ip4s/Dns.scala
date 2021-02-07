@@ -16,7 +16,7 @@
 
 package com.comcast.ip4s
 
-import cats.effect.Sync
+import cats.effect.{Blocker, ContextShift, Sync}
 import cats.syntax.all._
 
 import java.net.{InetAddress, UnknownHostException}
@@ -52,9 +52,9 @@ trait Dns[F[_]] {
 object Dns {
   def apply[F[_]](implicit F: Dns[F]): F.type = F
 
-  implicit def forSync[F[_]](implicit F: Sync[F]): Dns[F] = new Dns[F] {
+  implicit def forSync[F[_]](implicit F: Sync[F], cs: ContextShift[F], blocker: Blocker): Dns[F] = new Dns[F] {
     def resolve(hostname: Hostname): F[IpAddress] =
-      F.blocking {
+      blocker.delay {
         val addr = InetAddress.getByName(hostname.toString)
         IpAddress.fromBytes(addr.getAddress).get
       }
@@ -63,7 +63,7 @@ object Dns {
       resolve(hostname).map(Some(_): Option[IpAddress]).recover { case _: UnknownHostException => None }
 
     def resolveAll(hostname: Hostname): F[List[IpAddress]] =
-      F.blocking {
+      blocker.delay {
         try {
           val addrs = InetAddress.getAllByName(hostname.toString)
           addrs.toList.flatMap(addr => IpAddress.fromBytes(addr.getAddress))
@@ -73,6 +73,6 @@ object Dns {
       }
 
     def loopback: F[IpAddress] =
-      F.blocking(IpAddress.fromInetAddress(InetAddress.getByName(null)))
+      blocker.delay(IpAddress.fromInetAddress(InetAddress.getByName(null)))
   }
 }

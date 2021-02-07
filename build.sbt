@@ -1,7 +1,7 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtcrossproject.CrossPlugin.autoImport.CrossType
 
-ThisBuild / baseVersion := "3.0"
+ThisBuild / baseVersion := "2.0"
 
 ThisBuild / organization := "com.comcast"
 ThisBuild / organizationName := "Comcast Cable Communications Management, LLC"
@@ -117,7 +117,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .jvmSettings(
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.0.0-M5"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.3.1"
   )
   .settings(
     libraryDependencies ++= Seq(
