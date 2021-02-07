@@ -1,7 +1,7 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtcrossproject.CrossPlugin.autoImport.CrossType
 
-ThisBuild / baseVersion := "2.0"
+ThisBuild / baseVersion := "3.0"
 
 ThisBuild / organization := "com.comcast"
 ThisBuild / organizationName := "Comcast Cable Communications Management, LLC"
@@ -17,7 +17,7 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.11", "2.13.3", "3.0.0-M2", "3.0.0-M3")
+ThisBuild / crossScalaVersions := List("2.12.13", "2.13.4", "3.0.0-M2", "3.0.0-M3")
 
 ThisBuild / versionIntroduced := Map(
   "3.0.0-M2" -> "2.0.99",

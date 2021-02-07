@@ -5,14 +5,14 @@ This is the guide for IP Addresses for Scala & Scala.js. This library provides t
 
 # IP Addresses
 
-The `IpAddress` type represents either an IPv4 address or an IPv6 address. The primary mechanism to construct an `IpAddress` is `IpAddress.apply`, which converts a string to an `Option[IpAddress]`. You can also construct an `IpAddress` from a byte array of either 4 bytes or 16 bytes.
+The `IpAddress` type represents either an IPv4 address or an IPv6 address. The primary mechanism to construct an `IpAddress` is `IpAddress.fromString`, which converts a string to an `Option[IpAddress]`. You can also construct an `IpAddress` from a byte array of either 4 bytes or 16 bytes.
 
 ```scala
 import com.comcast.ip4s.IpAddress
 
-val home = IpAddress("127.0.0.1")
+val home = IpAddress.fromString("127.0.0.1")
 // home: Option[IpAddress] = Some(127.0.0.1)
-val home6 = IpAddress("::1")
+val home6 = IpAddress.fromString("::1")
 // home6: Option[IpAddress] = Some(::1)
 ```
 
@@ -23,9 +23,9 @@ Sometimes it is useful to explicitly require an IPv4 or IPv6 address -- for exam
 ```scala
 import com.comcast.ip4s.{Ipv4Address, Ipv6Address}
 
-val explicitV4Home = Ipv4Address("127.0.0.1")
+val explicitV4Home = Ipv4Address.fromString("127.0.0.1")
 // explicitV4Home: Option[Ipv4Address] = Some(127.0.0.1)
-val explicitV6Home = Ipv6Address("::1")
+val explicitV6Home = Ipv6Address.fromString("::1")
 // explicitV6Home: Option[Ipv6Address] = Some(::1)
 ```
 
@@ -63,7 +63,7 @@ The `ip` interpolator returns an `IpAddress`, the `ipv4` interpolator returns an
 
 ## IPv6 String Formats
 
-IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead, you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.apply` and `IpAddress.apply` can parse all of these formats.
+IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead, you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.fromString` and `IpAddress.fromString` can parse all of these formats.
 
 ```scala
 import com.comcast.ip4s._
@@ -75,9 +75,9 @@ val homeLong = home.toUncondensedString
 val homeMixed = home.toMixedString
 // homeMixed: String = ::127.0.0.1
 
-val parsedHomeLong = Ipv6Address(homeLong)
+val parsedHomeLong = Ipv6Address.fromString(homeLong)
 // parsedHomeLong: Option[Ipv6Address] = Some(::7f00:1)
-val parsedHomeMixed = Ipv6Address(homeMixed)
+val parsedHomeMixed = Ipv6Address.fromString(homeMixed)
 // parsedHomeMixed: Option[Ipv6Address] = Some(::7f00:1)
 ```
 
@@ -280,7 +280,7 @@ val t = MulticastSocketAddress(MulticastJoin.ssm(ip"10.10.10.10", ssmip"232.10.1
 The `Hostname` type models an RFC1123 compliant hostname -- limited to 253 total characters, labels separated by periods, and each label consisting of ASCII letters and digits and dashes, not beginning or ending in a dash, and not exceeding 63 characters.
 
 ```scala
-val home = Hostname("localhost")
+val home = Hostname.fromString("localhost")
 // home: Option[Hostname] = Some(localhost)
 val ls = home.map(_.labels)
 // ls: Option[List[Hostname.Label]] = Some(List(localhost))
@@ -332,10 +332,10 @@ emojiRegistrar.hostname
 The `Host` type is a common supertype of `IpAddress`, `Hostname`, and `IDN`.
 
 ```scala
-val hosts = List(ip"127.255.255.255", home, emojiRegistrar)
-// hosts: List[Host] = List(127.255.255.255, localhost, i❤.ws)
+val hosts = List(ip"127.0.0.255", home, emojiRegistrar)
+// hosts: List[Host] = List(127.0.0.255, localhost, i❤.ws)
 
 import cats.syntax.all._
 val hostIps = hosts.traverse(_.resolve[IO]).unsafeRunSync()
-// hostIps: List[IpAddress] = List(127.255.255.255, 127.0.0.1, 132.148.137.119)
+// hostIps: List[IpAddress] = List(127.0.0.255, 127.0.0.1, 132.148.137.119)
 ```

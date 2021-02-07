@@ -5,13 +5,13 @@ This is the guide for IP Addresses for Scala & Scala.js. This library provides t
 
 # IP Addresses
 
-The `IpAddress` type represents either an IPv4 address or an IPv6 address. The primary mechanism to construct an `IpAddress` is `IpAddress.apply`, which converts a string to an `Option[IpAddress]`. You can also construct an `IpAddress` from a byte array of either 4 bytes or 16 bytes.
+The `IpAddress` type represents either an IPv4 address or an IPv6 address. The primary mechanism to construct an `IpAddress` is `IpAddress.fromString`, which converts a string to an `Option[IpAddress]`. You can also construct an `IpAddress` from a byte array of either 4 bytes or 16 bytes.
 
 ```scala mdoc:to-string
 import com.comcast.ip4s.IpAddress
 
-val home = IpAddress("127.0.0.1")
-val home6 = IpAddress("::1")
+val home = IpAddress.fromString("127.0.0.1")
+val home6 = IpAddress.fromString("::1")
 ```
 
 The `toString` method on `IpAddress` renders the IP in dotted-decimal notation if it is a V4 address and condensed string notation if it is a V6 address. The `toBytes` method converts the IP into a 4 or 16 element byte array. There are a few more methods on `IpAddress` that we'll look at later but not many more -- the API is small.
@@ -21,8 +21,8 @@ Sometimes it is useful to explicitly require an IPv4 or IPv6 address -- for exam
 ```scala mdoc:to-string
 import com.comcast.ip4s.{Ipv4Address, Ipv6Address}
 
-val explicitV4Home = Ipv4Address("127.0.0.1")
-val explicitV6Home = Ipv6Address("::1")
+val explicitV4Home = Ipv4Address.fromString("127.0.0.1")
+val explicitV6Home = Ipv6Address.fromString("::1")
 ```
 
 Because `Ipv4Address` and `Ipv6Address` are subtypes of `IpAddress`, we can pattern match on an `IpAddress` or use the `fold` method:
@@ -54,7 +54,7 @@ The `ip` interpolator returns an `IpAddress`, the `ipv4` interpolator returns an
 
 ## IPv6 String Formats
 
-IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead, you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.apply` and `IpAddress.apply` can parse all of these formats.
+IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead, you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.fromString` and `IpAddress.fromString` can parse all of these formats.
 
 ```scala mdoc:reset:to-string
 import com.comcast.ip4s._
@@ -63,8 +63,8 @@ val home = ipv6"::7f00:1"
 val homeLong = home.toUncondensedString
 val homeMixed = home.toMixedString
 
-val parsedHomeLong = Ipv6Address(homeLong)
-val parsedHomeMixed = Ipv6Address(homeMixed)
+val parsedHomeLong = Ipv6Address.fromString(homeLong)
+val parsedHomeMixed = Ipv6Address.fromString(homeMixed)
 ```
 
 ## Ordering
@@ -230,7 +230,7 @@ val t = MulticastSocketAddress(MulticastJoin.ssm(ip"10.10.10.10", ssmip"232.10.1
 The `Hostname` type models an RFC1123 compliant hostname -- limited to 253 total characters, labels separated by periods, and each label consisting of ASCII letters and digits and dashes, not beginning or ending in a dash, and not exceeding 63 characters.
 
 ```scala mdoc:nest:to-string
-val home = Hostname("localhost")
+val home = Hostname.fromString("localhost")
 val ls = home.map(_.labels)
 val comcast = host"comcast.com"
 val cs = comcast.labels
