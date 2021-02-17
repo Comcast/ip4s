@@ -17,7 +17,7 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.13", "2.13.4", "3.0.0-M2", "3.0.0-M3")
+ThisBuild / crossScalaVersions := List("2.12.13", "2.13.4", "3.0.0-M3", "3.0.0-RC1")
 
 ThisBuild / versionIntroduced := Map(
   "3.0.0-M2" -> "2.0.99",
@@ -65,8 +65,8 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.15.2",
-      "org.scalameta" %%% "munit-scalacheck" % "0.7.21" % Test
+      "org.scalacheck" %%% "scalacheck" % "1.15.3",
+      "org.scalameta" %%% "munit-scalacheck" % "0.7.22" % Test
     )
   )
   .jvmSettings(
@@ -117,12 +117,12 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .jvmSettings(
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.0.0-RC1"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.0.0-RC2"
   )
   .settings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "2.4.1",
-      "org.scalacheck" %%% "scalacheck" % "1.15.2" % Test
+      "org.typelevel" %%% "cats-core" % "2.4.2",
+      "org.scalacheck" %%% "scalacheck" % "1.15.3" % Test
     )
   )
 
