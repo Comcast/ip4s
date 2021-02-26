@@ -17,7 +17,7 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.13", "2.13.4", "3.0.0-M3", "3.0.0-RC1")
+ThisBuild / crossScalaVersions := List("2.13.5", "2.13.4", "3.0.0-M3", "3.0.0-RC1")
 
 ThisBuild / versionIntroduced := Map(
   "3.0.0-M2" -> "2.0.99",
