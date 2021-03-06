@@ -86,9 +86,6 @@ lazy val testKitJVM = testKit.jvm.enablePlugins(SbtOsgi)
 lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
-  .settings(
-    unusedCompileDependenciesFilter -= moduleFilter("org.scalacheck", "scalacheck")
-  )
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .in(file("."))
@@ -100,22 +97,23 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     },
     scalacOptions := scalacOptions.value.filterNot(_ == "-source:3.0-migration"),
     Compile / scalafmt / unmanagedSources := (Compile / scalafmt / unmanagedSources).value.filterNot(
-      _.toString.endsWith("Interpolators.scala")
+      _.toString.endsWith("Literals.scala")
     ),
     Test / scalafmt / unmanagedSources := (Test / scalafmt / unmanagedSources).value.filterNot(
-      _.toString.endsWith("Interpolators.scala")
+      _.toString.endsWith("Literals.scala")
     ),
     Compile / unmanagedSourceDirectories ++= {
       val major = if (isDotty.value) "-3" else "-2"
       List(CrossType.Pure, CrossType.Full).flatMap(
         _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
       )
-    },
-    unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-core"),
-    unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-effect")
+    }
   )
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
+  .settings(
+    libraryDependencies += "org.typelevel" %%% "literally" % "0.1-138de63"
+  )
   .jvmSettings(
     libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.0.0-RC2"
   )
@@ -144,8 +142,7 @@ lazy val coreJS = core.js
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    npmDependencies in Compile += "punycode" -> "2.1.1",
-    unusedCompileDependenciesFilter -= moduleFilter("org.typelevel", "cats-effect")
+    npmDependencies in Compile += "punycode" -> "2.1.1"
   )
 
 lazy val docs = project

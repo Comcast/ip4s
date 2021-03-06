@@ -16,7 +16,7 @@
 
 package com.comcast.ip4s
 
-import scala.quoted._
+import org.typelevel.literally.Literally
 import scala.util.Try
 
 extension (inline ctx: StringContext)
@@ -58,97 +58,73 @@ extension (inline ctx: StringContext)
 
 object Literals:
 
-  trait Validator[A]:
-    def validate(s: String): Option[String]
-    def build(s: String)(using Quotes): Expr[A]
-
-    def apply(strCtxExpr: Expr[StringContext], argsExpr: Expr[Seq[Any]])(using Quotes): Expr[A] =
-      strCtxExpr.value match
-        case Some(sc) => apply(sc.parts, argsExpr)
-        case None =>
-          quotes.reflect.report.error("StringContext args must be statically known")
-          ???
-
-    private def apply(parts: Seq[String], argsExpr: Expr[Seq[Any]])(using Quotes): Expr[A] =
-      if parts.size == 1 then
-        val literal = parts.head
-        validate(literal) match
-          case Some(err) =>
-            quotes.reflect.report.error(err)
-            ???
-          case None =>
-            build(literal)
-      else
-        quotes.reflect.report.error("interpolation not supported", argsExpr)
-        ???
-
-  object ip extends Validator[IpAddress]:
+  object ip extends Literally[IpAddress]:
     def validate(s: String): Option[String] =
       IpAddress.fromString(s).fold(Some("Invalid IP address"))(_ => None)
     def build(s: String)(using Quotes): Expr[IpAddress] =
       '{_root_.com.comcast.ip4s.IpAddress.fromString(${Expr(s)}).get}
 
-  object ipv4 extends Validator[Ipv4Address]:
+  object ipv4 extends Literally[Ipv4Address]:
     def validate(s: String): Option[String] =
       Ipv4Address.fromString(s).fold(Some("Invalid IPv4 address"))(_ => None)
     def build(s: String)(using Quotes): Expr[Ipv4Address] =
       '{_root_.com.comcast.ip4s.Ipv4Address.fromString(${Expr(s)}).get}
 
-  object ipv6 extends Validator[Ipv6Address]:
+  object ipv6 extends Literally[Ipv6Address]:
     def validate(s: String): Option[String] =
       Ipv6Address.fromString(s).fold(Some("Invalid IPv6 address"))(_ => None)
     def build(s: String)(using Quotes): Expr[Ipv6Address] =
       '{_root_.com.comcast.ip4s.Ipv6Address.fromString(${Expr(s)}).get}
 
-  object mip extends Validator[Multicast[IpAddress]]:
+  object mip extends Literally[Multicast[IpAddress]]:
     def validate(s: String): Option[String] =
       IpAddress.fromString(s).flatMap(_.asMulticast).fold(Some("Invalid IP multicast address"))(_ => None)
     def build(s: String)(using Quotes): Expr[Multicast[IpAddress]] =
       '{_root_.com.comcast.ip4s.IpAddress.fromString(${Expr(s)}).get.asMulticast.get}
 
-  object mipv4 extends Validator[Multicast[Ipv4Address]]:
+  object mipv4 extends Literally[Multicast[Ipv4Address]]:
     def validate(s: String): Option[String] =
       Ipv4Address.fromString(s).flatMap(_.asMulticast).fold(Some("Invalid IPv4 multicast address"))(_ => None)
     def build(s: String)(using Quotes): Expr[Multicast[Ipv4Address]] =
       '{_root_.com.comcast.ip4s.Ipv4Address.fromString(${Expr(s)}).get.asMulticast.get}
 
-  object mipv6 extends Validator[Multicast[Ipv6Address]]:
+  object mipv6 extends Literally[Multicast[Ipv6Address]]:
     def validate(s: String): Option[String] =
       Ipv6Address.fromString(s).flatMap(_.asMulticast).fold(Some("Invalid IPv6 multicast address"))(_ => None)
     def build(s: String)(using Quotes): Expr[Multicast[Ipv6Address]] =
       '{_root_.com.comcast.ip4s.Ipv6Address.fromString(${Expr(s)}).get.asMulticast.get}
 
-  object ssmip extends Validator[SourceSpecificMulticast[IpAddress]]:
+  object ssmip extends Literally[SourceSpecificMulticast[IpAddress]]:
     def validate(s: String): Option[String] =
       IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticast).fold(Some("Invalid source specific IP multicast address"))(_ => None)
     def build(s: String)(using Quotes): Expr[SourceSpecificMulticast[IpAddress]] =
       '{_root_.com.comcast.ip4s.IpAddress.fromString(${Expr(s)}).get.asSourceSpecificMulticast.get}
 
-  object ssmipv4 extends Validator[SourceSpecificMulticast[Ipv4Address]]:
+  object ssmipv4 extends Literally[SourceSpecificMulticast[Ipv4Address]]:
     def validate(s: String): Option[String] =
       Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticast).fold(Some("Invalid source specific IPv4 multicast address"))(_ => None)
     def build(s: String)(using Quotes): Expr[SourceSpecificMulticast[Ipv4Address]] =
       '{_root_.com.comcast.ip4s.Ipv4Address.fromString(${Expr(s)}).get.asSourceSpecificMulticast.get}
 
-  object ssmipv6 extends Validator[SourceSpecificMulticast[Ipv6Address]]:
+  object ssmipv6 extends Literally[SourceSpecificMulticast[Ipv6Address]]:
     def validate(s: String): Option[String] =
       Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticast).fold(Some("Invalid source specific IPv6 multicast address"))(_ => None)
     def build(s: String)(using Quotes): Expr[SourceSpecificMulticast[Ipv6Address]] =
       '{_root_.com.comcast.ip4s.Ipv6Address.fromString(${Expr(s)}).get.asSourceSpecificMulticast.get}
 
-  object port extends Validator[Port]:
+  object port extends Literally[Port]:
     def validate(s: String): Option[String] =
       Try(s.toInt).toOption.flatMap(Port.fromInt).fold(Some("Invalid port"))(_ => None)
     def build(s: String)(using Quotes): Expr[Port] =
       '{_root_.com.comcast.ip4s.Port.fromInt(${Expr(s.toInt)}).get}
 
-  object host extends Validator[Hostname]:
+  object host extends Literally[Hostname]:
     def validate(s: String): Option[String] =
       Hostname.fromString(s).fold(Some("Invalid hostname"))(_ => None)
     def build(s: String)(using Quotes): Expr[Hostname] =
       '{_root_.com.comcast.ip4s.Hostname.fromString(${Expr(s)}).get}
 
-  object idn extends Validator[IDN]:
+  object idn extends Literally[IDN]:
     def validate(s: String): Option[String] =
       IDN.fromString(s).fold(Some("Invalid IDN"))(_ => None)
     def build(s: String)(using Quotes): Expr[IDN] =
