@@ -17,113 +17,139 @@
 package com.comcast.ip4s
 
 import org.typelevel.literally.Literally
-import scala.util.Try
 
 /** Macros that support literal string interpolators. */
 object Literals {
-  private[ip4s] abstract class SimpleLiterally[A](
-      name: String,
-      doValidate: String => Option[A]
-  ) extends Literally[A] {
-    def validate(s: String) = if (doValidate(s).isDefined) None else Some(s"invalid $name")
-  }
 
-  object ip extends SimpleLiterally[IpAddress]("IP address", IpAddress.fromString) {
-    def build(c: Context)(s: c.Expr[String]) = c.universe.reify(IpAddress.fromString(s.splice).get)
+  object ip extends Literally[IpAddress] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      IpAddress.fromString(s) match {
+        case Some(_) => Right(c.Expr(q"IpAddress.fromString($s).get"))
+        case None => Left("invalid IP address")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[IpAddress] = apply(c)(args: _*)
   }
 
-  object ipv4 extends SimpleLiterally[Ipv4Address]("IPv4 address", Ipv4Address.fromString) {
-    def build(c: Context)(s: c.Expr[String]) = c.universe.reify(Ipv4Address.fromString(s.splice).get)
+  object ipv4 extends Literally[Ipv4Address] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      Ipv4Address.fromString(s) match {
+        case Some(_) => Right(c.Expr(q"Ipv4Address.fromString($s).get"))
+        case None => Left("invalid IPv4 address")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv4Address] = apply(c)(args: _*)
   }
 
-  object ipv6 extends SimpleLiterally[Ipv6Address]("IPv6 address", Ipv6Address.fromString) {
-    def build(c: Context)(s: c.Expr[String]) = c.universe.reify(Ipv6Address.fromString(s.splice).get)
+  object ipv6 extends Literally[Ipv6Address] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      Ipv6Address.fromString(s) match {
+        case Some(_) => Right(c.Expr(q"Ipv6Address.fromString($s).get"))
+        case None => Left("invalid IPv6 address")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv6Address] = apply(c)(args: _*)
   }
 
-  object mip
-      extends SimpleLiterally[Multicast[IpAddress]](
-        "IP multicast address",
-        s => IpAddress.fromString(s).flatMap(_.asMulticast)
-      ) {
-    def build(c: Context)(s: c.Expr[String]) = c.universe.reify(IpAddress.fromString(s.splice).get.asMulticast.get)
+  object mip extends Literally[Multicast[IpAddress]] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      IpAddress.fromString(s).flatMap(_.asMulticast) match {
+        case Some(_) => Right(c.Expr(q"IpAddress.fromString($s).get.asMulticast.get"))
+        case None => Left("invalid IP multicast address")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[IpAddress]] = apply(c)(args: _*)
   }
 
-  object mipv4
-      extends SimpleLiterally[Multicast[Ipv4Address]](
-        "IPv4 multicast address",
-        s => Ipv4Address.fromString(s).flatMap(_.asMulticast)
-      ) {
-    def build(c: Context)(s: c.Expr[String]) = c.universe.reify(Ipv4Address.fromString(s.splice).get.asMulticast.get)
+  object mipv4 extends Literally[Multicast[Ipv4Address]] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      Ipv4Address.fromString(s).flatMap(_.asMulticast) match {
+        case Some(_) => Right(c.Expr(q"Ipv4Address.fromString($s).get.asMulticast.get"))
+        case None => Left("invalid IPv4 multicast address")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[Ipv4Address]] = apply(c)(args: _*)
   }
 
-  object mipv6
-      extends SimpleLiterally[Multicast[Ipv6Address]](
-        "IPv6 multicast address",
-        s => Ipv6Address.fromString(s).flatMap(_.asMulticast)
-      ) {
-    def build(c: Context)(s: c.Expr[String]) = c.universe.reify(Ipv6Address.fromString(s.splice).get.asMulticast.get)
+  object mipv6 extends Literally[Multicast[Ipv6Address]] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      Ipv6Address.fromString(s).flatMap(_.asMulticast) match {
+        case Some(_) => Right(c.Expr(q"Ipv6Address.fromString($s).get.asMulticast.get"))
+        case None => Left("invalid IPv6 multicast address")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[Ipv6Address]] = apply(c)(args: _*)
   }
 
-  object ssmip
-      extends SimpleLiterally[SourceSpecificMulticast[IpAddress]](
-        "source specific IP multicast address",
-        s => IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticast)
-      ) {
-    def build(c: Context)(s: c.Expr[String]) =
-      c.universe.reify(IpAddress.fromString(s.splice).get.asSourceSpecificMulticast.get)
+  object ssmip extends Literally[SourceSpecificMulticast[IpAddress]] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
+        case Some(_) => Right(c.Expr(q"IpAddress.fromString($s).get.asSourceSpecificMulticast.get"))
+        case None => Left("invalid source specific IP multicast address")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast[IpAddress]] = apply(c)(args: _*)
   }
 
-  object ssmipv4
-      extends SimpleLiterally[SourceSpecificMulticast[Ipv4Address]](
-        "source specific IPv4 multicast address",
-        s => Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticast)
-      ) {
-    def build(c: Context)(s: c.Expr[String]) =
-      c.universe.reify(Ipv4Address.fromString(s.splice).get.asSourceSpecificMulticast.get)
+  object ssmipv4 extends Literally[SourceSpecificMulticast[Ipv4Address]] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
+        case Some(_) => Right(c.Expr(q"Ipv4Address.fromString($s).get.asSourceSpecificMulticast.get"))
+        case None => Left("invalid source specific IPv4 multicast address")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast[Ipv4Address]] = apply(c)(args: _*)
   }
 
-  object ssmipv6
-      extends SimpleLiterally[SourceSpecificMulticast[Ipv6Address]](
-        "source specific IPv6 multicast address",
-        s => Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticast)
-      ) {
-    def build(c: Context)(s: c.Expr[String]) =
-      c.universe.reify(Ipv6Address.fromString(s.splice).get.asSourceSpecificMulticast.get)
+  object ssmipv6 extends Literally[SourceSpecificMulticast[Ipv6Address]] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
+        case Some(_) => Right(c.Expr(q"Ipv6Address.fromString($s).get.asSourceSpecificMulticast.get"))
+        case None => Left("invalid source specific IPv6 multicast address")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast[Ipv6Address]] = apply(c)(args: _*)
   }
 
-  object port
-      extends SimpleLiterally[Port](
-        "port",
-        s => Try(s.toInt).toOption.flatMap(Port.fromInt)
-      ) {
-    def build(c: Context)(s: c.Expr[String]) = c.universe.reify(Port.fromInt(s.splice.toInt).get)
+  object port extends Literally[Port] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      scala.util.Try(s.toInt).toOption.flatMap(Port.fromInt) match {
+        case Some(_) => Right(c.Expr(q"Port.fromInt($s.toInt).get"))
+        case None => Left("invalid port")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Port] = apply(c)(args: _*)
   }
 
-  object hostname
-      extends SimpleLiterally[Hostname](
-        "hostname",
-        Hostname.fromString
-      ) {
-    def build(c: Context)(s: c.Expr[String]) = c.universe.reify(Hostname.fromString(s.splice).get)
+  object hostname extends Literally[Hostname] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      Hostname.fromString(s) match {
+        case Some(_) => Right(c.Expr(q"Hostname.fromString($s).get"))
+        case None => Left("invalid hostname")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Hostname] = apply(c)(args: _*)
   }
 
-  object idn
-      extends SimpleLiterally[IDN](
-        "idn",
-        IDN.fromString
-      ) {
-    def build(c: Context)(s: c.Expr[String]) = c.universe.reify(IDN.fromString(s.splice).get)
+  object idn extends Literally[IDN] {
+    def validate(c: Context)(s: String) = {
+      import c.universe._
+      IDN.fromString(s) match {
+        case Some(_) => Right(c.Expr(q"IDN.fromString($s).get"))
+        case None => Left("invalid IDN")
+      }
+    }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[IDN] = apply(c)(args: _*)
   }
 }
