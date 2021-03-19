@@ -70,7 +70,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
     )
   )
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "30.1-jre" % "test",
+    libraryDependencies += "com.google.guava" % "guava" % "30.1.1-jre" % "test",
     OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
     OsgiKeys.importPackage := {
       val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
