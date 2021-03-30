@@ -18,31 +18,31 @@ package com.comcast
 
 package object ip4s {
   final implicit class IpLiteralSyntax(val sc: StringContext) extends AnyVal {
-    def ip(args: Any*): IpAddress = macro LiteralSyntaxMacros.ipInterpolator
+    def ip(args: Any*): IpAddress = macro Literals.ip.make
     def ipv4(args: Any*): Ipv4Address =
-      macro LiteralSyntaxMacros.ipv4Interpolator
+      macro Literals.ipv4.make
     def ipv6(args: Any*): Ipv6Address =
-      macro LiteralSyntaxMacros.ipv6Interpolator
+      macro Literals.ipv6.make
 
     def mip(args: Any*): Multicast[IpAddress] =
-      macro LiteralSyntaxMacros.mipInterpolator
+      macro Literals.mip.make
     def mipv4(args: Any*): Multicast[Ipv4Address] =
-      macro LiteralSyntaxMacros.mipv4Interpolator
+      macro Literals.mipv4.make
     def mipv6(args: Any*): Multicast[Ipv6Address] =
-      macro LiteralSyntaxMacros.mipv6Interpolator
+      macro Literals.mipv6.make
 
     def ssmip(args: Any*): SourceSpecificMulticast[IpAddress] =
-      macro LiteralSyntaxMacros.ssmipInterpolator
+      macro Literals.ssmip.make
     def ssmipv4(args: Any*): SourceSpecificMulticast[Ipv4Address] =
-      macro LiteralSyntaxMacros.ssmipv4Interpolator
+      macro Literals.ssmipv4.make
     def ssmipv6(args: Any*): SourceSpecificMulticast[Ipv6Address] =
-      macro LiteralSyntaxMacros.ssmipv6Interpolator
+      macro Literals.ssmipv6.make
 
     def port(args: Any*): Port =
-      macro LiteralSyntaxMacros.portInterpolator
+      macro Literals.port.make
     def host(args: Any*): Hostname =
-      macro LiteralSyntaxMacros.hostnameInterpolator
+      macro Literals.hostname.make
     def idn(args: Any*): IDN =
-      macro LiteralSyntaxMacros.idnInterpolator
+      macro Literals.idn.make
   }
 }
