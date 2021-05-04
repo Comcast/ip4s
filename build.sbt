@@ -60,7 +60,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.15.3",
+      "org.scalacheck" %%% "scalacheck" % "1.15.4",
       "org.scalameta" %%% "munit-scalacheck" % "0.7.25" % Test
     )
   )
@@ -115,7 +115,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % "2.6.0",
-      "org.scalacheck" %%% "scalacheck" % "1.15.3" % Test
+      "org.scalacheck" %%% "scalacheck" % "1.15.4" % Test
     )
   )
 
