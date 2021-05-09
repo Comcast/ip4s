@@ -137,7 +137,7 @@ lazy val coreJS = core.js
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    npmDependencies in Compile += "punycode" -> "2.1.1"
+    Compile / npmDependencies += "punycode" -> "2.1.1"
   )
 
 lazy val docs = project
@@ -152,7 +152,7 @@ lazy val docs = project
   )
 
 lazy val commonSettings = Seq(
-  unmanagedResources in Compile ++= {
+  Compile / unmanagedResources ++= {
     val base = baseDirectory.value / ".."
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   }
