@@ -52,4 +52,8 @@ class Ipv6AddressJvmTest extends BaseTestSuite {
   test("support conversion to Inet6Address") {
     forAll { (ip: Ipv6Address) => assert(ip.toInetAddress.isInstanceOf[Inet6Address]) }
   }
+
+  test("toInetAddress with IPv4 mapped addresses") {
+    assertEquals(ip"::ffff:f:f".toInetAddress, InetAddress.getByName("::ffff:f:f"))
+  }
 }
