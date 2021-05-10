@@ -1,5 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtcrossproject.CrossPlugin.autoImport.CrossType
+import com.typesafe.tools.mima.core._
 
 ThisBuild / baseVersion := "3.0"
 
@@ -43,6 +44,10 @@ ThisBuild / scalafmtOnCompile := true
 ThisBuild / initialCommands := "import com.comcast.ip4s._"
 
 ThisBuild / fatalWarningsInCI := false
+
+ThisBuild / mimaBinaryIssueFilters ++= Seq(
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Ipv6Address.toInetAddress")
+)
 
 lazy val root = project
   .in(file("."))

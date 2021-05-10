@@ -52,8 +52,8 @@ private[ip4s] trait Ipv4AddressCompanionPlatform {
 private[ip4s] trait Ipv6AddressPlatform extends IpAddressPlatform {
   protected val bytes: Array[Byte]
 
-  override def toInetAddress: Inet6Address =
-    InetAddress.getByAddress(bytes).asInstanceOf[Inet6Address]
+  override def toInetAddress: InetAddress =
+    InetAddress.getByAddress(bytes)
 }
 
 private[ip4s] trait Ipv6AddressCompanionPlatform {
