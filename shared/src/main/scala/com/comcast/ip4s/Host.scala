@@ -174,13 +174,20 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
     SourceSpecificMulticast.fromIpAddress(this)
 
   /** Narrows this address to an Ipv4Address if that is the underlying type. */
-  def asIpv4: Option[Ipv4Address] = fold(Some(_), _ => None)
+  def asIpv4: Option[Ipv4Address] = collapseMappedV4.fold(Some(_), _ => None)
 
   /** Narrows this address to an Ipv6Address if that is the underlying type. */
   def asIpv6: Option[Ipv6Address] = fold(_ => None, Some(_))
 
   /** Returns the version of this address. */
   def version: IpVersion = fold(_ => IpVersion.V4, _ => IpVersion.V6)
+
+  /** Returns true if this address is a V6 address containing a mapped V4 address. */
+  def isMappedV4: Boolean = fold(_ => false, Ipv6Address.MappedV4Block.contains)
+
+  /** If this address is an IPv4 mapped IPv6 address, converts to an IPv4 address, otherwise returns this. */
+  def collapseMappedV4: IpAddress =
+    fold(identity, v6 => if (v6.isMappedV4) IpAddress.fromBytes(v6.toBytes.takeRight(4)).get else v6)
 
   /** Constructs a [[Cidr]] address from this address. */
   def /(prefixBits: Int): Cidr[this.type] = Cidr(this, prefixBits)
@@ -558,6 +565,10 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
   /** Last IP address in the IPv6 source specific multicast range. */
   val SourceSpecificMulticastRangeEnd: Ipv6Address =
     fromBytes(255, 63, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255)
+
+  /** CIDR which defines the mapped IPv4 address block (https://datatracker.ietf.org/doc/html/rfc4291#section-2.5.5.2). */
+  val MappedV4Block: Cidr[Ipv6Address] =
+    Cidr(Ipv6Address.fromBytes(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0), 96)
 
   /** Parses an IPv6 address from a string in RFC4291 notation, returning `None` if the string is not a valid IPv6 address. */
   def fromString(value: String): Option[Ipv6Address] =
