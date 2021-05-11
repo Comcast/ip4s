@@ -119,10 +119,10 @@ class Ipv6AddressTest extends BaseTestSuite {
 
   test("converting V4 mapped address") {
     val addr = ip"::ffff:f:f"
-    assertEquals(addr.getClass, classOf[Ipv6Address])
+    assertEquals[Any, Any](addr.getClass, classOf[Ipv6Address])
     assertEquals(addr.version, IpVersion.V6)
     assertEquals(addr.toString, "::ffff:f:f")
-    assertEquals(addr.collapseMappedV4.getClass, classOf[Ipv4Address])
+    assertEquals[Any, Any](addr.collapseMappedV4.getClass, classOf[Ipv4Address])
     assertEquals[Any, Any](addr.asIpv6, Some(addr))
     assertEquals[Any, Any](addr.asIpv4, Some(ip"0.15.0.15"))
   }
