@@ -17,7 +17,7 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.13", "2.13.5", "3.0.0-RC2", "3.0.0-RC3")
+ThisBuild / crossScalaVersions := List("2.12.13", "2.13.5", "3.0.0")
 
 ThisBuild / spiewakCiReleaseSnapshots := true
 
@@ -60,8 +60,8 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.15.3",
-      "org.scalameta" %%% "munit-scalacheck" % "0.7.25" % Test
+      "org.scalacheck" %%% "scalacheck" % "1.15.4",
+      "org.scalameta" %%% "munit-scalacheck" % "0.7.26" % Test
     )
   )
   .jvmSettings(
@@ -107,15 +107,15 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(dottyLibrarySettings)
   .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(
-    libraryDependencies += "org.typelevel" %%% "literally" % "1.0.1"
+    libraryDependencies += "org.typelevel" %%% "literally" % "1.0.2"
   )
   .jvmSettings(
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.5.0"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "2.5.1"
   )
   .settings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "2.6.0",
-      "org.scalacheck" %%% "scalacheck" % "1.15.3" % Test
+      "org.typelevel" %%% "cats-core" % "2.6.1",
+      "org.scalacheck" %%% "scalacheck" % "1.15.4" % Test
     )
   )
 
@@ -137,7 +137,7 @@ lazy val coreJS = core.js
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    npmDependencies in Compile += "punycode" -> "2.1.1"
+    Compile / npmDependencies += "punycode" -> "2.1.1"
   )
 
 lazy val docs = project
@@ -152,7 +152,7 @@ lazy val docs = project
   )
 
 lazy val commonSettings = Seq(
-  unmanagedResources in Compile ++= {
+  Compile / unmanagedResources ++= {
     val base = baseDirectory.value / ".."
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   }
