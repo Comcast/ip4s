@@ -61,8 +61,6 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
     name := "ip4s-test-kit"
   )
   .settings(mimaPreviousArtifacts := Set.empty)
-  .settings(dottyLibrarySettings)
-  .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(
     libraryDependencies ++= Seq(
       "org.scalacheck" %%% "scalacheck" % "1.15.4",
@@ -109,8 +107,6 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
       )
     }
   )
-  .settings(dottyLibrarySettings)
-  .settings(dottyJsSettings(ThisBuild / crossScalaVersions))
   .settings(
     libraryDependencies += "org.typelevel" %%% "literally" % "1.0.2"
   )
