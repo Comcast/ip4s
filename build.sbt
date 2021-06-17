@@ -18,7 +18,7 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.14", "2.13.5", "3.0.0")
+ThisBuild / crossScalaVersions := List("2.12.14", "2.13.6", "3.0.0")
 
 ThisBuild / spiewakCiReleaseSnapshots := true
 
