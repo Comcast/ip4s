@@ -64,7 +64,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalacheck" %%% "scalacheck" % "1.15.4",
-      "org.scalameta" %%% "munit-scalacheck" % "0.7.27" % Test
+      "org.scalameta" %%% "munit-scalacheck" % "0.7.29" % Test
     )
   )
   .jvmSettings(
@@ -111,7 +111,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies += "org.typelevel" %%% "literally" % "1.0.2"
   )
   .jvmSettings(
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.2.2"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.2.5"
   )
   .settings(
     libraryDependencies ++= Seq(
