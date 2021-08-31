@@ -26,7 +26,7 @@ object Literals {
       import c.universe._
       IpAddress.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.IpAddress.fromString($s).get"))
-        case None => Left("invalid IP address")
+        case None    => Left("invalid IP address")
       }
     }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[IpAddress] = apply(c)(args: _*)
@@ -37,7 +37,7 @@ object Literals {
       import c.universe._
       Ipv4Address.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv4Address.fromString($s).get"))
-        case None => Left("invalid IPv4 address")
+        case None    => Left("invalid IPv4 address")
       }
     }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv4Address] = apply(c)(args: _*)
@@ -48,7 +48,7 @@ object Literals {
       import c.universe._
       Ipv6Address.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv6Address.fromString($s).get"))
-        case None => Left("invalid IPv6 address")
+        case None    => Left("invalid IPv6 address")
       }
     }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv6Address] = apply(c)(args: _*)
@@ -59,7 +59,7 @@ object Literals {
       import c.universe._
       IpAddress.fromString(s).flatMap(_.asMulticast) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.IpAddress.fromString($s).get.asMulticast.get"))
-        case None => Left("invalid IP multicast address")
+        case None    => Left("invalid IP multicast address")
       }
     }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[IpAddress]] = apply(c)(args: _*)
@@ -70,7 +70,7 @@ object Literals {
       import c.universe._
       Ipv4Address.fromString(s).flatMap(_.asMulticast) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv4Address.fromString($s).get.asMulticast.get"))
-        case None => Left("invalid IPv4 multicast address")
+        case None    => Left("invalid IPv4 multicast address")
       }
     }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[Ipv4Address]] = apply(c)(args: _*)
@@ -81,7 +81,7 @@ object Literals {
       import c.universe._
       Ipv6Address.fromString(s).flatMap(_.asMulticast) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv6Address.fromString($s).get.asMulticast.get"))
-        case None => Left("invalid IPv6 multicast address")
+        case None    => Left("invalid IPv6 multicast address")
       }
     }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[Ipv6Address]] = apply(c)(args: _*)
@@ -91,7 +91,8 @@ object Literals {
     def validate(c: Context)(s: String) = {
       import c.universe._
       IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
-        case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.IpAddress.fromString($s).get.asSourceSpecificMulticast.get"))
+        case Some(_) =>
+          Right(c.Expr(q"_root_.com.comcast.ip4s.IpAddress.fromString($s).get.asSourceSpecificMulticast.get"))
         case None => Left("invalid source specific IP multicast address")
       }
     }
@@ -102,7 +103,8 @@ object Literals {
     def validate(c: Context)(s: String) = {
       import c.universe._
       Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
-        case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv4Address.fromString($s).get.asSourceSpecificMulticast.get"))
+        case Some(_) =>
+          Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv4Address.fromString($s).get.asSourceSpecificMulticast.get"))
         case None => Left("invalid source specific IPv4 multicast address")
       }
     }
@@ -113,7 +115,8 @@ object Literals {
     def validate(c: Context)(s: String) = {
       import c.universe._
       Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
-        case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv6Address.fromString($s).get.asSourceSpecificMulticast.get"))
+        case Some(_) =>
+          Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv6Address.fromString($s).get.asSourceSpecificMulticast.get"))
         case None => Left("invalid source specific IPv6 multicast address")
       }
     }
@@ -125,7 +128,7 @@ object Literals {
       import c.universe._
       scala.util.Try(s.toInt).toOption.flatMap(Port.fromInt) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Port.fromInt($s.toInt).get"))
-        case None => Left("invalid port")
+        case None    => Left("invalid port")
       }
     }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Port] = apply(c)(args: _*)
@@ -136,7 +139,7 @@ object Literals {
       import c.universe._
       Hostname.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Hostname.fromString($s).get"))
-        case None => Left("invalid hostname")
+        case None    => Left("invalid hostname")
       }
     }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Hostname] = apply(c)(args: _*)
@@ -147,7 +150,7 @@ object Literals {
       import c.universe._
       IDN.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.IDN.fromString($s).get"))
-        case None => Left("invalid IDN")
+        case None    => Left("invalid IDN")
       }
     }
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[IDN] = apply(c)(args: _*)

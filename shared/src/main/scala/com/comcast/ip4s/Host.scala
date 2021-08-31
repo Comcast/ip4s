@@ -65,9 +65,9 @@ object Host {
 
 /** RFC1123 compliant hostname.
   *
-  * A hostname contains one or more labels, where each label consists of letters A-Z, a-z, digits 0-9, or a dash.
-  * A label may not start or end in a dash and may not exceed 63 characters in length. Labels are separated by
-  * periods and the overall hostname must not exceed 253 characters in length.
+  * A hostname contains one or more labels, where each label consists of letters A-Z, a-z, digits 0-9, or a dash. A
+  * label may not start or end in a dash and may not exceed 63 characters in length. Labels are separated by periods and
+  * the overall hostname must not exceed 253 characters in length.
   */
 final class Hostname private (val labels: List[Hostname.Label], override val toString: String) extends Host {
 
@@ -87,8 +87,8 @@ object Hostname {
 
   /** Label component of a hostname.
     *
-    * A label consists of letters A-Z, a-z, digits 0-9, or a dash. A label may not start or end in a
-    * dash and may not exceed 63 characters in length.
+    * A label consists of letters A-Z, a-z, digits 0-9, or a dash. A label may not start or end in a dash and may not
+    * exceed 63 characters in length.
     */
   final class Label private[Hostname] (override val toString: String) extends Serializable with Ordered[Label] {
     def compare(that: Label): Int = toString.compare(that.toString)
@@ -130,23 +130,26 @@ object IpVersion {
 
 /** Immutable and safe representation of an IP address, either V4 or V6.
   *
-  * === Construction ===
+  * ===Construction===
   *
   * `IpAddress` instances are constructed in a few different ways:
-  * - via `IpAddress("127.0.0.1")`, which parses a string representation of the IP and returns an `Option[IpAddress]`
-  * - via `IpAddress.fromBytes(arr)`, which returns an IP address if the supplied array is either exactly 4 bytes or exactly 16 bytes
-  * - via literal syntax like `ip"127.0.0.1"`, which returns an `IpAddress` and fails to *compile* if the IP is invalid.
+  *   - via `IpAddress("127.0.0.1")`, which parses a string representation of the IP and returns an `Option[IpAddress]`
+  *   - via `IpAddress.fromBytes(arr)`, which returns an IP address if the supplied array is either exactly 4 bytes or
+  *     exactly 16 bytes
+  *   - via literal syntax like `ip"127.0.0.1"`, which returns an `IpAddress` and fails to *compile* if the IP is
+  *     invalid.
   *
-  * === Type Hierarchy ===
+  * ===Type Hierarchy===
   *
   * There are two subtypes of `IpAddress` -- [[Ipv4Address]] and [[Ipv6Address]]. Each of these subtypes have a richer
-  * API than `IpAddress` and it is often useful to use those types directly, for example if your use case requires a V6 address.
-  * It is safe to pattern match on `IpAddress` to access `Ipv4Address` or `Ipv6Address` directly, or alternatively, you can use [[fold]].
+  * API than `IpAddress` and it is often useful to use those types directly, for example if your use case requires a V6
+  * address. It is safe to pattern match on `IpAddress` to access `Ipv4Address` or `Ipv6Address` directly, or
+  * alternatively, you can use [[fold]].
   *
-  * === JVM Specific API ===
+  * ===JVM Specific API===
   *
-  * If using `IpAddress` on the JVM, you can call `toInetAddress` to convert the address to a `java.net.InetAddress`, for use
-  * with networking libraries. This method does not exist on the Scala.js version.
+  * If using `IpAddress` on the JVM, you can call `toInetAddress` to convert the address to a `java.net.InetAddress`,
+  * for use with networking libraries. This method does not exist on the Scala.js version.
   */
 sealed abstract class IpAddress extends IpAddressPlatform with Host with Serializable {
   protected val bytes: Array[Byte]
@@ -169,7 +172,9 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
   /** Returns true if this address is in the source specific multicast range. */
   def isSourceSpecificMulticast: Boolean
 
-  /** Converts this address to a source specific multicast address, as long as it is in the source specific multicast address range. */
+  /** Converts this address to a source specific multicast address, as long as it is in the source specific multicast
+    * address range.
+    */
   def asSourceSpecificMulticast: Option[SourceSpecificMulticast[this.type]] =
     SourceSpecificMulticast.fromIpAddress(this)
 
@@ -198,8 +203,8 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
   /** Gets the IP address before this address, with underflow from minimum value to the maximum value. */
   def previous: IpAddress
 
-  /** Converts this address to a string form that is compatible for use in a URI per RFC3986
-    * (namely, IPv6 addresses are rendered in condensed form and surrounded by brackets).
+  /** Converts this address to a string form that is compatible for use in a URI per RFC3986 (namely, IPv6 addresses are
+    * rendered in condensed form and surrounded by brackets).
     */
   def toUriString: String
 
@@ -218,7 +223,9 @@ object IpAddress extends IpAddressCompanionPlatform {
   def fromString(value: String): Option[IpAddress] =
     Ipv4Address.fromString(value) orElse Ipv6Address.fromString(value)
 
-  /** Constructs an IP address from either a 4-element byte array or a 16-element byte array. Any other size array results in a `None`. */
+  /** Constructs an IP address from either a 4-element byte array or a 16-element byte array. Any other size array
+    * results in a `None`.
+    */
   def fromBytes(bytes: Array[Byte]): Option[IpAddress] =
     Ipv4Address.fromBytes(bytes) orElse Ipv6Address.fromBytes(bytes)
 
@@ -273,8 +280,8 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
   override def isSourceSpecificMulticast: Boolean =
     this >= Ipv4Address.SourceSpecificMulticastRangeStart && this <= Ipv4Address.SourceSpecificMulticastRangeEnd
 
-  /** Converts this V4 address to a compat V6 address, where the first 12 bytes are all zero
-    * and the last 4 bytes contain the bytes of this V4 address.
+  /** Converts this V4 address to a compat V6 address, where the first 12 bytes are all zero and the last 4 bytes
+    * contain the bytes of this V4 address.
     */
   def toCompatV6: Ipv6Address = {
     val compat = new Array[Byte](16)
@@ -285,8 +292,8 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
     Ipv6Address.fromBytes(compat).get
   }
 
-  /** Converts this V4 address to a mapped V6 address, where the first 10 bytes are all zero,
-    * the next two bytes are `ff`, and the last 4 bytes contain the bytes of this V4 address.
+  /** Converts this V4 address to a mapped V6 address, where the first 10 bytes are all zero, the next two bytes are
+    * `ff`, and the last 4 bytes contain the bytes of this V4 address.
     */
   def toMappedV6: Ipv6Address = {
     val mapped = new Array[Byte](16)
@@ -301,20 +308,16 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
 
   /** Applies the supplied mask to this address.
     *
-    * @example {{{
-    * scala> ipv4"192.168.29.1".masked(ipv4"255.255.0.0")
-    * res0: Ipv4Address = 192.168.0.0
-    * }}}
+    * @example
+    *   {{{ scala> ipv4"192.168.29.1".masked(ipv4"255.255.0.0") res0: Ipv4Address = 192.168.0.0 }}}
     */
   def masked(mask: Ipv4Address): Ipv4Address =
     Ipv4Address.fromLong(toLong & mask.toLong)
 
   /** Computes the last address in the network identified by applying the supplied mask to this address.
     *
-    * @example {{{
-    * scala> ipv4"192.168.29.1".maskedLast(ipv4"255.255.0.0")
-    * res0: Ipv4Address = 192.168.255.255
-    * }}}
+    * @example
+    *   {{{ scala> ipv4"192.168.29.1".maskedLast(ipv4"255.255.0.0") res0: Ipv4Address = 192.168.255.255 }}}
     */
   def maskedLast(mask: Ipv4Address): Ipv4Address =
     Ipv4Address.fromLong(toLong & mask.toLong | ~mask.toLong)
@@ -335,7 +338,8 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
   val SourceSpecificMulticastRangeEnd: Ipv4Address =
     fromBytes(232, 255, 255, 255)
 
-  /** Parses an IPv4 address from a dotted-decimal string, returning `None` if the string is not a valid IPv4 address. */
+  /** Parses an IPv4 address from a dotted-decimal string, returning `None` if the string is not a valid IPv4 address.
+    */
   def fromString(value: String): Option[Ipv4Address] = {
     val trimmed = value.trim
     val fields = trimmed.split('.')
@@ -358,8 +362,8 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
     } else None
   }
 
-  /** Constructs an IPv4 address from a 4-element byte array.
-    * Returns `Some` when array is exactly 4-bytes and `None` otherwise.
+  /** Constructs an IPv4 address from a 4-element byte array. Returns `Some` when array is exactly 4-bytes and `None`
+    * otherwise.
     */
   def fromBytes(bytes: Array[Byte]): Option[Ipv4Address] =
     if (bytes.size == 4) Some(unsafeFromBytes(bytes.clone))
@@ -370,8 +374,8 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
 
   /** Constructs an address from the specified 4 bytes.
     *
-    * Each byte is represented as an `Int` to avoid having to manually call `.toByte` on each value --
-    * the `toByte` call is done inside this function.
+    * Each byte is represented as an `Int` to avoid having to manually call `.toByte` on each value -- the `toByte` call
+    * is done inside this function.
     */
   def fromBytes(a: Int, b: Int, c: Int, d: Int): Ipv4Address = {
     val bytes = new Array[Byte](4)
@@ -395,10 +399,8 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
 
   /** Computes a mask by setting the first / left-most `n` bits high.
     *
-    * @example {{{
-    * scala> Ipv4Address.mask(16)
-    * res0: Ipv4Address = 255.255.0.0
-    * }}}
+    * @example
+    *   {{{ scala> Ipv4Address.mask(16) res0: Ipv4Address = 255.255.0.0 }}}
     */
   def mask(bits: Int): Ipv4Address = {
     val b = if (bits < 0) 0 else if (bits > 32) 32 else bits
@@ -471,25 +473,20 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
     str.toString
   }
 
-  /** Converts this address to a string of form `x:x:x:x:x:x:a.b.c.d` where
-    * each `x` represents 16-bits and `a.b.c.d` is IPv4 dotted decimal notation.
-    * Consecutive 0 `x` fields are condensed with `::`.
+  /** Converts this address to a string of form `x:x:x:x:x:x:a.b.c.d` where each `x` represents 16-bits and `a.b.c.d` is
+    * IPv4 dotted decimal notation. Consecutive 0 `x` fields are condensed with `::`.
     *
-    * For example, the IPv4 address `127.0.0.1` can be converted to a compatible
-    * IPv6 address via [[Ipv4Address#toCompatV6]], which is represented as the string
-    * `::7f00:1` and the mixed string `::127.0.0.1`.
+    * For example, the IPv4 address `127.0.0.1` can be converted to a compatible IPv6 address via
+    * [[Ipv4Address#toCompatV6]], which is represented as the string `::7f00:1` and the mixed string `::127.0.0.1`.
     *
-    * Similarly, `127.0.0.1` can be converted to a mapped V6 address via [[Ipv4Address#toMappedV6]],
-    * resulting in `::ffff:7f00:1` and the mixed string `::ffff:127.0.0.1`.
+    * Similarly, `127.0.0.1` can be converted to a mapped V6 address via [[Ipv4Address#toMappedV6]], resulting in
+    * `::ffff:7f00:1` and the mixed string `::ffff:127.0.0.1`.
     *
     * This format is described in RFC4291 section 2.2.3.
     *
-    * @example {{{
-    * scala> ipv6"::7f00:1".toMixedString
-    * res0: String = ::127.0.0.1
-    * scala> ipv6"ff3b:1234::ffab:7f00:1".toMixedString
-    * res0: String = ff3b:1234::ffab:127.0.0.1
-    * }}}
+    * @example
+    *   {{{ scala> ipv6"::7f00:1".toMixedString res0: String = ::127.0.0.1 scala>
+    *   ipv6"ff3b:1234::ffab:7f00:1".toMixedString res0: String = ff3b:1234::ffab:127.0.0.1 }}}
     */
   def toMixedString: String = {
     val bytes = toBytes
@@ -529,20 +526,17 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
 
   /** Applies the supplied mask to this address.
     *
-    * @example {{{
-    * scala> ipv6"ff3b::1".masked(ipv6"fff0::")
-    * res0: Ipv6Address = ff30::
-    * }}}
+    * @example
+    *   {{{ scala> ipv6"ff3b::1".masked(ipv6"fff0::") res0: Ipv6Address = ff30:: }}}
     */
   def masked(mask: Ipv6Address): Ipv6Address =
     Ipv6Address.fromBigInt(toBigInt & mask.toBigInt)
 
   /** Computes the last address in the network identified by applying the supplied mask to this address.
     *
-    * @example {{{
-    * scala> ipv6"ff3b::1".maskedLast(ipv6"fff0::")
-    * res0: Ipv6Address = ff3f:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-    * }}}
+    * @example
+    *   {{{ scala> ipv6"ff3b::1".maskedLast(ipv6"fff0::") res0: Ipv6Address = ff3f:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+    *   }}}
     */
   def maskedLast(mask: Ipv6Address): Ipv6Address =
     Ipv6Address.fromBigInt(toBigInt & mask.toBigInt | ~mask.toBigInt)
@@ -566,11 +560,14 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
   val SourceSpecificMulticastRangeEnd: Ipv6Address =
     fromBytes(255, 63, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255)
 
-  /** CIDR which defines the mapped IPv4 address block (https://datatracker.ietf.org/doc/html/rfc4291#section-2.5.5.2). */
+  /** CIDR which defines the mapped IPv4 address block (https://datatracker.ietf.org/doc/html/rfc4291#section-2.5.5.2).
+    */
   val MappedV4Block: Cidr[Ipv6Address] =
     Cidr(Ipv6Address.fromBytes(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0), 96)
 
-  /** Parses an IPv6 address from a string in RFC4291 notation, returning `None` if the string is not a valid IPv6 address. */
+  /** Parses an IPv6 address from a string in RFC4291 notation, returning `None` if the string is not a valid IPv6
+    * address.
+    */
   def fromString(value: String): Option[Ipv6Address] =
     fromNonMixedString(value) orElse fromMixedString(value)
 
@@ -658,8 +655,8 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
       case _ => None
     }
 
-  /** Constructs an IPv6 address from a 16-element byte array.
-    * Returns `Some` when array is exactly 16-bytes and `None` otherwise.
+  /** Constructs an IPv6 address from a 16-element byte array. Returns `Some` when array is exactly 16-bytes and `None`
+    * otherwise.
     */
   def fromBytes(bytes: Array[Byte]): Option[Ipv6Address] =
     if (bytes.size == 16) Some(unsafeFromBytes(bytes.clone))
@@ -670,7 +667,8 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
 
   /** Constructs an address from the specified 16 bytes.
     *
-    * Each byte is represented as an `Int` to avoid having to manually call `.toByte` on each value -- the `toByte` call is done inside this function.
+    * Each byte is represented as an `Int` to avoid having to manually call `.toByte` on each value -- the `toByte` call
+    * is done inside this function.
     */
   def fromBytes(
       b0: Int,
@@ -723,10 +721,8 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
 
   /** Computes a mask by setting the first / left-most `n` bits high.
     *
-    * @example {{{
-    * scala> Ipv6Address.mask(32)
-    * res0: Ipv6Address = ffff:ffff::
-    * }}}
+    * @example
+    *   {{{ scala> Ipv6Address.mask(32) res0: Ipv6Address = ffff:ffff:: }}}
     */
   def mask(bits: Int): Ipv6Address = {
     val b = if (bits < 0) 0 else if (bits > 128) 128 else bits
@@ -741,19 +737,19 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
 
 /** Internationalized domain name, as specified by RFC3490 and RFC5891.
   *
-  * This type models internationalized hostnames. An IDN provides unicode labels, a unicode string form,
-  * and an ASCII hostname form.
+  * This type models internationalized hostnames. An IDN provides unicode labels, a unicode string form, and an ASCII
+  * hostname form.
   *
-  * A well formed IDN consists of one or more labels separated by dots. Each label may contain unicode characters
-  * as long as the converted ASCII form meets the requirements of RFC1123 (e.g., 63 or fewer characters and no
-  * leading or trailing dash). A dot is represented as an ASCII period or one of the unicode dots: full stop,
-  * ideographic full stop, fullwidth full stop, halfwidth ideographic full stop.
+  * A well formed IDN consists of one or more labels separated by dots. Each label may contain unicode characters as
+  * long as the converted ASCII form meets the requirements of RFC1123 (e.g., 63 or fewer characters and no leading or
+  * trailing dash). A dot is represented as an ASCII period or one of the unicode dots: full stop, ideographic full
+  * stop, fullwidth full stop, halfwidth ideographic full stop.
   *
-  * The `toString` method returns the IDN in the form in which it was constructed. Sometimes it is useful to
-  * normalize the IDN -- converting all dots to an ASCII period and converting all labels to lowercase.
+  * The `toString` method returns the IDN in the form in which it was constructed. Sometimes it is useful to normalize
+  * the IDN -- converting all dots to an ASCII period and converting all labels to lowercase.
   *
-  * Note: equality and comparison of IDNs is case-sensitive. Consider comparing normalized toString values
-  * for a more lenient notion of equality.
+  * Note: equality and comparison of IDNs is case-sensitive. Consider comparing normalized toString values for a more
+  * lenient notion of equality.
   */
 final class IDN private (val labels: List[IDN.Label], val hostname: Hostname, override val toString: String)
     extends Host {

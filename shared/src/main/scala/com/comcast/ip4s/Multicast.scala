@@ -20,8 +20,8 @@ import cats.{Order, Show}
 
 /** Witness that the wrapped address of type `A` is a multicast address.
   *
-  * An instance of `Multicast` is typically created by either calling `Multicast.apply` or by using
-  * the `asMulticast` method on `IpAddress`.
+  * An instance of `Multicast` is typically created by either calling `Multicast.apply` or by using the `asMulticast`
+  * method on `IpAddress`.
   */
 sealed trait Multicast[+A <: IpAddress] extends Product with Serializable {
   def address: A
@@ -47,8 +47,8 @@ object Multicast {
 
 /** Witnesses that the wrapped address of type `A` is a source specific multicast address.
   *
-  * An instance of `SourceSpecificMulticast` is typically created by either calling `Multicast.apply`
-  * or by using the `asSourceSpecificMulticast` method on `IpAddress`.
+  * An instance of `SourceSpecificMulticast` is typically created by either calling `Multicast.apply` or by using the
+  * `asSourceSpecificMulticast` method on `IpAddress`.
   */
 sealed trait SourceSpecificMulticast[+A <: IpAddress] extends Multicast[A] {
   override def toString: String = address.toString
@@ -59,7 +59,9 @@ object SourceSpecificMulticast {
     override def toString: String = address.toString
   }
 
-  /** Constructs a source specific multicast IP address. Returns `None` is the supplied address is not in the valid source specific multicast range. */
+  /** Constructs a source specific multicast IP address. Returns `None` is the supplied address is not in the valid
+    * source specific multicast range.
+    */
   def fromIpAddress[A <: IpAddress](address: A): Option[SourceSpecificMulticast[A]] =
     if (address.isSourceSpecificMulticast) Some(new DefaultSourceSpecificMulticast(address)) else None
 
