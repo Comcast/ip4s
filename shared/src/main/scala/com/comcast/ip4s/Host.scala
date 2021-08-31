@@ -309,7 +309,7 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
   /** Applies the supplied mask to this address.
     *
     * @example
-    *   {{{ scala> ipv4"192.168.29.1".masked(ipv4"255.255.0.0") res0: Ipv4Address = 192.168.0.0 }}}
+    *   {{{scala> ipv4"192.168.29.1".masked(ipv4"255.255.0.0") res0: Ipv4Address = 192.168.0.0}}}
     */
   def masked(mask: Ipv4Address): Ipv4Address =
     Ipv4Address.fromLong(toLong & mask.toLong)
@@ -317,7 +317,7 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
   /** Computes the last address in the network identified by applying the supplied mask to this address.
     *
     * @example
-    *   {{{ scala> ipv4"192.168.29.1".maskedLast(ipv4"255.255.0.0") res0: Ipv4Address = 192.168.255.255 }}}
+    *   {{{scala> ipv4"192.168.29.1".maskedLast(ipv4"255.255.0.0") res0: Ipv4Address = 192.168.255.255}}}
     */
   def maskedLast(mask: Ipv4Address): Ipv4Address =
     Ipv4Address.fromLong(toLong & mask.toLong | ~mask.toLong)
@@ -400,7 +400,7 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
   /** Computes a mask by setting the first / left-most `n` bits high.
     *
     * @example
-    *   {{{ scala> Ipv4Address.mask(16) res0: Ipv4Address = 255.255.0.0 }}}
+    *   {{{scala> Ipv4Address.mask(16) res0: Ipv4Address = 255.255.0.0}}}
     */
   def mask(bits: Int): Ipv4Address = {
     val b = if (bits < 0) 0 else if (bits > 32) 32 else bits
@@ -527,7 +527,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
   /** Applies the supplied mask to this address.
     *
     * @example
-    *   {{{ scala> ipv6"ff3b::1".masked(ipv6"fff0::") res0: Ipv6Address = ff30:: }}}
+    *   {{{scala> ipv6"ff3b::1".masked(ipv6"fff0::") res0: Ipv6Address = ff30::}}}
     */
   def masked(mask: Ipv6Address): Ipv6Address =
     Ipv6Address.fromBigInt(toBigInt & mask.toBigInt)
@@ -722,7 +722,7 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
   /** Computes a mask by setting the first / left-most `n` bits high.
     *
     * @example
-    *   {{{ scala> Ipv6Address.mask(32) res0: Ipv6Address = ffff:ffff:: }}}
+    *   {{{scala> Ipv6Address.mask(32) res0: Ipv6Address = ffff:ffff::}}}
     */
   def mask(bits: Int): Ipv6Address = {
     val b = if (bits < 0) 0 else if (bits > 128) 128 else bits
