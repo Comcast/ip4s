@@ -111,7 +111,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies += "org.typelevel" %%% "literally" % "1.0.2"
   )
   .jvmSettings(
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.2.5"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.2.9"
   )
   .settings(
     libraryDependencies ++= Seq(
