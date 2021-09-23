@@ -122,7 +122,7 @@ object Arbitraries {
 
   implicit val hostnameArbitrary: Arbitrary[Hostname] = Arbitrary(hostnameGenerator)
 
-  val idnGenerator: Gen[IDN] = {
+  lazy val idnGenerator: Gen[IDN] = {
     val genChar: Gen[Char] = Gen.oneOf(Gen.alphaNumChar, Gen.const('δ'), Gen.const('π'), Gen.const('θ'))
     val genLabel: Gen[String] = for {
       first <- genChar
@@ -140,5 +140,5 @@ object Arbitraries {
     } yield idn.get
   }
 
-  implicit val idnArbitrary: Arbitrary[IDN] = Arbitrary(idnGenerator)
+  implicit def idnArbitrary: Arbitrary[IDN] = Arbitrary(idnGenerator)
 }
