@@ -18,7 +18,7 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
-ThisBuild / crossScalaVersions := List("2.12.15", "2.13.6", "3.0.1")
+ThisBuild / crossScalaVersions := List("2.12.14", "2.13.6", "3.0.2")
 
 ThisBuild / spiewakCiReleaseSnapshots := true
 
@@ -111,7 +111,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies += "org.typelevel" %%% "literally" % "1.0.2"
   )
   .jvmSettings(
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.2.5"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.2.9"
   )
   .settings(
     libraryDependencies ++= Seq(
