@@ -34,6 +34,7 @@ class Ipv6AddressTest extends BaseTestSuite {
     assertEquals(Ipv6Address.fromString(":"), None)
     assertEquals(Ipv6Address.fromString(" : "), None)
   }
+
   test("parsing from string - does parse ::") {
     assertEquals(Ipv6Address.fromString("::").isDefined, true)
     assertEquals(Ipv6Address.fromString(" :: ").isDefined, true)
@@ -44,6 +45,10 @@ class Ipv6AddressTest extends BaseTestSuite {
       assertEquals(Ipv6Address.fromString("::" + v4), Some(v4.toCompatV6))
       assertEquals(Ipv6Address.fromString("::ffff:" + v4), Some(v4.toMappedV6))
     }
+  }
+
+  test("parsing from string - does not misinterpret hosts") {
+    assertEquals(Ipv6Address.fromString("db"), None)
   }
 
   test("support converting to uncondensed string form") {
