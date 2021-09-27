@@ -568,10 +568,12 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
     var beforeCondenser = true
     var suffix: List[Int] = Nil
     val trimmed = value.trim()
-    val fields =
-      if (trimmed.nonEmpty) trimmed.split(":") else Array.empty[String]
-    var idx = 0
     var result: Option[Ipv6Address] = null
+    val fields =
+      if (trimmed.contains(':')) trimmed.split(':')
+      else Array.empty[String]
+    // if (trimmed.nonEmpty) trimmed.split(':') else Array.empty[String]
+    var idx = 0
     while (idx < fields.size && (result eq null)) {
       val field = fields(idx)
       if (field.isEmpty) {
@@ -599,7 +601,7 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
     }
     if (result ne null) {
       result
-    } else if (fields.isEmpty && (trimmed.isEmpty || trimmed == ":")) {
+    } else if (fields.isEmpty && (trimmed.isEmpty || trimmed != "::")) {
       None
     } else {
       val bytes = new Array[Byte](16)
