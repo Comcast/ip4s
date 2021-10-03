@@ -48,13 +48,13 @@ sealed trait Dns[F[_]] {
 
   /** Reverses the supplied address to a hostname using the platform DNS resolver.
     *
-    * If the address cannot be resolved, a `None` is returned.
+    * If the address cannot be reversed, a `None` is returned.
     */
   def reverseOption(address: IpAddress): F[Option[Hostname]]
 
   /** Reverses the supplied address to all hostnames known to the platform DNS resolver.
     *
-    * If the address cannot be resolved, an empty list is returned.
+    * If the address cannot be reversed, an empty list is returned.
     */
   def reverseAll(address: IpAddress): F[List[Hostname]]
 
