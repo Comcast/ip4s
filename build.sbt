@@ -46,7 +46,8 @@ ThisBuild / initialCommands := "import com.comcast.ip4s._"
 ThisBuild / fatalWarningsInCI := false
 
 ThisBuild / mimaBinaryIssueFilters ++= Seq(
-  ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Ipv6Address.toInetAddress")
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Ipv6Address.toInetAddress"),
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.Dns.*") // sealed trait
 )
 
 lazy val root = project
