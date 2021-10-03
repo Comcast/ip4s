@@ -16,43 +16,13 @@
 
 package com.comcast.ip4s
 
-import cats.effect.Sync
+import cats.effect.kernel.Sync
 import cats.syntax.all._
 
-import java.net.{InetAddress, UnknownHostException}
+import java.net.InetAddress
 
-/** Capability for an effect `F[_]` which can do DNS lookups.
-  *
-  * An instance is available for any effect which has a `Sync` instance.
-  */
-trait Dns[F[_]] {
-
-  /** Resolves the supplied hostname to an ip address using the platform DNS resolver.
-    *
-    * If the hostname cannot be resolved, the effect fails with a `java.net.UnknownHostException`.
-    */
-  def resolve(hostname: Hostname): F[IpAddress]
-
-  /** Resolves the supplied hostname to an ip address using the platform DNS resolver.
-    *
-    * If the hostname cannot be resolved, a `None` is returned.
-    */
-  def resolveOption(hostname: Hostname): F[Option[IpAddress]]
-
-  /** Resolves the supplied hostname to all ip addresses known to the platform DNS resolver.
-    *
-    * If the hostname cannot be resolved, an empty list is returned.
-    */
-  def resolveAll(hostname: Hostname): F[List[IpAddress]]
-
-  /** Gets an IP address representing the loopback interface. */
-  def loopback: F[IpAddress]
-}
-
-object Dns {
-  def apply[F[_]](implicit F: Dns[F]): F.type = F
-
-  implicit def forSync[F[_]](implicit F: Sync[F]): Dns[F] = new Dns[F] {
+trait DnsCompanionPlatform {
+  implicit def forSync[F[_]](implicit F: Sync[F]): Dns[F] = new UnsealedDns[F] {
     def resolve(hostname: Hostname): F[IpAddress] =
       F.blocking {
         val addr = InetAddress.getByName(hostname.toString)
@@ -60,7 +30,7 @@ object Dns {
       }
 
     def resolveOption(hostname: Hostname): F[Option[IpAddress]] =
-      resolve(hostname).map(Some(_): Option[IpAddress]).recover { case _: UnknownHostException => None }
+      resolve(hostname).map(_.some).recover { case _: UnknownHostException => None }
 
     def resolveAll(hostname: Hostname): F[List[IpAddress]] =
       F.blocking {
@@ -71,6 +41,20 @@ object Dns {
           case _: UnknownHostException => Nil
         }
       }
+
+    def reverse(address: IpAddress): F[Hostname] =
+      F.blocking {
+        address.toInetAddress.getCanonicalHostName
+      } flatMap { hn =>
+        // getCanonicalHostName returns the IP address as a string on failure
+        Hostname.fromString(hn).liftTo[F](new UnknownHostException(address.toString))
+      }
+
+    def reverseOption(address: IpAddress): F[Option[Hostname]] =
+      reverse(address).map(_.some).recover { case _: UnknownHostException => None }
+
+    def reverseAll(address: IpAddress): F[List[Hostname]] =
+      reverseOption(address).map(_.toList)
 
     def loopback: F[IpAddress] =
       F.blocking(IpAddress.fromInetAddress(InetAddress.getByName(null)))
