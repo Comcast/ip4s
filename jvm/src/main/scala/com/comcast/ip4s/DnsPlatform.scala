@@ -21,7 +21,7 @@ import cats.syntax.all._
 
 import java.net.InetAddress
 
-trait DnsCompanionPlatform {
+private[ip4s] trait DnsCompanionPlatform {
   implicit def forSync[F[_]](implicit F: Sync[F]): Dns[F] = new UnsealedDns[F] {
     def resolve(hostname: Hostname): F[IpAddress] =
       F.blocking {
