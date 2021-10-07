@@ -46,7 +46,8 @@ ThisBuild / initialCommands := "import com.comcast.ip4s._"
 ThisBuild / fatalWarningsInCI := false
 
 ThisBuild / mimaBinaryIssueFilters ++= Seq(
-  ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Ipv6Address.toInetAddress")
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Ipv6Address.toInetAddress"),
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.Dns.*") // sealed trait
 )
 
 lazy val root = project
@@ -64,7 +65,9 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalacheck" %%% "scalacheck" % "1.15.4",
-      "org.scalameta" %%% "munit-scalacheck" % "0.7.29" % Test
+      "org.scalameta" %%% "munit-scalacheck" % "0.7.29" % Test,
+      "org.typelevel" %%% "cats-effect" % "3.2.9" % Test,
+      "org.typelevel" %%% "munit-cats-effect-3" % "1.0.6" % Test,
     )
   )
   .jvmSettings(
@@ -108,15 +111,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     }
   )
   .settings(
-    libraryDependencies += "org.typelevel" %%% "literally" % "1.0.2"
-  )
-  .jvmSettings(
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.2.9"
-  )
-  .settings(
     libraryDependencies ++= Seq(
+      "org.typelevel" %%% "literally" % "1.0.2",
       "org.typelevel" %%% "cats-core" % "2.6.1",
-      "org.scalacheck" %%% "scalacheck" % "1.15.4" % Test
+      "org.typelevel" %%% "cats-effect-kernel" % "3.2.9",
     )
   )
 

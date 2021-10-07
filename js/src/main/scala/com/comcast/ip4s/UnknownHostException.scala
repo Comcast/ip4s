@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-package com.comcast
+package com.comcast.ip4s
 
-package object ip4s extends ip4splatform
+import java.io.IOException
+import scala.scalajs.js
+import scala.util.control.NoStackTrace
+
+class UnknownHostException(message: String = null, cause: Throwable = null) extends IOException(message, cause)
+
+private[ip4s] class JavaScriptUnknownHostException(message: String, cause: js.JavaScriptException)
+    extends UnknownHostException(message, cause)
+    with NoStackTrace

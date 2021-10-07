@@ -16,7 +16,7 @@
 
 package com.comcast
 
-package object ip4s {
+package object ip4s extends ip4splatform {
   final implicit class IpLiteralSyntax(val sc: StringContext) extends AnyVal {
     def ip(args: Any*): IpAddress = macro Literals.ip.make
     def ipv4(args: Any*): Ipv4Address =

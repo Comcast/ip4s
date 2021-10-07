@@ -16,4 +16,6 @@
 
 package com.comcast
 
-package object ip4s extends ip4splatform
+private[comcast] trait ip4splatform {
+  type UnknownHostException = java.net.UnknownHostException
+}
