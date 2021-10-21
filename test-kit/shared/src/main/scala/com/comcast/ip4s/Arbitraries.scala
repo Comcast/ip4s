@@ -141,4 +141,10 @@ object Arbitraries {
   }
 
   implicit def idnArbitrary: Arbitrary[IDN] = Arbitrary(idnGenerator)
+
+  val macAddressGenerator: Gen[MacAddress] = for {
+    bytes <- Gen.listOfN(6, Arbitrary.arbitrary[Byte])
+  } yield MacAddress.fromBytes(bytes.toArray).get
+
+  implicit val macAddressArbitrary: Arbitrary[MacAddress] = Arbitrary(macAddressGenerator)
 }
