@@ -51,7 +51,7 @@ final class MacAddress private (private val bytes: Array[Byte]) extends Ordered[
   override def hashCode: Int = java.util.Arrays.hashCode(bytes)
 
   override def toString: String =
-    bytes.map(b => f"$b%02x").mkString("", ":", "")
+    bytes.map(b => f"${0xff & b}%02x").mkString("", ":", "")
 }
 
 object MacAddress {
