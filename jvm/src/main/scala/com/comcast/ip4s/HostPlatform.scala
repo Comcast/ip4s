@@ -19,8 +19,6 @@ package com.comcast.ip4s
 import cats.{Applicative, ApplicativeThrow}
 import cats.syntax.all._
 
-import java.net.UnknownHostException
-
 private[ip4s] trait HostPlatform { self: Host =>
 
   /** Resolves this host to an ip address using the platform DNS resolver.

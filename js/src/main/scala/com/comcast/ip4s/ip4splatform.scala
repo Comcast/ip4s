@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package com.comcast
+package com.comcast.ip4s
 
 private[comcast] trait ip4splatform
