@@ -2,7 +2,7 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import com.typesafe.tools.mima.core._
 
-ThisBuild / baseVersion := "3.0"
+ThisBuild / baseVersion := "3.1"
 
 ThisBuild / organization := "com.comcast"
 ThisBuild / organizationName := "Comcast Cable Communications Management, LLC"
@@ -34,8 +34,6 @@ ThisBuild / scmInfo := Some(
 )
 
 ThisBuild / testFrameworks += new TestFramework("munit.Framework")
-
-ThisBuild / strictSemVer := false
 
 ThisBuild / doctestTestFramework := DoctestTestFramework.ScalaCheck
 
