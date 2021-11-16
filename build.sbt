@@ -69,19 +69,11 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
     )
   )
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "31.0.1-jre" % "test",
-    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
-    OsgiKeys.importPackage := {
-      val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
-      Seq(s"""scala.*;version="[$major.$minor,$major.${minor + 1})"""", "*")
-    },
-    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.*"),
-    OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
-    osgiSettings
+    libraryDependencies += "com.google.guava" % "guava" % "31.0.1-jre" % "test"
   )
   .dependsOn(core % "compile->compile")
 
-lazy val testKitJVM = testKit.jvm.enablePlugins(SbtOsgi)
+lazy val testKitJVM = testKit.jvm
 lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
@@ -117,17 +109,6 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   )
 
 lazy val coreJVM = core.jvm
-  .enablePlugins(SbtOsgi)
-  .settings(
-    OsgiKeys.exportPackage := Seq("com.comcast.ip4s.*;version=${Bundle-Version}"),
-    OsgiKeys.importPackage := {
-      val Some((major, minor)) = CrossVersion.partialVersion(scalaVersion.value)
-      Seq(s"""scala.*;version="[$major.$minor,$major.${minor + 1})"""", "*")
-    },
-    OsgiKeys.privatePackage := Seq("com.comcast.ip4s.*"),
-    OsgiKeys.additionalHeaders := Map("-removeheaders" -> "Include-Resource,Private-Package"),
-    osgiSettings
-  )
 
 lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
