@@ -18,6 +18,8 @@ ThisBuild / developers ++= List(
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
 
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
+
 ThisBuild / crossScalaVersions := List("2.12.15", "2.13.7", "3.1.0")
 
 ThisBuild / spiewakCiReleaseSnapshots := true
