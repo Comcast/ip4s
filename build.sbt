@@ -1,19 +1,14 @@
-import sbtcrossproject.CrossPlugin.autoImport.crossProject
-import sbtcrossproject.CrossPlugin.autoImport.CrossType
 import com.typesafe.tools.mima.core._
 
-ThisBuild / baseVersion := "3.1"
+ThisBuild / tlBaseVersion := "3.1"
 
 ThisBuild / organization := "com.comcast"
 ThisBuild / organizationName := "Comcast Cable Communications Management, LLC"
 
-ThisBuild / homepage := Some(url("https://github.com/comcast/ip4s"))
 ThisBuild / startYear := Some(2018)
 
-ThisBuild / publishGithubUser := "mpilquist"
-ThisBuild / publishFullName := "Michael Pilquist"
-
 ThisBuild / developers ++= List(
+  Developer("mpilquist", "Michael Pilquist", "@mpilquist", url("https://github.com/mpilquist")),
   Developer("matthughes", "Matt Hughes", "@matthughes", url("https://github.com/matthughes")),
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
@@ -22,20 +17,7 @@ ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
 ThisBuild / crossScalaVersions := List("2.12.15", "2.13.8", "3.1.0")
 
-ThisBuild / spiewakCiReleaseSnapshots := true
-
-ThisBuild / spiewakMainBranches := List("main")
-
-ThisBuild / homepage := Some(url("https://github.com/comcast/ip4s"))
-
-ThisBuild / scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/comcast/ip4s"),
-    "git@github.com:comcast/ip4s.git"
-  )
-)
-
-ThisBuild / testFrameworks += new TestFramework("munit.Framework")
+ThisBuild / tlCiReleaseBranches := List("main")
 
 ThisBuild / doctestTestFramework := DoctestTestFramework.ScalaCheck
 
@@ -43,17 +25,12 @@ ThisBuild / scalafmtOnCompile := true
 
 ThisBuild / initialCommands := "import com.comcast.ip4s._"
 
-ThisBuild / fatalWarningsInCI := false
-
 ThisBuild / mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Ipv6Address.toInetAddress"),
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.Dns.*") // sealed trait
 )
 
-lazy val root = project
-  .in(file("."))
-  .enablePlugins(NoPublishPlugin, SonatypeCiReleasePlugin)
-  .aggregate(coreJVM, coreJS, testKitJVM, testKitJS)
+lazy val root = tlCrossRootProject.aggregate(core, testKit)
 
 lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .in(file("./test-kit"))
@@ -86,21 +63,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-core",
     libraryDependencies ++= {
-      if (isDotty.value) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
+      if (scalaVersion.value.startsWith("3")) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
     },
-    scalacOptions := scalacOptions.value.filterNot(_ == "-source:3.0-migration"),
-    Compile / scalafmt / unmanagedSources := (Compile / scalafmt / unmanagedSources).value.filterNot(
-      _.toString.endsWith("Literals.scala")
-    ),
-    Test / scalafmt / unmanagedSources := (Test / scalafmt / unmanagedSources).value.filterNot(
-      _.toString.endsWith("Literals.scala")
-    ),
-    Compile / unmanagedSourceDirectories ++= {
-      val major = if (isDotty.value) "-3" else "-2"
-      List(CrossType.Pure, CrossType.Full).flatMap(
-        _.sharedSrcDir(baseDirectory.value, "main").toList.map(f => file(f.getPath + major))
-      )
-    }
+    scalacOptions := scalacOptions.value.filterNot(_ == "-source:3.0-migration")
   )
   .settings(
     libraryDependencies ++= Seq(
@@ -110,7 +75,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     )
   )
 
-lazy val coreJVM = core.jvm
+lazy val coreJVM = core.jvm.settings(
+  doctestIgnoreRegex := Some(".*Literals.scala")
+)
 
 lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
@@ -137,3 +104,4 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   }
 )
+
