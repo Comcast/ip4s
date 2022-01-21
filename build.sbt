@@ -9,8 +9,8 @@ ThisBuild / startYear := Some(2018)
 
 ThisBuild / developers ++= List(
   tlGitHubDev("mpilquist", "Michael Pilquist"),
-  Developer("matthughes", "Matt Hughes", "@matthughes", url("https://github.com/matthughes")),
-  Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
+  tlGitHubDev("matthughes", "Matt Hughes"),
+  tlGitHubDev("nequissimus", "Tim Steinbach")
 )
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
