@@ -63,7 +63,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-core",
     libraryDependencies ++= {
-      if (scalaVersion.value.startsWith("3")) Nil else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
+      if (scalaVersion.value.startsWith("3")) Nil
+      else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
     },
     scalacOptions := scalacOptions.value.filterNot(_ == "-source:3.0-migration")
   )
@@ -104,4 +105,3 @@ lazy val commonSettings = Seq(
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   }
 )
-
