@@ -19,11 +19,7 @@ ThisBuild / crossScalaVersions := List("2.12.15", "2.13.8", "3.1.0")
 
 ThisBuild / tlVersionIntroduced := Map("3" -> "3.0.3")
 
-ThisBuild / tlCiReleaseBranches := List("main")
-
 ThisBuild / doctestTestFramework := DoctestTestFramework.ScalaCheck
-
-ThisBuild / scalafmtOnCompile := true
 
 ThisBuild / initialCommands := "import com.comcast.ip4s._"
 
@@ -65,7 +61,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "ip4s-core",
     libraryDependencies ++= {
-      if (scalaVersion.value.startsWith("3")) Nil
+      if (tlIsScala3.value) Nil
       else List("org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided")
     },
     scalacOptions := scalacOptions.value.filterNot(_ == "-source:3.0-migration")
