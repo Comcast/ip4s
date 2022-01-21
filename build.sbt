@@ -8,7 +8,7 @@ ThisBuild / organizationName := "Comcast Cable Communications Management, LLC"
 ThisBuild / startYear := Some(2018)
 
 ThisBuild / developers ++= List(
-  Developer("mpilquist", "Michael Pilquist", "@mpilquist", url("https://github.com/mpilquist")),
+  tlGitHubDev("mpilquist", "Michael Pilquist"),
   Developer("matthughes", "Matt Hughes", "@matthughes", url("https://github.com/matthughes")),
   Developer("nequissimus", "Tim Steinbach", "@nequissimus", url("https://github.com/nequissimus"))
 )
