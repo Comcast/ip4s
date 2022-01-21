@@ -19,6 +19,7 @@ package com.comcast.ip4s
 import cats.effect.kernel.Async
 import cats.syntax.all._
 
+import scala.annotation.nowarn
 import scala.scalajs.js
 import scala.scalajs.js.|
 import scala.scalajs.js.annotation.JSImport
@@ -87,8 +88,10 @@ private[ip4s] trait DnsCompanionPlatform {
 @JSImport("dns", "promises")
 private[ip4s] object dnsPromises extends js.Any {
 
+  @nowarn
   def lookup(hostname: String, options: LookupOptions): js.Promise[LookupResult | js.Array[LookupResult]] = js.native
 
+  @nowarn
   def reverse(ip: String): js.Promise[js.Array[String]] = js.native
 }
 
