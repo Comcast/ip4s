@@ -39,7 +39,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.15.4",
+      "org.scalacheck" %%% "scalacheck" % "1.16.0",
       "org.scalameta" %%% "munit-scalacheck" % "0.7.29" % Test,
       "org.typelevel" %%% "cats-effect" % "3.3.11" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
