@@ -80,11 +80,11 @@ object MulticastJoin {
           case Some(sourceStr) =>
             for {
               source <- parse(sourceStr)
-              group <- parse(groupStr).flatMap(_.asSourceSpecificMulticast)
+              group <- parse(groupStr).flatMap(_.asSourceSpecificMulticastLenient)
             } yield ssm(source, group)
           case None =>
             for {
-              group <- parse(groupStr).flatMap(_.asSourceSpecificMulticast)
+              group <- parse(groupStr).flatMap(_.asSourceSpecificMulticastLenient)
             } yield asm(group)
         }
       case _ => None

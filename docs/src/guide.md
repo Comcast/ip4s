@@ -114,6 +114,12 @@ val multicastIps = ips.flatMap(_.asMulticast)
 val ssmIps = ips.flatMap(_.asSourceSpecificMulticast)
 ```
 
+It's common for source specific multicast to be used with group addresses outside the designated source specific multicast address range. To support such cases, use `asSourceSpecificMulticastLenient`:
+
+```scala mdco:nest:to-string
+val lenient = ips.flatMap(_.asSourceSpecificMulticastLenient)
+```
+
 ## Multicast Literals
 
 There are string interpolators for constructing multicast and source specific multicast address from literal strings, similar to the `ip`, `ipv4`, and `ipv6` interpolators. The multicast interpolators are:

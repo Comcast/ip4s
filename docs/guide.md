@@ -98,11 +98,11 @@ When compiling for the JVM, the various IP address classes have a `toInetAddress
 
 ```scala
 val homeIA = ip"127.0.0.1".toInetAddress
-// homeIA: java.net.InetAddress = /127.0.0.1
+// homeIA: InetAddress = /127.0.0.1
 val home4IA = ipv4"127.0.0.1".toInetAddress
-// home4IA: java.net.Inet4Address = /127.0.0.1
+// home4IA: Inet4Address = /127.0.0.1
 val home6IA = ipv6"::1".toInetAddress
-// home6IA: java.net.Inet6Address = /0:0:0:0:0:0:0:1
+// home6IA: InetAddress = /0:0:0:0:0:0:0:1
 ```
 
 # Multicast
@@ -133,9 +133,15 @@ To construct instances of `Multicast[A]` and `SourceSpecificMulticast[A]`, we ca
 
 ```scala
 val multicastIps = ips.flatMap(_.asMulticast)
-// multicastIps: List[com.comcast.ip4s.Multicast[IpAddress]] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
+// multicastIps: List[Multicast[IpAddress]] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
 val ssmIps = ips.flatMap(_.asSourceSpecificMulticast)
-// ssmIps: List[com.comcast.ip4s.SourceSpecificMulticast[IpAddress]] = List(232.11.11.11, ff3b::11)
+// ssmIps: List[SourceSpecificMulticast[IpAddress]] = List(232.11.11.11, ff3b::11)
+```
+
+It's common for source specific multicast to be used with group addresses outside the designated source specific multicast address range. To support such cases, use `asSourceSpecificMulticastLenient`:
+
+```scala mdco:nest:to-string
+val lenient = ips.flatMap(_.asSourceSpecificMulticastLenient)
 ```
 
 ## Multicast Literals
@@ -169,11 +175,11 @@ To construct a `MulticastJoin`, we can use the `asm` and `ssm` methods in the `M
 
 ```scala
 val j1 = MulticastJoin.ssm(ipv4"10.11.12.13", ssmipv4"232.1.2.3")
-// j1: com.comcast.ip4s.MulticastJoin[Ipv4Address] = 10.11.12.13@232.1.2.3
+// j1: MulticastJoin[Ipv4Address] = 10.11.12.13@232.1.2.3
 val j2 = MulticastJoin.ssm(ipv4"10.11.12.13", ipv4"232.1.2.3".asSourceSpecificMulticast.get)
-// j2: com.comcast.ip4s.MulticastJoin[Ipv4Address] = 10.11.12.13@232.1.2.3
+// j2: MulticastJoin[Ipv4Address] = 10.11.12.13@232.1.2.3
 val j3 = MulticastJoin.asm(mipv6"ff3b::10")
-// j3: com.comcast.ip4s.MulticastJoin[Ipv6Address] = ff3b::10
+// j3: MulticastJoin[Ipv6Address] = ff3b::10
 ```
 
 # CIDR
@@ -259,7 +265,7 @@ On the JVM, a `SocketAddress` can be converted to a `java.net.InetSocketAddress`
 
 ```scala
 val u = t.toInetSocketAddress
-// u: java.net.InetSocketAddress = /0:0:0:0:0:0:0:1:5555
+// u: InetSocketAddress = /[0:0:0:0:0:0:0:1]:5555
 ```
 
 ## Multicast Socket Addresses
@@ -270,9 +276,9 @@ Similarly, a multicast socket address is a multicast join and a UDP port number.
 import com.comcast.ip4s._
 
 val s = MulticastSocketAddress(SourceSpecificMulticastJoin(ipv4"10.10.10.10", ssmipv4"232.10.11.12"), port"5555")
-// s: MulticastSocketAddress[SourceSpecificMulticastJoin, Ipv4Address] = 10.10.10.10@232.10.11.12:5555
+// s: MulticastSocketAddress[[A >: Nothing <: IpAddress] => SourceSpecificMulticastJoin[A], Ipv4Address] = 10.10.10.10@232.10.11.12:5555
 val t = MulticastSocketAddress(MulticastJoin.ssm(ip"10.10.10.10", ssmip"232.10.11.12"), port"5555")
-// t: MulticastSocketAddress[MulticastJoin, IpAddress] = 10.10.10.10@232.10.11.12:5555
+// t: MulticastSocketAddress[[A >: Nothing <: IpAddress] => MulticastJoin[A], IpAddress] = 10.10.10.10@232.10.11.12:5555
 ```
 
 # Hostnames
@@ -283,11 +289,11 @@ The `Hostname` type models an RFC1123 compliant hostname -- limited to 253 total
 val home = Hostname.fromString("localhost")
 // home: Option[Hostname] = Some(localhost)
 val ls = home.map(_.labels)
-// ls: Option[List[Hostname.Label]] = Some(List(localhost))
+// ls: Option[List[Label]] = Some(List(localhost))
 val comcast = host"comcast.com"
 // comcast: Hostname = comcast.com
 val cs = comcast.labels
-// cs: List[Hostname.Label] = List(comcast, com)
+// cs: List[Label] = List(comcast, com)
 ```
 
 ## Hostname Resolution

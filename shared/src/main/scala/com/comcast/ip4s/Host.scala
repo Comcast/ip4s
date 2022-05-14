@@ -178,6 +178,10 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
   def asSourceSpecificMulticast: Option[SourceSpecificMulticast[this.type]] =
     SourceSpecificMulticast.fromIpAddress(this)
 
+  /** Like `asSourceSpecificMulticast` but allows multicast addresses outside the source specific range. */
+  def asSourceSpecificMulticastLenient: Option[SourceSpecificMulticast[this.type]] =
+    SourceSpecificMulticast.fromIpAddressLenient(this)
+
   /** Narrows this address to an Ipv4Address if that is the underlying type. */
   def asIpv4: Option[Ipv4Address] = collapseMappedV4.fold(Some(_), _ => None)
 

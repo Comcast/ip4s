@@ -95,23 +95,29 @@ object Literals:
 
   object ssmip extends Literally[SourceSpecificMulticast[IpAddress]]:
     def validate(s: String)(using Quotes) =
-      IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticast) match
+      IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticastLenient) match
         case Some(_) =>
-          Right('{ _root_.com.comcast.ip4s.IpAddress.fromString(${ Expr(s) }).get.asSourceSpecificMulticast.get })
+          Right('{
+            _root_.com.comcast.ip4s.IpAddress.fromString(${ Expr(s) }).get.asSourceSpecificMulticastLenient.get
+          })
         case None => Left("Invalid source specific IP multicast address")
 
   object ssmipv4 extends Literally[SourceSpecificMulticast[Ipv4Address]]:
     def validate(s: String)(using Quotes) =
-      Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match
+      Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticastLenient) match
         case Some(_) =>
-          Right('{ _root_.com.comcast.ip4s.Ipv4Address.fromString(${ Expr(s) }).get.asSourceSpecificMulticast.get })
+          Right('{
+            _root_.com.comcast.ip4s.Ipv4Address.fromString(${ Expr(s) }).get.asSourceSpecificMulticastLenient.get
+          })
         case None => Left("Invalid source specific IPv4 multicast address")
 
   object ssmipv6 extends Literally[SourceSpecificMulticast[Ipv6Address]]:
     def validate(s: String)(using Quotes) =
-      Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match
+      Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticastLenient) match
         case Some(_) =>
-          Right('{ _root_.com.comcast.ip4s.Ipv6Address.fromString(${ Expr(s) }).get.asSourceSpecificMulticast.get })
+          Right('{
+            _root_.com.comcast.ip4s.Ipv6Address.fromString(${ Expr(s) }).get.asSourceSpecificMulticastLenient.get
+          })
         case None => Left("Invalid source specific IPv6 multicast address")
 
   object port extends Literally[Port]:

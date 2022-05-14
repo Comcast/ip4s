@@ -23,8 +23,16 @@ class MulticastTest extends BaseTestSuite {
   test("support equality") {
     forAll { (mip: Multicast[IpAddress]) =>
       assertEquals(mip.address.asMulticast, Some(mip))
-      mip.address.asSourceSpecificMulticast.foreach(x => assert(x == mip))
-      mip.address.asSourceSpecificMulticast.foreach(x => assertEquals(mip, x))
+      mip.address.asSourceSpecificMulticastLenient.foreach(x => assertEquals(mip, x))
+      mip.address.asSourceSpecificMulticastLenient.foreach(x => assert(x == mip))
     }
+  }
+
+  test("support SSM outside source specific range") {
+    assertEquals(ip"239.10.10.10".asSourceSpecificMulticast, None)
+    assertEquals(
+      ip"239.10.10.10".asSourceSpecificMulticastLenient,
+      Some(SourceSpecificMulticast.unsafeCreate(ip"239.10.10.10"))
+    )
   }
 }
