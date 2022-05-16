@@ -135,7 +135,7 @@ To construct instances of `Multicast[A]` and `SourceSpecificMulticast[A]`, we ca
 val multicastIps = ips.flatMap(_.asMulticast)
 // multicastIps: List[com.comcast.ip4s.Multicast[IpAddress]] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
 val ssmIps = ips.flatMap(_.asSourceSpecificMulticast)
-// ssmIps: List[com.comcast.ip4s.SourceSpecificMulticast[IpAddress]] = List(232.11.11.11, ff3b::11)
+// ssmIps: List[SourceSpecificMulticast.Strict[IpAddress]] = List(232.11.11.11, ff3b::11)
 ```
 
 It's common for source specific multicast to be used with group addresses outside the designated source specific multicast address range. To support such cases, use `asSourceSpecificMulticastLenient`:
@@ -144,6 +144,8 @@ It's common for source specific multicast to be used with group addresses outsid
 val lenient = ips.flatMap(_.asSourceSpecificMulticastLenient)
 // lenient: List[com.comcast.ip4s.SourceSpecificMulticast[IpAddress]] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
 ```
+
+Additionally, the `SourceSpecificMulticast.Strict[A]` type provides the guarantee that the wrapped address is in the RFC defined source specific range.
 
 ## Multicast Literals
 

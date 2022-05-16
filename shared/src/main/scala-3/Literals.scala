@@ -37,13 +37,13 @@ extension (inline ctx: StringContext)
   inline def mipv6(inline args: Any*): Multicast[Ipv6Address] =
     ${ Literals.mipv6('ctx, 'args) }
 
-  inline def ssmip(inline args: Any*): SourceSpecificMulticast[IpAddress] =
+  inline def ssmip(inline args: Any*): SourceSpecificMulticast.Strict[IpAddress] =
     ${ Literals.ssmip('ctx, 'args) }
 
-  inline def ssmipv4(inline args: Any*): SourceSpecificMulticast[Ipv4Address] =
+  inline def ssmipv4(inline args: Any*): SourceSpecificMulticast.Strict[Ipv4Address] =
     ${ Literals.ssmipv4('ctx, 'args) }
 
-  inline def ssmipv6(inline args: Any*): SourceSpecificMulticast[Ipv6Address] =
+  inline def ssmipv6(inline args: Any*): SourceSpecificMulticast.Strict[Ipv6Address] =
     ${ Literals.ssmipv6('ctx, 'args) }
 
   inline def port(inline args: Any*): Port =
@@ -93,7 +93,7 @@ object Literals:
         case Some(_) => Right('{ _root_.com.comcast.ip4s.Ipv6Address.fromString(${ Expr(s) }).get.asMulticast.get })
         case None    => Left("Invalid IPv6 multicast address")
 
-  object ssmip extends Literally[SourceSpecificMulticast[IpAddress]]:
+  object ssmip extends Literally[SourceSpecificMulticast.Strict[IpAddress]]:
     def validate(s: String)(using Quotes) =
       IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticast) match
         case Some(_) =>
@@ -102,7 +102,7 @@ object Literals:
           })
         case None => Left("Invalid source specific IP multicast address")
 
-  object ssmipv4 extends Literally[SourceSpecificMulticast[Ipv4Address]]:
+  object ssmipv4 extends Literally[SourceSpecificMulticast.Strict[Ipv4Address]]:
     def validate(s: String)(using Quotes) =
       Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match
         case Some(_) =>
@@ -111,7 +111,7 @@ object Literals:
           })
         case None => Left("Invalid source specific IPv4 multicast address")
 
-  object ssmipv6 extends Literally[SourceSpecificMulticast[Ipv6Address]]:
+  object ssmipv6 extends Literally[SourceSpecificMulticast.Strict[Ipv6Address]]:
     def validate(s: String)(using Quotes) =
       Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match
         case Some(_) =>

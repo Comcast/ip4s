@@ -120,6 +120,8 @@ It's common for source specific multicast to be used with group addresses outsid
 val lenient = ips.flatMap(_.asSourceSpecificMulticastLenient)
 ```
 
+Additionally, the `SourceSpecificMulticast.Strict[A]` type provides the guarantee that the wrapped address is in the RFC defined source specific range.
+
 ## Multicast Literals
 
 There are string interpolators for constructing multicast and source specific multicast address from literal strings, similar to the `ip`, `ipv4`, and `ipv6` interpolators. The multicast interpolators are:
