@@ -90,9 +90,9 @@ object Literals {
   object ssmip extends Literally[SourceSpecificMulticast[IpAddress]] {
     def validate(c: Context)(s: String) = {
       import c.universe._
-      IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticastLenient) match {
+      IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
         case Some(_) =>
-          Right(c.Expr(q"_root_.com.comcast.ip4s.IpAddress.fromString($s).get.asSourceSpecificMulticastLenient.get"))
+          Right(c.Expr(q"_root_.com.comcast.ip4s.IpAddress.fromString($s).get.asSourceSpecificMulticast.get"))
         case None => Left("invalid source specific IP multicast address")
       }
     }
@@ -102,9 +102,9 @@ object Literals {
   object ssmipv4 extends Literally[SourceSpecificMulticast[Ipv4Address]] {
     def validate(c: Context)(s: String) = {
       import c.universe._
-      Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticastLenient) match {
+      Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
         case Some(_) =>
-          Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv4Address.fromString($s).get.asSourceSpecificMulticastLenient.get"))
+          Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv4Address.fromString($s).get.asSourceSpecificMulticast.get"))
         case None => Left("invalid source specific IPv4 multicast address")
       }
     }
@@ -114,9 +114,9 @@ object Literals {
   object ssmipv6 extends Literally[SourceSpecificMulticast[Ipv6Address]] {
     def validate(c: Context)(s: String) = {
       import c.universe._
-      Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticastLenient) match {
+      Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
         case Some(_) =>
-          Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv6Address.fromString($s).get.asSourceSpecificMulticastLenient.get"))
+          Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv6Address.fromString($s).get.asSourceSpecificMulticast.get"))
         case None => Left("invalid source specific IPv6 multicast address")
       }
     }

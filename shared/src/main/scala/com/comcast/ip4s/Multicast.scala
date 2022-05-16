@@ -56,6 +56,11 @@ object Multicast {
   * `asSourceSpecificMulticast` and `asSourceSpecificMulticastLenient` methods on `IpAddress`.
   */
 sealed trait SourceSpecificMulticast[+A <: IpAddress] extends Multicast[A] {
+
+  /** Ensures the referenced address is in the RFC defined source specific address range. */
+  def strict: Option[this.type] =
+    if (address.isSourceSpecificMulticast) Some(this) else None
+
   override def toString: String = address.toString
 }
 
