@@ -31,11 +31,11 @@ package object ip4s extends ip4splatform {
     def mipv6(args: Any*): Multicast[Ipv6Address] =
       macro Literals.mipv6.make
 
-    def ssmip(args: Any*): SourceSpecificMulticast[IpAddress] =
+    def ssmip(args: Any*): SourceSpecificMulticast.Strict[IpAddress] =
       macro Literals.ssmip.make
-    def ssmipv4(args: Any*): SourceSpecificMulticast[Ipv4Address] =
+    def ssmipv4(args: Any*): SourceSpecificMulticast.Strict[Ipv4Address] =
       macro Literals.ssmipv4.make
-    def ssmipv6(args: Any*): SourceSpecificMulticast[Ipv6Address] =
+    def ssmipv6(args: Any*): SourceSpecificMulticast.Strict[Ipv6Address] =
       macro Literals.ssmipv6.make
 
     def port(args: Any*): Port =

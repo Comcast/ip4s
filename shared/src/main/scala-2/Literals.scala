@@ -87,7 +87,7 @@ object Literals {
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[Ipv6Address]] = apply(c)(args: _*)
   }
 
-  object ssmip extends Literally[SourceSpecificMulticast[IpAddress]] {
+  object ssmip extends Literally[SourceSpecificMulticast.Strict[IpAddress]] {
     def validate(c: Context)(s: String) = {
       import c.universe._
       IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
@@ -96,10 +96,10 @@ object Literals {
         case None => Left("invalid source specific IP multicast address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast[IpAddress]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast.Strict[IpAddress]] = apply(c)(args: _*)
   }
 
-  object ssmipv4 extends Literally[SourceSpecificMulticast[Ipv4Address]] {
+  object ssmipv4 extends Literally[SourceSpecificMulticast.Strict[Ipv4Address]] {
     def validate(c: Context)(s: String) = {
       import c.universe._
       Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
@@ -108,10 +108,10 @@ object Literals {
         case None => Left("invalid source specific IPv4 multicast address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast[Ipv4Address]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast.Strict[Ipv4Address]] = apply(c)(args: _*)
   }
 
-  object ssmipv6 extends Literally[SourceSpecificMulticast[Ipv6Address]] {
+  object ssmipv6 extends Literally[SourceSpecificMulticast.Strict[Ipv6Address]] {
     def validate(c: Context)(s: String) = {
       import c.universe._
       Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
@@ -120,7 +120,7 @@ object Literals {
         case None => Left("invalid source specific IPv6 multicast address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast[Ipv6Address]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast.Strict[Ipv6Address]] = apply(c)(args: _*)
   }
 
   object port extends Literally[Port] {

@@ -25,7 +25,12 @@ ThisBuild / initialCommands := "import com.comcast.ip4s._"
 
 ThisBuild / mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Ipv6Address.toInetAddress"),
-  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.Dns.*") // sealed trait
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.Dns.*"), // sealed trait
+  // Scala 3 (erroneously?) considered Multicast/SourceSpecificMulticast as sum types
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Multicast.ordinal"),
+  ProblemFilters.exclude[MissingTypesProblem]("com.comcast.ip4s.Multicast$"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.SourceSpecificMulticast.ordinal"),
+  ProblemFilters.exclude[MissingTypesProblem]("com.comcast.ip4s.SourceSpecificMulticast$")
 )
 
 lazy val root = tlCrossRootProject.aggregate(core, testKit)
@@ -93,8 +98,8 @@ lazy val docs = project
   .settings(
     mdocIn := baseDirectory.value / "src",
     mdocOut := baseDirectory.value / "../docs",
-    crossScalaVersions := (ThisBuild / crossScalaVersions).value.filter(_.startsWith("2.")),
-    githubWorkflowArtifactUpload := false
+    githubWorkflowArtifactUpload := false,
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.3.11"
   )
 
 lazy val commonSettings = Seq(

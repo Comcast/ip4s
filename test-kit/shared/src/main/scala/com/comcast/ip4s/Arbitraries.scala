@@ -80,8 +80,9 @@ object Arbitraries {
   def multicastJoinGenerator[A <: IpAddress](genSource: Gen[A], genGroup: Gen[Multicast[A]]): Gen[MulticastJoin[A]] =
     genGroup.flatMap { group =>
       group.address.asSourceSpecificMulticast match {
-        case Some(grp) => genSource.filter(_.getClass == grp.getClass).flatMap(src => MulticastJoin.ssm(src, grp))
-        case None      => MulticastJoin.asm(group)
+        case Some(grp) =>
+          genSource.filter(_.getClass == grp.address.getClass).flatMap(src => MulticastJoin.ssm(src, grp))
+        case None => MulticastJoin.asm(group)
       }
     }
 

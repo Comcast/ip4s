@@ -88,7 +88,7 @@ object MulticastSocketAddress {
           case Some(sourceStr) =>
             for {
               source <- parse(sourceStr)
-              group <- parse(groupStr).flatMap(_.asSourceSpecificMulticast)
+              group <- parse(groupStr).flatMap(_.asSourceSpecificMulticastLenient)
               port <- Port.fromString(portStr)
             } yield MulticastSocketAddress(MulticastJoin.ssm(source, group), port)
           case None =>
