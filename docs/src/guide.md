@@ -116,7 +116,7 @@ val ssmIps = ips.flatMap(_.asSourceSpecificMulticast)
 
 It's common for source specific multicast to be used with group addresses outside the designated source specific multicast address range. To support such cases, use `asSourceSpecificMulticastLenient`:
 
-```scala mdco:nest:to-string
+```scala mdoc:nest:to-string
 val lenient = ips.flatMap(_.asSourceSpecificMulticastLenient)
 ```
 
