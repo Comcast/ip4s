@@ -35,7 +35,9 @@ ThisBuild / mimaBinaryIssueFilters ++= Seq(
 
 lazy val root = tlCrossRootProject.aggregate(core, testKit)
 
-lazy val testKit = crossProject(JVMPlatform, JSPlatform)
+ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+
+lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("./test-kit"))
   .settings(commonSettings)
   .settings(
@@ -45,9 +47,9 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalacheck" %%% "scalacheck" % "1.16.0",
-      "org.scalameta" %%% "munit-scalacheck" % "0.7.29" % Test,
-      "org.typelevel" %%% "cats-effect" % "3.3.12" % Test,
-      "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
+      "org.scalameta" %%% "munit-scalacheck" % "1.0.0-M6" % Test,
+      "com.armanbilge" %%% "cats-effect" % "3.4-f28b163-SNAPSHOT" % Test,
+      "com.armanbilge" %%% "munit-cats-effect" % "2.0-4e051ab-SNAPSHOT" % Test
     )
   )
   .jvmSettings(
@@ -59,8 +61,10 @@ lazy val testKitJVM = testKit.jvm
 lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
+lazy val testKitNative = testKit.js
+  .disablePlugins(DoctestPlugin)
 
-lazy val core = crossProject(JVMPlatform, JSPlatform)
+lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("."))
   .settings(commonSettings)
   .settings(
@@ -73,9 +77,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   )
   .settings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "literally" % "1.0.2",
+      "org.typelevel" %%% "literally" % "1.1-ba0b394-SNAPSHOT",
       "org.typelevel" %%% "cats-core" % "2.8.0",
-      "org.typelevel" %%% "cats-effect-kernel" % "3.3.12"
+      "com.armanbilge" %%% "cats-effect-kernel" % "3.4-f28b163-SNAPSHOT"
     )
   )
 
@@ -90,6 +94,9 @@ lazy val coreJS = core.js
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     Compile / npmDependencies += "punycode" -> "2.1.1"
   )
+
+lazy val coreNative = core.native
+  .disablePlugins(DoctestPlugin)
 
 lazy val docs = project
   .in(file("docs"))
