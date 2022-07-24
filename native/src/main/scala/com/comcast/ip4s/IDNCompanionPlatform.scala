@@ -22,12 +22,29 @@ import scala.scalanative.unsigned._
 import scala.util.Try
 
 private[ip4s] trait IDNCompanionPlatform {
-  private[ip4s] def toAscii(value: String): Option[String] = ???
+  private[ip4s] def toAscii(value: String): Option[String] = Zone { implicit z =>
+    val src = toCWideStringUTF16LE(value)
+    val dest = stackalloc[uidna.UChar](MaxLength)
+    val status = stackalloc[uidna.UErrorCode]()
+    val destLength = uidna.uidna_IDNToASCII(
+      src,
+      -1,
+      dest,
+      MaxLength,
+      0,
+      null,
+      status
+    )
+    if (!status == 0) {
+      !(dest + destLength) = 0.toUShort
+      Some(fromCWideString(dest, StandardCharsets.UTF_16LE))
+    } else None
+  }
 
   private[ip4s] def toUnicode(value: String): String = Zone { implicit z =>
     val src = toCWideStringUTF16LE(value)
-    val dest = stackalloc[icuuc.UChar](MaxLength)
-    val destLength = icuuc.uidna_IDNToUnicode(
+    val dest = stackalloc[uidna.UChar](MaxLength)
+    val destLength = uidna.uidna_IDNToUnicode(
       src,
       -1,
       dest,
@@ -45,12 +62,13 @@ private[ip4s] trait IDNCompanionPlatform {
 
 @link("icuuc")
 @extern
-private object icuuc {
+private object uidna {
 
   type UChar = CChar16
   type UParseError = Ptr[Byte]
   type UErrorCode = CInt
 
+  @name("ip4s_uidna_IDNToUnicode")
   def uidna_IDNToASCII(
       src: Ptr[UChar],
       srcLength: CInt,
@@ -61,6 +79,7 @@ private object icuuc {
       status: Ptr[UErrorCode]
   ): CInt = extern
 
+  @name("ip4s_uidna_IDNToUnicode")
   def uidna_IDNToUnicode(
       src: Ptr[UChar],
       srcLength: CInt,
