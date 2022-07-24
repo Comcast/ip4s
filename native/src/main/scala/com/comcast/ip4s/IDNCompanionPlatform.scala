@@ -16,10 +16,59 @@
 
 package com.comcast.ip4s
 
+import java.nio.charset.StandardCharsets
+import scala.scalanative.unsafe._
+import scala.scalanative.unsigned._
 import scala.util.Try
 
 private[ip4s] trait IDNCompanionPlatform {
   private[ip4s] def toAscii(value: String): Option[String] = ???
 
-  private[ip4s] def toUnicode(value: String): String = ???
+  private[ip4s] def toUnicode(value: String): String = Zone { implicit z =>
+    val src = toCWideStringUTF16LE(value)
+    val dest = stackalloc[icuuc.UChar](MaxLength)
+    val destLength = icuuc.uidna_IDNToUnicode(
+      src,
+      -1,
+      dest,
+      MaxLength,
+      0,
+      null,
+      null
+    )
+    !(dest + destLength) = 0.toUShort
+    fromCWideString(dest, StandardCharsets.UTF_16LE)
+  }
+
+  private final val MaxLength = 256
+}
+
+@link("icuuc")
+@extern
+private object icuuc {
+
+  type UChar = CChar16
+  type UParseError = Ptr[Byte]
+  type UErrorCode = CInt
+
+  def uidna_IDNToASCII(
+      src: Ptr[UChar],
+      srcLength: CInt,
+      dest: Ptr[UChar],
+      destCapacity: CInt,
+      options: CInt,
+      parseError: Ptr[UParseError],
+      status: Ptr[UErrorCode]
+  ): CInt = extern
+
+  def uidna_IDNToUnicode(
+      src: Ptr[UChar],
+      srcLength: CInt,
+      dest: Ptr[UChar],
+      destCapacity: CInt,
+      options: CInt,
+      parseError: Ptr[UParseError],
+      status: Ptr[UErrorCode]
+  ): CInt = extern
+
 }
