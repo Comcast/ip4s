@@ -19,7 +19,6 @@ package com.comcast.ip4s
 import java.nio.charset.StandardCharsets
 import scala.scalanative.unsafe._
 import scala.scalanative.unsigned._
-import scala.util.Try
 
 private[ip4s] trait IDNCompanionPlatform {
   private[ip4s] def toAscii(value: String): Option[String] = Zone { implicit z =>
@@ -35,10 +34,9 @@ private[ip4s] trait IDNCompanionPlatform {
       null,
       status
     )
-    if (!status == 0) {
-      !(dest + destLength) = 0.toUShort
-      Some(fromCWideString(dest, StandardCharsets.UTF_16LE))
-    } else None
+    if (!status == 0)
+      Some(fromCWideStringUTF16LE(dest, destLength))
+    else None
   }
 
   private[ip4s] def toUnicode(value: String): String = Zone { implicit z =>
@@ -56,11 +54,21 @@ private[ip4s] trait IDNCompanionPlatform {
     )
     if (!status != 0)
       throw new RuntimeException("uidna_IDNToUnicode: " + !status)
-    !(dest + destLength) = 0.toUShort
-    fromCWideString(dest, StandardCharsets.UTF_16LE)
+    fromCWideStringUTF16LE(dest, destLength)
   }
 
-  private final val MaxLength = 256
+  private[this] def fromCWideStringUTF16LE(chars: Ptr[CChar16], length: CInt): String = {
+    val bytes = chars.asInstanceOf[Ptr[Byte]]
+    val buf = new Array[Byte](2 * length)
+    var i = 0
+    while (i < buf.length) {
+      buf(i) = bytes(i)
+      i += 1
+    }
+    new String(buf, StandardCharsets.UTF_16LE)
+  }
+
+  private[this] final val MaxLength = 256
 }
 
 @link("icuuc")
