@@ -79,7 +79,7 @@ private object uidna {
   type UParseError = Ptr[Byte]
   type UErrorCode = CInt
 
-  @name("ip4s_uidna_IDNToUnicode")
+  @name("ip4s_uidna_IDNToASCII")
   def uidna_IDNToASCII(
       src: Ptr[UChar],
       srcLength: CInt,

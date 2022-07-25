@@ -20,9 +20,6 @@ import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class IDNTest extends BaseTestSuite {
-  test("bla".only) {
-    println("Here: " + IDN.toUnicode("yGn12x-K-fYx--X3T---W----UA-B-Xf-1bOG--Ght2--B"))
-  }
 
   test("support any hostname") {
     forAll { (h: Hostname) =>
