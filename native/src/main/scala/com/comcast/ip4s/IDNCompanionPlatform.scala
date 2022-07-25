@@ -44,6 +44,7 @@ private[ip4s] trait IDNCompanionPlatform {
   private[ip4s] def toUnicode(value: String): String = Zone { implicit z =>
     val src = toCWideStringUTF16LE(value)
     val dest = stackalloc[uidna.UChar](MaxLength)
+    val status = stackalloc[uidna.UErrorCode]()
     val destLength = uidna.uidna_IDNToUnicode(
       src,
       -1,
@@ -51,8 +52,10 @@ private[ip4s] trait IDNCompanionPlatform {
       MaxLength,
       0,
       null,
-      null
+      status
     )
+    if (!status != 0)
+      throw new RuntimeException("uidna_IDNToUnicode: " + !status)
     !(dest + destLength) = 0.toUShort
     fromCWideString(dest, StandardCharsets.UTF_16LE)
   }
