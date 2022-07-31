@@ -15,7 +15,7 @@ ThisBuild / developers ++= List(
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
-ThisBuild / crossScalaVersions := List("2.12.15", "2.13.8", "3.1.2")
+ThisBuild / crossScalaVersions := List("2.12.16", "2.13.8", "3.1.3")
 
 ThisBuild / tlVersionIntroduced := Map("3" -> "3.0.3")
 
@@ -74,7 +74,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "literally" % "1.0.2",
-      "org.typelevel" %%% "cats-core" % "2.7.0",
+      "org.typelevel" %%% "cats-core" % "2.8.0",
       "org.typelevel" %%% "cats-effect-kernel" % "3.3.14"
     )
   )
