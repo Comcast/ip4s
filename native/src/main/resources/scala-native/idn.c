@@ -1,3 +1,7 @@
+#if __has_include(<unicode/uidna.h>)
+// this way compile won't fail on systems without uidna
+// so long as they don't call IDN-related methods, linking will not fail
+
 #include <unicode/uidna.h>
 
 // annoying glue layer ...
@@ -25,3 +29,5 @@ int32_t ip4s_uidna_IDNToUnicode(const UChar *src, int32_t srcLength,
   return uidna_IDNToUnicode(src, srcLength, dest, destCapacity, options,
                             parseError, status);
 }
+
+#endif // has_include
