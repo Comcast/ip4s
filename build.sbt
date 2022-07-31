@@ -15,7 +15,7 @@ ThisBuild / developers ++= List(
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
-ThisBuild / crossScalaVersions := List("2.12.15", "2.13.8", "3.1.3")
+ThisBuild / crossScalaVersions := List("2.12.16", "2.13.8", "3.1.3")
 
 ThisBuild / tlVersionIntroduced := Map("3" -> "3.0.3")
 
@@ -106,7 +106,7 @@ lazy val docs = project
     mdocIn := baseDirectory.value / "src",
     mdocOut := baseDirectory.value / "../docs",
     githubWorkflowArtifactUpload := false,
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.3.12"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.3.14"
   )
 
 lazy val commonSettings = Seq(
