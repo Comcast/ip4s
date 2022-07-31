@@ -15,7 +15,7 @@ ThisBuild / developers ++= List(
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
-ThisBuild / crossScalaVersions := List("2.12.15", "2.13.8", "3.1.2")
+ThisBuild / crossScalaVersions := List("2.12.16", "2.13.8", "3.1.3")
 
 ThisBuild / tlVersionIntroduced := Map("3" -> "3.0.3")
 
@@ -46,7 +46,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies ++= Seq(
       "org.scalacheck" %%% "scalacheck" % "1.16.0",
       "org.scalameta" %%% "munit-scalacheck" % "0.7.29" % Test,
-      "org.typelevel" %%% "cats-effect" % "3.3.12" % Test,
+      "org.typelevel" %%% "cats-effect" % "3.3.14" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
     )
   )
@@ -74,8 +74,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "literally" % "1.0.2",
-      "org.typelevel" %%% "cats-core" % "2.7.0",
-      "org.typelevel" %%% "cats-effect-kernel" % "3.3.12"
+      "org.typelevel" %%% "cats-core" % "2.8.0",
+      "org.typelevel" %%% "cats-effect-kernel" % "3.3.14"
     )
   )
 
@@ -99,7 +99,7 @@ lazy val docs = project
     mdocIn := baseDirectory.value / "src",
     mdocOut := baseDirectory.value / "../docs",
     githubWorkflowArtifactUpload := false,
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.3.12"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.3.14"
   )
 
 lazy val commonSettings = Seq(
