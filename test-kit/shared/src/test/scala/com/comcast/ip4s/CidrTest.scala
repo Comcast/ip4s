@@ -30,8 +30,7 @@ class CidrTest extends BaseTestSuite {
       val prefixBits = ((prefixBits0 % max).abs + 1)
       val maskInt = BigInt(-1) << (max - prefixBits)
       val mask = ip.fold(_ => Ipv4Address.fromLong(maskInt.toLong & 0xffffffff), _ => Ipv6Address.fromBigInt(maskInt))
-      try assertEquals(Cidr.fromIpAndMask(ip, mask), Cidr(ip, prefixBits))
-      catch { case e => println(s"failing: $ip $mask"); throw e }
+      assertEquals(Cidr.fromIpAndMask(ip, mask), Cidr(ip, prefixBits))
     }
   }
 }
