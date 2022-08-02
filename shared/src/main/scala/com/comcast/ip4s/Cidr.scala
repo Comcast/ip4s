@@ -111,7 +111,7 @@ object Cidr {
     new Cidr(address, b)
   }
 
-  /** Constructs a CID from the supplied IP address and netmask. The number of leading 1 bits in the netmask are used as
+  /** Constructs a CIDR from the supplied IP address and netmask. The number of leading 1 bits in the netmask are used as
     * the prefix bits for the CIDR.
     */
   def fromIpAndMask[A <: IpAddress](address: A, mask: A): Cidr[A] = {
