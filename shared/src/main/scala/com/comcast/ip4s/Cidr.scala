@@ -111,6 +111,22 @@ object Cidr {
     new Cidr(address, b)
   }
 
+  /** Constructs a CID from the supplied IP address and netmask. The number of leading 1 bits in the netmask are used as
+    * the prefix bits for the CIDR.
+    */
+  def fromIpAndMask[A <: IpAddress](address: A, mask: A): Cidr[A] = {
+    import java.lang.Long.numberOfLeadingZeros
+    val prefixBits = mask.fold(
+      m => numberOfLeadingZeros(~(m.toLong | 0xffffffff00000000L)) - 32,
+      m => {
+        val upper = (m.toBigInt >> 64).toLong
+        val upperNum = numberOfLeadingZeros(~upper)
+        if (upperNum == 64) upperNum + numberOfLeadingZeros(~(m.toBigInt.toLong)) else upperNum
+      }
+    )
+    apply(address, prefixBits)
+  }
+
   /** Constructs a CIDR from a string of the form `ip/prefixBits`. */
   def fromString(value: String): Option[Cidr[IpAddress]] = fromStringGeneral(value, IpAddress.fromString)
 

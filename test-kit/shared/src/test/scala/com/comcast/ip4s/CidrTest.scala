@@ -23,4 +23,15 @@ class CidrTest extends BaseTestSuite {
   property("roundtrip through string") {
     forAll { (cidr: Cidr[IpAddress]) => assertEquals(Cidr.fromString(cidr.toString), Some(cidr)) }
   }
+
+  property("fromIpAndMask") {
+    forAll { (ip: IpAddress, prefixBits0: Int) =>
+      val max = ip.fold(_ => 32, _ => 128)
+      val prefixBits = ((prefixBits0 % max).abs + 1)
+      val maskInt = BigInt(-1) << (max - prefixBits)
+      val mask = ip.fold(_ => Ipv4Address.fromLong(maskInt.toLong & 0xffffffff), _ => Ipv6Address.fromBigInt(maskInt))
+      try assertEquals(Cidr.fromIpAndMask(ip, mask), Cidr(ip, prefixBits))
+      catch { case e => println(s"failing: $ip $mask"); throw e }
+    }
+  }
 }
