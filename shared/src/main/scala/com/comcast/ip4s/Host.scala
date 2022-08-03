@@ -201,6 +201,28 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
   /** Constructs a [[Cidr]] address from this address. */
   def /(prefixBits: Int): Cidr[this.type] = Cidr(this, prefixBits)
 
+  /** Returns the number of leading ones in this address. When this address is a netmask, the result can be used to
+    * create a CIDR.
+    *
+    * @example {{{
+    * scala> val address = ipv4"192.168.1.25"
+    * scala> val netmask = ipv4"255.255.0.0"
+    * scala> address / netmask.prefixBits
+    * res0: Cidr[Ipv4Address] = 192.168.1.25/16
+    * }}}
+    */
+  def prefixBits: Int = {
+    import java.lang.Long.numberOfLeadingZeros
+    fold(
+      m => numberOfLeadingZeros(~(m.toLong | 0xffffffff00000000L)) - 32,
+      m => {
+        val upper = (m.toBigInt >> 64).toLong
+        val upperNum = numberOfLeadingZeros(~upper)
+        if (upperNum == 64) upperNum + numberOfLeadingZeros(~(m.toBigInt.toLong)) else upperNum
+      }
+    )
+  }
+
   /** Gets the IP address after this address, with overflow from the maximum value to the minimum value. */
   def next: IpAddress
 
