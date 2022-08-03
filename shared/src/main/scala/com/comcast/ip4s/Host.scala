@@ -207,7 +207,7 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
     * @example {{{
     * scala> val address = ipv4"192.168.1.25"
     * scala> val netmask = ipv4"255.255.0.0"
-    * scala> address / netmask.prefixBits
+    * scala> (address / netmask.prefixBits): Cidr[Ipv4Address]
     * res0: Cidr[Ipv4Address] = 192.168.1.25/16
     * }}}
     */
