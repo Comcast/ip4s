@@ -34,9 +34,12 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
 
   /** Returns the routing mask.
     *
-    * @example
-    *   {{{ scala> Cidr(ipv4"10.11.12.13", 8).mask res0: Ipv4Address = 255.0.0.0 scala> Cidr(ipv6"2001:db8:abcd:12::",
-    *   96).mask res1: Ipv6Address = ffff:ffff:ffff:ffff:ffff:ffff:: }}}
+    * @example {{{
+    * scala> Cidr(ipv4"10.11.12.13", 8).mask
+    * res0: Ipv4Address = 255.0.0.0
+    * scala> Cidr(ipv6"2001:db8:abcd:12::", 96).mask
+    * res1: Ipv6Address = ffff:ffff:ffff:ffff:ffff:ffff::
+    * }}}
     */
   def mask: A = address.transform(_ => Ipv4Address.mask(prefixBits), _ => Ipv6Address.mask(prefixBits))
 
@@ -44,20 +47,28 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
     *
     * Note: the routing prefix also serves as the first address in the range described by this CIDR.
     *
-    * @example
-    *   {{{ scala> Cidr(ipv4"10.11.12.13", 8).prefix res0: Ipv4Address = 10.0.0.0 scala> Cidr(ipv6"2001:db8:abcd:12::",
-    *   96).prefix res1: Ipv6Address = 2001:db8:abcd:12:: scala> Cidr(ipv6"2001:db8:abcd:12::", 32).prefix res2:
-    *   Ipv6Address = 2001:db8:: }}}
+    * @example {{{
+    * scala> Cidr(ipv4"10.11.12.13", 8).prefix
+    * res0: Ipv4Address = 10.0.0.0
+    * scala> Cidr(ipv6"2001:db8:abcd:12::", 96).prefix
+    * res1: Ipv6Address = 2001:db8:abcd:12::
+    * scala> Cidr(ipv6"2001:db8:abcd:12::", 32).prefix
+    * res2: Ipv6Address = 2001:db8::
+    * }}}
     */
   def prefix: A =
     address.transform(_.masked(Ipv4Address.mask(prefixBits)), _.masked(Ipv6Address.mask(prefixBits)))
 
   /** Returns the last address in the range described by this CIDR.
     *
-    * @example
-    *   {{{ scala> Cidr(ipv4"10.11.12.13", 8).last res0: Ipv4Address = 10.255.255.255 scala>
-    *   Cidr(ipv6"2001:db8:abcd:12::", 96).last res1: Ipv6Address = 2001:db8:abcd:12::ffff:ffff scala>
-    *   Cidr(ipv6"2001:db8:abcd:12::", 32).last res2: Ipv6Address = 2001:db8:ffff:ffff:ffff:ffff:ffff:ffff }}}
+    * @example {{{
+    * scala> Cidr(ipv4"10.11.12.13", 8).last
+    * res0: Ipv4Address = 10.255.255.255
+    * scala> Cidr(ipv6"2001:db8:abcd:12::", 96).last
+    * res1: Ipv6Address = 2001:db8:abcd:12::ffff:ffff
+    * scala> Cidr(ipv6"2001:db8:abcd:12::", 32).last
+    * res2: Ipv6Address = 2001:db8:ffff:ffff:ffff:ffff:ffff:ffff
+    * }}}
     */
   def last: A =
     address.transform(_.maskedLast(Ipv4Address.mask(prefixBits)), _.maskedLast(Ipv6Address.mask(prefixBits)))
@@ -70,11 +81,17 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
 
   /** Returns a predicate which tests if the supplied address is in the range described by this CIDR.
     *
-    * @example
-    *   {{{ scala> Cidr(ipv4"10.11.12.13", 8).contains(ipv4"10.100.100.100") res0: Boolean = true scala>
-    *   Cidr(ipv4"10.11.12.13", 8).contains(ipv4"11.100.100.100") res1: Boolean = false scala> val x =
-    *   Cidr(ipv6"2001:db8:abcd:12::", 96).contains scala> x(ipv6"2001:db8:abcd:12::5") res2: Boolean = true scala>
-    *   x(ipv6"2001:db8::") res3: Boolean = false }}}
+    * @example {{{
+    * scala> Cidr(ipv4"10.11.12.13", 8).contains(ipv4"10.100.100.100")
+    * res0: Boolean = true
+    * scala> Cidr(ipv4"10.11.12.13", 8).contains(ipv4"11.100.100.100")
+    * res1: Boolean = false
+    * scala> val x = Cidr(ipv6"2001:db8:abcd:12::", 96).contains
+    * scala> x(ipv6"2001:db8:abcd:12::5")
+    * res2: Boolean = true
+    * scala> x(ipv6"2001:db8::")
+    * res3: Boolean = false
+    * }}}
     */
   def contains[AA >: A <: IpAddress]: AA => Boolean = {
     val start = prefix

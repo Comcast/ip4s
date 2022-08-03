@@ -334,16 +334,20 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
 
   /** Applies the supplied mask to this address.
     *
-    * @example
-    *   {{{scala> ipv4"192.168.29.1".masked(ipv4"255.255.0.0") res0: Ipv4Address = 192.168.0.0}}}
+    * @example {{{
+    * scala> ipv4"192.168.29.1".masked(ipv4"255.255.0.0")
+    * res0: Ipv4Address = 192.168.0.0
+    * }}}
     */
   def masked(mask: Ipv4Address): Ipv4Address =
     Ipv4Address.fromLong(toLong & mask.toLong)
 
   /** Computes the last address in the network identified by applying the supplied mask to this address.
     *
-    * @example
-    *   {{{scala> ipv4"192.168.29.1".maskedLast(ipv4"255.255.0.0") res0: Ipv4Address = 192.168.255.255}}}
+    * @example {{{
+    * scala> ipv4"192.168.29.1".maskedLast(ipv4"255.255.0.0")
+    * res0: Ipv4Address = 192.168.255.255
+    * }}}
     */
   def maskedLast(mask: Ipv4Address): Ipv4Address =
     Ipv4Address.fromLong(toLong & mask.toLong | ~mask.toLong)
@@ -425,8 +429,10 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
 
   /** Computes a mask by setting the first / left-most `n` bits high.
     *
-    * @example
-    *   {{{scala> Ipv4Address.mask(16) res0: Ipv4Address = 255.255.0.0}}}
+    * @example {{{
+    * scala> Ipv4Address.mask(16)
+    * res0: Ipv4Address = 255.255.0.0
+    * }}}
     */
   def mask(bits: Int): Ipv4Address = {
     val b = if (bits < 0) 0 else if (bits > 32) 32 else bits
@@ -510,9 +516,12 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
     *
     * This format is described in RFC4291 section 2.2.3.
     *
-    * @example
-    *   {{{ scala> ipv6"::7f00:1".toMixedString res0: String = ::127.0.0.1 scala>
-    *   ipv6"ff3b:1234::ffab:7f00:1".toMixedString res0: String = ff3b:1234::ffab:127.0.0.1 }}}
+    * @example {{{
+    * scala> ipv6"::7f00:1".toMixedString
+    * res0: String = ::127.0.0.1
+    * scala> ipv6"ff3b:1234::ffab:7f00:1".toMixedString
+    * res0: String = ff3b:1234::ffab:127.0.0.1
+    * }}}
     */
   def toMixedString: String = {
     val bytes = toBytes
@@ -552,17 +561,20 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
 
   /** Applies the supplied mask to this address.
     *
-    * @example
-    *   {{{scala> ipv6"ff3b::1".masked(ipv6"fff0::") res0: Ipv6Address = ff30::}}}
+    * @example {{{
+    * scala> ipv6"ff3b::1".masked(ipv6"fff0::")
+    * res0: Ipv6Address = ff30::
+    * }}}
     */
   def masked(mask: Ipv6Address): Ipv6Address =
     Ipv6Address.fromBigInt(toBigInt & mask.toBigInt)
 
   /** Computes the last address in the network identified by applying the supplied mask to this address.
     *
-    * @example
-    *   {{{ scala> ipv6"ff3b::1".maskedLast(ipv6"fff0::") res0: Ipv6Address = ff3f:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-    *   }}}
+    * @example {{{
+    * scala> ipv6"ff3b::1".maskedLast(ipv6"fff0::")
+    * res0: Ipv6Address = ff3f:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+    * }}}
     */
   def maskedLast(mask: Ipv6Address): Ipv6Address =
     Ipv6Address.fromBigInt(toBigInt & mask.toBigInt | ~mask.toBigInt)
@@ -749,8 +761,10 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
 
   /** Computes a mask by setting the first / left-most `n` bits high.
     *
-    * @example
-    *   {{{scala> Ipv6Address.mask(32) res0: Ipv6Address = ffff:ffff::}}}
+    * @example {{{
+    * scala> Ipv6Address.mask(32)
+    * res0: Ipv6Address = ffff:ffff::
+    * }}}
     */
   def mask(bits: Int): Ipv6Address = {
     val b = if (bits < 0) 0 else if (bits > 128) 128 else bits
