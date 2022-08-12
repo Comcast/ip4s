@@ -79,7 +79,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "literally" % "1.1.0",
       "org.typelevel" %%% "cats-core" % "2.8.0",
-      "com.armanbilge" %%% "cats-effect-kernel" % "3.4-f28b163-SNAPSHOT"
+      "com.armanbilge" %%% "cats-effect-kernel" % "3.4-f28b163-SNAPSHOT",
+      "org.scalacheck" %%% "scalacheck" % "1.16.0" % Test
     )
   )
 
