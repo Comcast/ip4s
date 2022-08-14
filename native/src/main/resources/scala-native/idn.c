@@ -15,6 +15,10 @@
 // Further reading:
 // https://unicode-org.github.io/icu/userguide/icu/design.html#icu-binary-compatibility
 
+// magic incantations to workaround scala-native#2778
+#pragma weak uidna_IDNToASCII
+#pragma weak uidna_IDNToUnicode
+
 int32_t ip4s_uidna_IDNToASCII(const UChar *src, int32_t srcLength, UChar *dest,
                               int32_t destCapacity, int32_t options,
                               UParseError *parseError, UErrorCode *status) {
