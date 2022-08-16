@@ -240,15 +240,15 @@ private[idna] object Punycode {
           var continue = true
           while (continue) {
 
-            /** RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt
-              *
-              *                        t=k-bias
-              *                        if(t<TMIN) {
-              *                            t=TMIN
-              *                        } else if(t>TMAX) {
-              *                            t=TMAX
-              *                        }
-              */
+            /* RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt
+             *
+             *                        t=k-bias
+             *                        if(t<TMIN) {
+             *                            t=TMIN
+             *                        } else if(t>TMAX) {
+             *                            t=TMAX
+             *                        }
+             */
 
             t = k - bias
             if (t < TMIN) {
