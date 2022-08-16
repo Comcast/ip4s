@@ -143,7 +143,7 @@ private[idna] object Punycode {
   def encode(src: CharSequence, caseFlags: Array[Boolean]): StringBuilder = {
     var n, delta, handledCPCount, basicLength, bias, j, m, q, k, t, srcCPCount = 0
     var c, c2 = '\u0000'
-    var srcLength = src.length()
+    val srcLength = src.length()
     if (srcLength > ENCODE_MAX_CODE_UNITS) {
       throw new IllegalArgumentException("input too long: " + srcLength + " UTF-16 code units")
     }
@@ -158,20 +158,21 @@ private[idna] object Punycode {
     j = 0
     while (j < srcLength) {
       c = src.charAt(j)
-      if (isBasic(c)) {
+      if (isBasic(c.toInt)) {
         cpBuffer(srcCPCount) = 0
         srcCPCount += 1
         dest.append(if (caseFlags != null) asciiCaseMap(c, caseFlags(j)) else c)
       } else {
         n = (if (caseFlags != null && caseFlags(j)) 1 else 0) << 31
-        if (!UTF16.isSurrogate(c)) {
+        if (!UTF16.isSurrogate(c.toInt)) {
           n |= c
         } else if (
-          UTF16.isLeadSurrogate(c) && (j + 1) < srcLength && UTF16.isTrailSurrogate({ c2 = src.charAt(j + 1); c2 })
+          UTF16.isLeadSurrogate(c.toInt) && (j + 1) < srcLength && UTF16
+            .isTrailSurrogate({ c2 = src.charAt(j + 1); c2.toInt })
         ) {
           j += 1
 
-          n |= UCharacter.getCodePoint(c, c2)
+          n |= UCharacter.getCodePoint(c.toInt, c2.toInt)
         } else {
           /* error: unmatched surrogate */
           throw new IllegalArgumentException("Illegal char found")
@@ -331,13 +332,13 @@ private[idna] object Punycode {
     j = 0
     while (j < basicLength) {
       b = src.charAt(j)
-      if (!isBasic(b)) {
+      if (!isBasic(b.toInt)) {
         throw new IllegalArgumentException("Illegal char found")
       }
       dest.append(b)
 
       if (caseFlags != null && j < caseFlags.length) {
-        caseFlags(j) = isBasicUpperCase(b)
+        caseFlags(j) = isBasicUpperCase(b.toInt)
       }
       j += 1
     }
@@ -373,7 +374,7 @@ private[idna] object Punycode {
           throw new IllegalArgumentException("Illegal char found")
         }
 
-        digit = decodeDigit(src.charAt(in))
+        digit = decodeDigit(src.charAt(in).toInt)
         in += 1
         if (digit < 0) {
           throw new IllegalArgumentException("Invalid char found")
@@ -461,7 +462,7 @@ private[idna] object Punycode {
           System.arraycopy(caseFlags, codeUnitIndex, caseFlags, codeUnitIndex + cpLength, dest.length() - codeUnitIndex)
         }
         /* Case of last character determines uppercase flag: */
-        caseFlags(codeUnitIndex) = isBasicUpperCase(src.charAt(in - 1))
+        caseFlags(codeUnitIndex) = isBasicUpperCase(src.charAt(in - 1).toInt)
         if (cpLength == 2) {
           caseFlags(codeUnitIndex + 1) = false
         }

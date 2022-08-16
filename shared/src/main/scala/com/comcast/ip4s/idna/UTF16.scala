@@ -143,7 +143,7 @@ private[idna] object UTF16 {
 
   /** Value that all lead surrogate starts with
     */
-  private[this] final val LEAD_SURROGATE_OFFSET_ = LEAD_SURROGATE_MIN_VALUE
-    - (SUPPLEMENTARY_MIN_VALUE >> LEAD_SURROGATE_SHIFT_)
+  private[this] final val LEAD_SURROGATE_OFFSET_ =
+    LEAD_SURROGATE_MIN_VALUE - (SUPPLEMENTARY_MIN_VALUE >> LEAD_SURROGATE_SHIFT_)
 
 }
