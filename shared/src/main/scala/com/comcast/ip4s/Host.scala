@@ -285,6 +285,10 @@ object IpAddress extends IpAddressCompanionPlatform {
   def fromBytes(bytes: Array[Byte]): Option[IpAddress] =
     Ipv4Address.fromBytes(bytes) orElse Ipv6Address.fromBytes(bytes)
 
+  /** Gets an IP address repesenting the loopback interface. */
+  def loopback[F[_]](implicit F: Dns[F]): F[IpAddress] =
+    F.loopback
+
   private[ip4s] def compareBytes(x: IpAddress, y: IpAddress): Int = {
     var i, result = 0
     val xb = x.bytes
