@@ -51,9 +51,6 @@ class Idna2008Suite extends BaseTestSuite {
   }
 
   val testData = List(
-    // Illegal inputs.
-    TestCase("\u00C0\u0080\u00C1\u0080", None), // Overlong UTF-8 sequence.
-    TestCase("\u00C0\u0080\u00C1\u0080.com", None), // Overlong UTF-8 sequence.
     // No conversion
     TestCase("", ""),
     TestCase(".", "."),
