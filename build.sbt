@@ -58,6 +58,9 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
 lazy val testKitJVM = testKit.jvm
 lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
+  .settings(
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
+  )
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .in(file("."))
