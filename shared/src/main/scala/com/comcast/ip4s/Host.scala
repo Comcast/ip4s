@@ -16,9 +16,13 @@
 
 package com.comcast.ip4s
 
-import cats.{Order, Show}
+import cats.{Applicative, ApplicativeThrow, Order, Show}
+import cats.syntax.all._
 
 import scala.util.hashing.MurmurHash3
+
+// annoying bincompat shim
+private[ip4s] trait HostPlatform
 
 /** ADT representing either an `IpAddress`, `Hostname`, or `IDN`. */
 sealed trait Host extends HostPlatform with Ordered[Host] {
@@ -51,6 +55,35 @@ sealed trait Host extends HostPlatform with Ordered[Host] {
           case y: Hostname    => x.hostname.toString.compare(y.toString)
           case y: IDN         => x.hostname.toString.compare(y.hostname.toString)
         }
+    }
+
+  /** Resolves this host to an ip address using the platform DNS resolver.
+    *
+    * If the host cannot be resolved, the effect fails with a `com.comcast.ip4s.UnknownHostException`.
+    */
+  def resolve[F[_]: Dns: Applicative]: F[IpAddress] =
+    this match {
+      case ip: IpAddress      => Applicative[F].pure(ip)
+      case hostname: Hostname => Dns[F].resolve(hostname)
+      case idn: IDN           => Dns[F].resolve(idn.hostname)
+    }
+
+  /** Resolves this host to an ip address using the platform DNS resolver.
+    *
+    * If the host cannot be resolved, a `None` is returned.
+    */
+  def resolveOption[F[_]: Dns: ApplicativeThrow]: F[Option[IpAddress]] =
+    resolve[F].map(Some(_): Option[IpAddress]).recover { case _: UnknownHostException => None }
+
+  /** Resolves this host to all ip addresses known to the platform DNS resolver.
+    *
+    * If the host cannot be resolved, an empty list is returned.
+    */
+  def resolveAll[F[_]: Dns: Applicative]: F[List[IpAddress]] =
+    this match {
+      case ip: IpAddress      => Applicative[F].pure(List(ip))
+      case hostname: Hostname => Dns[F].resolveAll(hostname)
+      case idn: IDN           => Dns[F].resolveAll(idn.hostname)
     }
 }
 
@@ -254,6 +287,10 @@ object IpAddress extends IpAddressCompanionPlatform {
     */
   def fromBytes(bytes: Array[Byte]): Option[IpAddress] =
     Ipv4Address.fromBytes(bytes) orElse Ipv6Address.fromBytes(bytes)
+
+  /** Gets an IP address repesenting the loopback interface. */
+  def loopback[F[_]](implicit F: Dns[F]): F[IpAddress] =
+    F.loopback
 
   private[ip4s] def compareBytes(x: IpAddress, y: IpAddress): Int = {
     var i, result = 0
