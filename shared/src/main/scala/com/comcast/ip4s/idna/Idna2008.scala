@@ -16,12 +16,12 @@
 
 package com.comcast.ip4s.idna
 
-private[idna] object Idna2008 {
+private[ip4s] object Idna2008 {
 
-  private[this] val dot = "[\u002e\u3002\uff0e\uff61]".r.pattern
+  val DotPattern = "[\u002e\u3002\uff0e\uff61]".r.pattern
 
   def toAscii(domain: String): String = {
-    dot
+    DotPattern
       .split(domain, -1)
       .map { label =>
         if (label.forall(_ < 128)) label
@@ -31,7 +31,7 @@ private[idna] object Idna2008 {
   }
 
   def toUnicode(domain: String): String = {
-    dot
+    DotPattern
       .split(domain, -1)
       .map { label =>
         if (label.startsWith("xn--")) Punycode.decode(label.subSequence(4, label.length), null)

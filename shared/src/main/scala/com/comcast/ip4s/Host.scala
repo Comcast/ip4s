@@ -17,6 +17,7 @@
 package com.comcast.ip4s
 
 import cats.{Order, Show}
+import com.comcast.ip4s.idna.Idna2008
 
 import scala.util.hashing.MurmurHash3
 
@@ -823,20 +824,18 @@ object IDN extends IDNCompanionPlatform {
       }
   }
 
-  private val DotPattern = "[\\.\u002e\u3002\uff0e\uff61]"
-
   /** Constructs a `IDN` from a string. */
   def fromString(value: String): Option[IDN] =
     value.size match {
       case 0 => None
       case _ =>
-        val labels = value
-          .split(DotPattern)
+        val labels = Idna2008.DotPattern
+          .split(value)
           .iterator
           .map(new Label(_))
           .toList
         Option(labels).filterNot(_.isEmpty).flatMap { ls =>
-          val hostname = toAscii(value).flatMap(Hostname.fromString)
+          val hostname = Hostname.fromString(Idna2008.toAscii(value))
           hostname.map(h => new IDN(ls, h, value))
         }
     }
@@ -844,7 +843,7 @@ object IDN extends IDNCompanionPlatform {
   /** Converts the supplied (ASCII) hostname in to an IDN. */
   def fromHostname(hostname: Hostname): IDN = {
     val labels =
-      hostname.labels.map(l => new Label(toUnicode(l.toString)))
+      hostname.labels.map(l => new Label(Idna2008.toUnicode(l.toString)))
     new IDN(labels, hostname, labels.toList.mkString("."))
   }
 
