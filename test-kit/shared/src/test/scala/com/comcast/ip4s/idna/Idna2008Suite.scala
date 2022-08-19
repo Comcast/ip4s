@@ -116,10 +116,12 @@ class Idna2008Suite extends BaseTestSuite {
   }
 
   group("toUnicode") {
-    testData.collect { case TestCase(decoded, Some(encoded)) =>
-      test(encoded) {
-        assertEquals(Idna2008.toUnicode(encoded), decoded.replaceAll("[\u002e\u3002\uff0e\uff61]", "."))
-      }
+    testData.foreach {
+      case TestCase(decoded, Some(encoded)) =>
+        test(encoded) {
+          assertEquals(Idna2008.toUnicode(encoded), decoded.replaceAll("[\u002e\u3002\uff0e\uff61]", "."))
+        }
+      case _ => ()
     }
   }
 
