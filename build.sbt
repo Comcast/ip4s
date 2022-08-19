@@ -58,7 +58,6 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
 lazy val testKitJVM = testKit.jvm
 lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
-  .enablePlugins(ScalaJSBundlerPlugin)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .in(file("."))
@@ -86,10 +85,8 @@ lazy val coreJVM = core.jvm.settings(
 
 lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
-  .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    Compile / npmDependencies += "punycode" -> "2.1.1"
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
 
 lazy val docs = project
