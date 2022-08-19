@@ -21,8 +21,11 @@ import cats.syntax.all._
 
 import scala.util.hashing.MurmurHash3
 
+// annoying bincompat shim
+private[ip4s] trait HostPlatform
+
 /** ADT representing either an `IpAddress`, `Hostname`, or `IDN`. */
-sealed trait Host extends Ordered[Host] {
+sealed trait Host extends HostPlatform with Ordered[Host] {
 
   def compare(that: Host): Int =
     this match {
