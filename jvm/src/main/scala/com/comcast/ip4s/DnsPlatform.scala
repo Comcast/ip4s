@@ -42,13 +42,18 @@ private[ip4s] trait DnsCompanionPlatform {
         }
       }
 
-    def reverse(address: IpAddress): F[Hostname] =
+    def reverse(address: IpAddress): F[Hostname] = {
+      val inetAddress = address.toInetAddress
       F.blocking {
-        address.toInetAddress.getCanonicalHostName
+        inetAddress.getCanonicalHostName
       } flatMap { hn =>
-        // getCanonicalHostName returns the IP address as a string on failure
-        Hostname.fromString(hn).liftTo[F](new UnknownHostException(address.toString))
+        (if (hn == inetAddress.getHostAddress)
+           None // getCanonicalHostName returns the IP address as a string on failure
+         else
+           Hostname.fromString(hn))
+          .liftTo[F](new UnknownHostException(address.toString))
       }
+    }
 
     def reverseOption(address: IpAddress): F[Option[Hostname]] =
       reverse(address).map(_.some).recover { case _: UnknownHostException => None }

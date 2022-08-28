@@ -35,7 +35,7 @@ private[ip4s] trait DnsCompanionPlatform {
         }
         .adaptError {
           case ex @ js.JavaScriptException(error: js.Error) if error.message.contains("ENOTFOUND") =>
-            new JavaScriptUnknownHostException(hostname.toString, ex)
+            new JavaScriptUnknownHostException(s"$hostname: Name or service not known", ex)
         }
 
     def resolveOption(hostname: Hostname): F[Option[IpAddress]] =
