@@ -46,4 +46,14 @@ class DnsTest extends CatsEffectSuite {
     assertIO(Dns[IO].loopback.map(_.some), IpAddress.fromString("127.0.0.1"))
   }
 
+  test("resolve unknown host") {
+    Dns[IO]
+      .resolve(host"not.example.com")
+      .interceptMessage[UnknownHostException]("not.example.com: Name or service not known")
+  }
+
+  test("reverse unknown ip") {
+    Dns[IO].reverse(ip"240.0.0.0").interceptMessage[UnknownHostException]("240.0.0.0")
+  }
+
 }
