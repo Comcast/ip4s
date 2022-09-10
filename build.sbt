@@ -84,7 +84,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .nativeSettings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "idna4s-core" % "0.0-ec440ea",
+      "org.typelevel" %%% "idna4s-core" % "0.0-ec440ea"
     )
   )
 
