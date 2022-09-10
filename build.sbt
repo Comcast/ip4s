@@ -82,6 +82,11 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.scalacheck" %%% "scalacheck" % "1.16.0" % Test
     )
   )
+  .nativeSettings(
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "idna4s-core" % "0.0-ec440ea",
+    )
+  )
 
 lazy val coreJVM = core.jvm.settings(
   doctestIgnoreRegex := Some(".*Literals.scala")

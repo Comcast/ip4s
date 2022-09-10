@@ -38,11 +38,8 @@
  */
 
 package com.comcast.ip4s
-package idna
 
-import scala.util.Try
-
-class Idna2008Suite extends BaseTestSuite {
+class IdnaSuite extends BaseTestSuite {
 
   case class TestCase(decoded: String, encoded: Option[String])
   object TestCase {
@@ -110,7 +107,7 @@ class Idna2008Suite extends BaseTestSuite {
   group("toAscii") {
     testData.foreach { case TestCase(decoded, encoded) =>
       test(decoded) {
-        assertEquals(Try(Idna2008.toAscii(decoded)).toOption, encoded)
+        assertEquals(IDN.toAscii(decoded), encoded)
       }
     }
   }
@@ -119,7 +116,7 @@ class Idna2008Suite extends BaseTestSuite {
     testData.foreach {
       case TestCase(decoded, Some(encoded)) =>
         test(encoded) {
-          assertEquals(Idna2008.toUnicode(encoded), decoded.replaceAll("[\u002e\u3002\uff0e\uff61]", "."))
+          assertEquals(IDN.toUnicode(encoded), decoded.replaceAll("[\u002e\u3002\uff0e\uff61]", "."))
         }
       case _ => ()
     }

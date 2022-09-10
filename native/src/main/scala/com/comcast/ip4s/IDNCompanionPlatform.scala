@@ -16,14 +16,32 @@
 
 package com.comcast.ip4s
 
-import com.comcast.ip4s.idna.Idna2008
-
-import scala.util.Try
+import org.typelevel.idna4s.core.bootstring.Bootstring
+import org.typelevel.idna4s.core.bootstring.BootstringParams.PunycodeParams
+import cats.syntax.all._
 
 private[ip4s] trait IDNCompanionPlatform {
+
+  private[this] val DotPattern = "[\u002e\u3002\uff0e\uff61]".r.pattern
+
   private[ip4s] def toAscii(value: String): Option[String] =
-    Try(Idna2008.toAscii(value)).toOption
+    DotPattern
+      .split(value, -1)
+      .toList
+      .traverse { label =>
+        if (label.forall(_ < 128)) Some(label)
+        else Bootstring.encodeRaw(PunycodeParams)(label).toOption.map("xn--" + _)
+      }
+      .map(_.mkString("."))
 
   private[ip4s] def toUnicode(value: String): String =
-    Idna2008.toAscii(value)
+    DotPattern
+      .split(value, -1)
+      .toList
+      .traverse { label =>
+        if (label.startsWith("xn--")) Bootstring.decodeRaw(PunycodeParams)(label.substring(4, label.length))
+        else Right(label)
+      }
+      .map(_.mkString("."))
+      .fold(e => throw new IllegalArgumentException(e), identity[String](_))
 }
