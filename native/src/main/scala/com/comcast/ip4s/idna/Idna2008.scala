@@ -14,16 +14,30 @@
  * limitations under the License.
  */
 
-package com.comcast.ip4s
+package com.comcast.ip4s.idna
 
-import com.comcast.ip4s.idna.Idna2008
+private[ip4s] object Idna2008 {
 
-import scala.util.Try
+  val DotPattern = "[\u002e\u3002\uff0e\uff61]".r.pattern
 
-private[ip4s] trait IDNCompanionPlatform {
-  private[ip4s] def toAscii(value: String): Option[String] =
-    Try(Idna2008.toAscii(value)).toOption
+  def toAscii(domain: String): String = {
+    DotPattern
+      .split(domain, -1)
+      .map { label =>
+        if (label.forall(_ < 128)) label
+        else "xn--" + Punycode.encode(label, null)
+      }
+      .mkString(".")
+  }
 
-  private[ip4s] def toUnicode(value: String): String =
-    Idna2008.toAscii(value)
+  def toUnicode(domain: String): String = {
+    DotPattern
+      .split(domain, -1)
+      .map { label =>
+        if (label.startsWith("xn--")) Punycode.decode(label.subSequence(4, label.length), null)
+        else label
+      }
+      .mkString(".")
+  }
+
 }

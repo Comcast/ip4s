@@ -35,8 +35,6 @@ ThisBuild / mimaBinaryIssueFilters ++= Seq(
 
 lazy val root = tlCrossRootProject.aggregate(core, testKit)
 
-ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshots")
-
 lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("./test-kit"))
   .settings(commonSettings)
@@ -48,8 +46,8 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.scalacheck" %%% "scalacheck" % "1.16.0",
       "org.scalameta" %%% "munit-scalacheck" % "1.0.0-M6" % Test,
-      "com.armanbilge" %%% "cats-effect" % "3.4-f28b163-SNAPSHOT" % Test,
-      "com.armanbilge" %%% "munit-cats-effect" % "2.0-4e051ab-SNAPSHOT" % Test
+      "org.typelevel" %%% "cats-effect" % "3.3.14-1-5d11fe9" % Test,
+      "org.typelevel" %%% "munit-cats-effect" % "2.0-5e03bfc" % Test
     )
   )
   .jvmSettings(
@@ -79,7 +77,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "literally" % "1.1.0",
       "org.typelevel" %%% "cats-core" % "2.8.0",
-      "com.armanbilge" %%% "cats-effect-kernel" % "3.4-f28b163-SNAPSHOT",
+      "org.typelevel" %%% "cats-effect-kernel" % "3.3.14-1-5d11fe9",
       "org.scalacheck" %%% "scalacheck" % "1.16.0" % Test
     )
   )
@@ -90,10 +88,8 @@ lazy val coreJVM = core.jvm.settings(
 
 lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
-  .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    Compile / npmDependencies += "punycode" -> "2.1.1"
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
 
 lazy val coreNative = core.native
