@@ -61,6 +61,7 @@ lazy val testKitJS = testKit.js
   .enablePlugins(ScalaJSBundlerPlugin)
 lazy val testKitNative = testKit.js
   .disablePlugins(DoctestPlugin)
+  .settings(commonNativeSettings)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("."))
@@ -94,6 +95,7 @@ lazy val coreJS = core.js
 
 lazy val coreNative = core.native
   .disablePlugins(DoctestPlugin)
+  .settings(commonNativeSettings)
 
 lazy val docs = project
   .in(file("docs"))
@@ -111,4 +113,8 @@ lazy val commonSettings = Seq(
     val base = baseDirectory.value / ".."
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   }
+)
+
+lazy val commonNativeSettings = Seq(
+  tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "3.1.4").toMap
 )
