@@ -94,7 +94,9 @@ lazy val coreJVM = core.jvm.settings(
 
 lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
+  .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
+    Compile / npmDependencies += "punycode" -> "2.1.1",
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
 
