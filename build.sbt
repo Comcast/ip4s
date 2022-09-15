@@ -15,7 +15,7 @@ ThisBuild / developers ++= List(
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
-ThisBuild / crossScalaVersions := List("2.12.16", "2.13.8", "3.2.0")
+ThisBuild / crossScalaVersions := List("2.12.16", "2.13.8", "3.1.3")
 
 ThisBuild / tlVersionIntroduced := Map("3" -> "3.0.3")
 
@@ -35,7 +35,7 @@ ThisBuild / mimaBinaryIssueFilters ++= Seq(
 
 lazy val root = tlCrossRootProject.aggregate(core, testKit)
 
-lazy val testKit = crossProject(JVMPlatform, JSPlatform)
+lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("./test-kit"))
   .settings(commonSettings)
   .settings(
@@ -45,9 +45,9 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalacheck" %%% "scalacheck" % "1.16.0",
-      "org.scalameta" %%% "munit-scalacheck" % "0.7.29" % Test,
+      "org.scalameta" %%% "munit-scalacheck" % "1.0.0-M6" % Test,
       "org.typelevel" %%% "cats-effect" % "3.3.14" % Test,
-      "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
+      "org.typelevel" %%% "munit-cats-effect" % "2.0.0-M3" % Test
     )
   )
   .jvmSettings(
@@ -59,8 +59,11 @@ lazy val testKitJVM = testKit.jvm
 lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
+lazy val testKitNative = testKit.js
+  .disablePlugins(DoctestPlugin)
+  .settings(commonNativeSettings)
 
-lazy val core = crossProject(JVMPlatform, JSPlatform)
+lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("."))
   .settings(commonSettings)
   .settings(
@@ -79,6 +82,11 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
       "org.scalacheck" %%% "scalacheck" % "1.16.0" % Test
     )
   )
+  .nativeSettings(
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "idna4s-core" % "0.0.1"
+    )
+  )
 
 lazy val coreJVM = core.jvm.settings(
   doctestIgnoreRegex := Some(".*Literals.scala")
@@ -88,9 +96,13 @@ lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    Compile / npmDependencies += "punycode" -> "2.1.1"
+    Compile / npmDependencies += "punycode" -> "2.1.1",
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
+
+lazy val coreNative = core.native
+  .disablePlugins(DoctestPlugin)
+  .settings(commonNativeSettings)
 
 lazy val docs = project
   .in(file("docs"))
@@ -108,4 +120,8 @@ lazy val commonSettings = Seq(
     val base = baseDirectory.value / ".."
     (base / "NOTICE") +: (base / "LICENSE") +: (base / "CONTRIBUTING") +: ((base / "licenses") * "LICENSE_*").get
   }
+)
+
+lazy val commonNativeSettings = Seq(
+  tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "3.1.4").toMap
 )

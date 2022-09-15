@@ -20,6 +20,7 @@ import org.scalacheck.Prop.forAll
 import Arbitraries._
 
 class IDNTest extends BaseTestSuite {
+
   test("support any hostname") {
     forAll { (h: Hostname) =>
       val i = IDN.fromHostname(h)
