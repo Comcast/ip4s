@@ -39,8 +39,8 @@ final class Port private (val value: Int) extends Product with Serializable with
 }
 
 object Port {
-  val MinValue: Int = 0
-  val MaxValue: Int = 65535
+  final val MinValue = 0
+  final val MaxValue = 65535
 
   def fromInt(value: Int): Option[Port] =
     if (value >= MinValue && value <= MaxValue) Some(new Port(value)) else None
