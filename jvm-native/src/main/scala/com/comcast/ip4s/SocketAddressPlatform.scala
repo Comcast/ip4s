@@ -29,8 +29,11 @@ private[ip4s] trait SocketAddressPlatform[+A <: Host] {
 }
 
 private[ip4s] trait SocketAddressCompanionPlatform {
+  // bincompat
   @deprecated("resolve is now defined on SocketAddress", "3.2.1")
-  implicit class ResolveOps(private val self: SocketAddress[Host]) {
+  def ResolveOps(self: SocketAddress[Host]): ResolveOps = new ResolveOps(self)
+  @deprecated("resolve is now defined on SocketAddress", "3.2.1")
+  class ResolveOps(private val self: SocketAddress[Host]) {
 
     /** Resolves this `SocketAddress[Hostname]` to a `SocketAddress[IpAddress]`. */
     def resolve[F[_]: Dns: Applicative]: F[SocketAddress[IpAddress]] = self.resolve
