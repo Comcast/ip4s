@@ -30,11 +30,7 @@ final case class SocketAddress[+A <: Host](host: A, port: Port) extends SocketAd
 
   /** Resolves this `SocketAddress[Hostname]` to a `SocketAddress[IpAddress]`. */
   final def resolve[F[_]: Dns: Applicative]: F[SocketAddress[IpAddress]] =
-    host match {
-      case ip: IpAddress      => Applicative[F].pure(SocketAddress(ip, port))
-      case hostname: Hostname => Dns[F].resolve(hostname).map(ip => SocketAddress(ip, port))
-      case idn: IDN           => Dns[F].resolve(idn.hostname).map(ip => SocketAddress(ip, port))
-    }
+    host.resolve.map(SocketAddress(_, port))
 }
 
 object SocketAddress extends SocketAddressCompanionPlatform {
