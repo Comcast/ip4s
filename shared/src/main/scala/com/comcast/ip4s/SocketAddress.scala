@@ -16,7 +16,8 @@
 
 package com.comcast.ip4s
 
-import cats.{Order, Show}
+import cats.{Applicative, Order, Show}
+import cats.syntax.all._
 
 /** An IP address of the specified type and a port number. Used to describe the source or destination of a socket.
   */
@@ -26,6 +27,10 @@ final case class SocketAddress[+A <: Host](host: A, port: Port) extends SocketAd
       case _: Ipv6Address => s"[$host]:$port"
       case _              => s"$host:$port"
     }
+
+  /** Resolves this `SocketAddress[Hostname]` to a `SocketAddress[IpAddress]`. */
+  final def resolve[F[_]: Dns: Applicative]: F[SocketAddress[IpAddress]] =
+    host.resolve.map(SocketAddress(_, port))
 }
 
 object SocketAddress extends SocketAddressCompanionPlatform {
