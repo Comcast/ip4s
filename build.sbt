@@ -15,7 +15,7 @@ ThisBuild / developers ++= List(
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
-ThisBuild / crossScalaVersions := List("2.12.16", "2.13.8", "3.1.3")
+ThisBuild / crossScalaVersions := List("2.12.17", "2.13.8", "3.1.3")
 
 ThisBuild / tlVersionIntroduced := Map("3" -> "3.0.3")
 
@@ -44,7 +44,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.16.0",
+      "org.scalacheck" %%% "scalacheck" % "1.17.0",
       "org.scalameta" %%% "munit-scalacheck" % "1.0.0-M6" % Test,
       "org.typelevel" %%% "cats-effect" % "3.3.14" % Test,
       "org.typelevel" %%% "munit-cats-effect" % "2.0.0-M3" % Test
@@ -79,7 +79,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.typelevel" %%% "literally" % "1.1.0",
       "org.typelevel" %%% "cats-core" % "2.8.0",
       "org.typelevel" %%% "cats-effect-kernel" % "3.3.14",
-      "org.scalacheck" %%% "scalacheck" % "1.16.0" % Test
+      "org.scalacheck" %%% "scalacheck" % "1.17.0" % Test
     )
   )
   .nativeSettings(
