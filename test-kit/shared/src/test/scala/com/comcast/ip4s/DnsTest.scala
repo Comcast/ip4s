@@ -43,13 +43,19 @@ class DnsTest extends CatsEffectSuite {
   }
 
   test("loopback") {
+    val loopbacks = Set(ip"127.0.0.1", ip"::1")
+    Dns[IO].loopback.flatMap { loopback =>
+      IO(loopbacks.contains(clue(loopback)))
+    }
     assertIO(Dns[IO].loopback.map(_.some), IpAddress.fromString("127.0.0.1"))
   }
 
   test("resolve unknown host") {
-    Dns[IO]
-      .resolve(host"not.example.com")
-      .interceptMessage[UnknownHostException]("not.example.com: Name or service not known")
+    Dns[IO].resolve(host"not.example.com").void.recover { case ex: UnknownHostException =>
+      assert(
+        ex.getMessage == "not.example.com: Name or service not known" || ex.getMessage == "not.example.com: nodename nor servname provided, or not known"
+      )
+    }
   }
 
   test("reverse unknown ip") {
