@@ -16,6 +16,8 @@
 
 package com.comcast.ip4s
 
+import cats.effect.IO
+
 /** Capability for an effect `F[_]` which can do DNS lookups.
   *
   * An instance is available for any effect which has a `Sync` instance on JVM and `Async` on Node.js.
@@ -66,4 +68,6 @@ private[ip4s] trait UnsealedDns[F[_]] extends Dns[F]
 
 object Dns extends DnsCompanionPlatform {
   def apply[F[_]](implicit F: Dns[F]): F.type = F
+
+  implicit def forIO: Dns[IO] = forAsync[IO]
 }

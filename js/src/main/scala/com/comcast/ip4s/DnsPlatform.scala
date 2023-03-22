@@ -24,7 +24,7 @@ import scala.scalajs.js.|
 import scala.scalajs.js.annotation.JSImport
 
 private[ip4s] trait DnsCompanionPlatform {
-  implicit def forAsync[F[_]](implicit F: Async[F]): Dns[F] = new UnsealedDns[F] {
+  def forAsync[F[_]](implicit F: Async[F]): Dns[F] = new UnsealedDns[F] {
     def resolve(hostname: Hostname): F[IpAddress] =
       F.fromPromise(F.delay(dnsPromises.lookup(hostname.toString, LookupOptions(all = false))))
         .flatMap { address =>

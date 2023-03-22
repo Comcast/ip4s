@@ -1,6 +1,6 @@
 import com.typesafe.tools.mima.core._
 
-ThisBuild / tlBaseVersion := "3.2"
+ThisBuild / tlBaseVersion := "3.3"
 
 ThisBuild / organization := "com.comcast"
 ThisBuild / organizationName := "Comcast Cable Communications Management, LLC"
@@ -46,7 +46,6 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.scalacheck" %%% "scalacheck" % "1.17.0",
       "org.scalameta" %%% "munit-scalacheck" % "1.0.0-M7" % Test,
-      "org.typelevel" %%% "cats-effect" % "3.4.8" % Test,
       "org.typelevel" %%% "munit-cats-effect" % "2.0.0-M3" % Test
     )
   )
@@ -78,7 +77,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "literally" % "1.1.0",
       "org.typelevel" %%% "cats-core" % "2.9.0",
-      "org.typelevel" %%% "cats-effect-kernel" % "3.4.8",
+      "org.typelevel" %%% "cats-effect" % "3.4.8",
       "org.scalacheck" %%% "scalacheck" % "1.17.0" % Test
     )
   )
