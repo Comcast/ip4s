@@ -16,13 +16,16 @@
 
 package com.comcast.ip4s
 
+import cats.effect.kernel.Async
 import cats.effect.kernel.Sync
 import cats.syntax.all._
 
 import java.net.InetAddress
 
 private[ip4s] trait DnsCompanionPlatform {
-  implicit def forSync[F[_]](implicit F: Sync[F]): Dns[F] = new UnsealedDns[F] {
+  def forAsync[F[_]: Async]: Dns[F] = forSync // alias for cross-compiling w/ JS
+
+  def forSync[F[_]](implicit F: Sync[F]): Dns[F] = new UnsealedDns[F] {
     def resolve(hostname: Hostname): F[IpAddress] =
       F.blocking {
         val addr = InetAddress.getByName(hostname.toString)
