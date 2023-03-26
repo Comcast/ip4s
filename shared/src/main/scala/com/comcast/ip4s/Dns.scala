@@ -17,6 +17,8 @@
 package com.comcast.ip4s
 
 import cats.effect.IO
+import cats.effect.LiftIO
+import cats.effect.kernel.Async
 
 /** Capability for an effect `F[_]` which can do DNS lookups.
   *
@@ -69,5 +71,10 @@ private[ip4s] trait UnsealedDns[F[_]] extends Dns[F]
 object Dns extends DnsCompanionPlatform {
   def apply[F[_]](implicit F: Dns[F]): F.type = F
 
-  implicit def forIO: Dns[IO] = forAsync[IO]
+  implicit def forLiftIO[F[_]: Async: LiftIO]: Dns[F] = {
+    val _ = LiftIO[F]
+    forAsync
+  }
+
+  def forIO: Dns[IO] = forLiftIO
 }
