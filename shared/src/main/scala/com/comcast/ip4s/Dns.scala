@@ -16,13 +16,17 @@
 
 package com.comcast.ip4s
 
+import cats.~>
+import cats.Functor
+import cats.data.EitherT
+import cats.data.Kleisli
 import cats.effect.IO
 
 /** Capability for an effect `F[_]` which can do DNS lookups.
   *
   * An instance is available for any effect which has a `Sync` instance on JVM and `Async` on Node.js.
   */
-sealed trait Dns[F[_]] {
+sealed trait Dns[F[_]] { outer =>
 
   /** Resolves the supplied hostname to an ip address using the platform DNS resolver.
     *
@@ -62,6 +66,17 @@ sealed trait Dns[F[_]] {
 
   /** Gets an IP address representing the loopback interface. */
   def loopback: F[IpAddress]
+
+  /** Translates effect type from `F` to `G` using the supplied `FunctionK` */
+  final def mapK[G[_]](fk: F ~> G): Dns[G] = new Dns[G] {
+    def resolve(hostname: Hostname) = fk(outer.resolve(hostname))
+    def resolveOption(hostname: Hostname) = fk(outer.resolveOption(hostname))
+    def resolveAll(hostname: Hostname) = fk(outer.resolveAll(hostname))
+    def reverse(address: IpAddress) = fk(outer.reverse(address))
+    def reverseOption(address: IpAddress) = fk(outer.reverseOption(address))
+    def reverseAll(address: IpAddress) = fk(outer.reverseAll(address))
+    def loopback = fk(outer.loopback)
+  }
 }
 
 private[ip4s] trait UnsealedDns[F[_]] extends Dns[F]
@@ -70,4 +85,11 @@ object Dns extends DnsCompanionPlatform {
   def apply[F[_]](implicit F: Dns[F]): F.type = F
 
   implicit def forIO: Dns[IO] = forAsync[IO]
+
+  implicit def forEitherT[F[_]: Functor, A](implicit dns: Dns[F]): Dns[EitherT[F, A, *]] =
+    dns.mapK(EitherT.liftK)
+
+  implicit def forKleisli[F[_], A](implicit dns: Dns[F]): Dns[Kleisli[F, A, *]] =
+    dns.mapK(Kleisli.liftK)
+
 }
