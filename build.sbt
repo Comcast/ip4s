@@ -15,7 +15,7 @@ ThisBuild / developers ++= List(
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
-ThisBuild / crossScalaVersions := List("2.12.18", "2.13.10", "3.2.2")
+ThisBuild / crossScalaVersions := List("2.12.18", "2.13.11", "3.2.2")
 
 ThisBuild / tlVersionIntroduced := Map("3" -> "3.0.3")
 
@@ -50,7 +50,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     )
   )
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "31.1-jre" % "test"
+    libraryDependencies += "com.google.guava" % "guava" % "32.1.1-jre" % "test"
   )
   .dependsOn(core % "compile->compile")
 
@@ -77,7 +77,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "literally" % "1.1.0",
       "org.typelevel" %%% "cats-core" % "2.9.0",
-      "org.typelevel" %%% "cats-effect" % "3.4.10",
+      "org.typelevel" %%% "cats-effect" % "3.4.11",
       "org.scalacheck" %%% "scalacheck" % "1.17.0" % Test
     )
   )
@@ -111,7 +111,7 @@ lazy val docs = project
     mdocIn := baseDirectory.value / "src",
     mdocOut := baseDirectory.value / "../docs",
     githubWorkflowArtifactUpload := false,
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.4.10"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.4.11"
   )
 
 lazy val commonSettings = Seq(
