@@ -45,6 +45,9 @@ object Port {
   def fromInt(value: Int): Option[Port] =
     if (value >= MinValue && value <= MaxValue) Some(new Port(value)) else None
 
+  def unsafeFromInt(value: Int): Port =
+    new Port(value)
+
   def fromString(value: String): Option[Port] =
     Try(value.toInt).toOption.flatMap(fromInt)
 
