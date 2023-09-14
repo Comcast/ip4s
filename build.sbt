@@ -50,7 +50,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     )
   )
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "32.1.1-jre" % "test"
+    libraryDependencies += "com.google.guava" % "guava" % "32.1.2-jre" % "test"
   )
   .dependsOn(core % "compile->compile")
 
@@ -77,7 +77,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "literally" % "1.1.0",
       "org.typelevel" %%% "cats-core" % "2.10.0",
-      "org.typelevel" %%% "cats-effect" % "3.4.11",
+      "org.typelevel" %%% "cats-effect" % "3.5.1",
       "org.scalacheck" %%% "scalacheck" % "1.17.0" % Test
     )
   )
@@ -111,7 +111,7 @@ lazy val docs = project
     mdocIn := baseDirectory.value / "src",
     mdocOut := baseDirectory.value / "../docs",
     githubWorkflowArtifactUpload := false,
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.4.11"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.5.1"
   )
 
 lazy val commonSettings = Seq(
