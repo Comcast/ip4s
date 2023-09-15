@@ -4,6 +4,7 @@ ThisBuild / tlBaseVersion := "3.3"
 
 ThisBuild / organization := "com.comcast"
 ThisBuild / organizationName := "Comcast Cable Communications Management, LLC"
+ThisBuild / tlSonatypeUseLegacyHost := true
 
 ThisBuild / startYear := Some(2018)
 
