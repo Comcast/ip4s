@@ -22,7 +22,7 @@ import org.typelevel.literally.Literally
 object Literals {
 
   object ip extends Literally[IpAddress] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[IpAddress]] = {
       import c.universe._
       IpAddress.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.IpAddress.fromString($s).get"))
@@ -33,7 +33,7 @@ object Literals {
   }
 
   object ipv4 extends Literally[Ipv4Address] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[Ipv4Address]] = {
       import c.universe._
       Ipv4Address.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv4Address.fromString($s).get"))
@@ -44,7 +44,7 @@ object Literals {
   }
 
   object ipv6 extends Literally[Ipv6Address] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[Ipv6Address]] = {
       import c.universe._
       Ipv6Address.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv6Address.fromString($s).get"))
@@ -55,7 +55,7 @@ object Literals {
   }
 
   object mip extends Literally[Multicast[IpAddress]] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[Multicast[IpAddress]]] = {
       import c.universe._
       IpAddress.fromString(s).flatMap(_.asMulticast) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.IpAddress.fromString($s).get.asMulticast.get"))
@@ -66,7 +66,7 @@ object Literals {
   }
 
   object mipv4 extends Literally[Multicast[Ipv4Address]] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[Multicast[Ipv4Address]]] = {
       import c.universe._
       Ipv4Address.fromString(s).flatMap(_.asMulticast) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv4Address.fromString($s).get.asMulticast.get"))
@@ -77,7 +77,7 @@ object Literals {
   }
 
   object mipv6 extends Literally[Multicast[Ipv6Address]] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[Multicast[Ipv6Address]]] = {
       import c.universe._
       Ipv6Address.fromString(s).flatMap(_.asMulticast) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Ipv6Address.fromString($s).get.asMulticast.get"))
@@ -88,7 +88,7 @@ object Literals {
   }
 
   object ssmip extends Literally[SourceSpecificMulticast.Strict[IpAddress]] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[SourceSpecificMulticast.Strict[IpAddress]]] = {
       import c.universe._
       IpAddress.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
         case Some(_) =>
@@ -100,7 +100,7 @@ object Literals {
   }
 
   object ssmipv4 extends Literally[SourceSpecificMulticast.Strict[Ipv4Address]] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[SourceSpecificMulticast.Strict[Ipv4Address]]] = {
       import c.universe._
       Ipv4Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
         case Some(_) =>
@@ -112,7 +112,7 @@ object Literals {
   }
 
   object ssmipv6 extends Literally[SourceSpecificMulticast.Strict[Ipv6Address]] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[SourceSpecificMulticast.Strict[Ipv6Address]]] = {
       import c.universe._
       Ipv6Address.fromString(s).flatMap(_.asSourceSpecificMulticast) match {
         case Some(_) =>
@@ -124,7 +124,7 @@ object Literals {
   }
 
   object port extends Literally[Port] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[Port]] = {
       import c.universe._
       scala.util.Try(s.toInt).toOption.flatMap(Port.fromInt) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Port.fromInt($s.toInt).get"))
@@ -135,7 +135,7 @@ object Literals {
   }
 
   object hostname extends Literally[Hostname] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[Hostname]] = {
       import c.universe._
       Hostname.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.Hostname.fromString($s).get"))
@@ -146,7 +146,7 @@ object Literals {
   }
 
   object idn extends Literally[IDN] {
-    def validate(c: Context)(s: String) = {
+    def validate(c: Context)(s: String): Either[String, c.Expr[IDN]] = {
       import c.universe._
       IDN.fromString(s) match {
         case Some(_) => Right(c.Expr(q"_root_.com.comcast.ip4s.IDN.fromString($s).get"))
