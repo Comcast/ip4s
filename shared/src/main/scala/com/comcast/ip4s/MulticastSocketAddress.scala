@@ -35,14 +35,14 @@ final case class MulticastSocketAddress[J[+x <: IpAddress] <: MulticastJoin[x], 
 
   override def toString: String = {
     val (source, group) = join.sourceAndGroup
-    group.address match {
-      case _: Ipv4Address => s"$join:$port"
-      case _: Ipv6Address =>
+    group.address.fold(
+      _ => s"$join:$port",
+      _ =>
         source match {
           case None      => s"[${group.address}]:$port"
           case Some(src) => s"[$src]@[${group.address}]:$port"
         }
-    }
+    )
   }
 }
 

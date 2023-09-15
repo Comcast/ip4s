@@ -19,6 +19,7 @@ package com.comcast.ip4s
 import scalajs._
 import scala.scalajs.js.annotation._
 import scala.util.Try
+import org.typelevel.scalaccompat.annotation._
 
 private[ip4s] trait IDNCompanionPlatform {
   private[ip4s] def toAscii(value: String): Option[String] =
@@ -30,6 +31,7 @@ private[ip4s] trait IDNCompanionPlatform {
 
 @js.native
 @JSImport("punycode", JSImport.Default)
+@nowarn212("cat=unused")
 private[ip4s] object Punycode extends js.Any {
   def toASCII(value: String): String = js.native
 
