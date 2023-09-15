@@ -23,6 +23,8 @@ import scala.scalajs.js
 import scala.scalajs.js.|
 import scala.scalajs.js.annotation.JSImport
 
+import org.typelevel.scalaccompat.annotation._
+
 private[ip4s] trait DnsCompanionPlatform {
   def forAsync[F[_]](implicit F: Async[F]): Dns[F] = new UnsealedDns[F] {
     def resolve(hostname: Hostname): F[IpAddress] =
@@ -85,6 +87,7 @@ private[ip4s] trait DnsCompanionPlatform {
 
 @js.native
 @JSImport("dns", "promises")
+@nowarn212("cat=unused")
 private[ip4s] object dnsPromises extends js.Any {
 
   def lookup(hostname: String, options: LookupOptions): js.Promise[LookupResult | js.Array[LookupResult]] = js.native
