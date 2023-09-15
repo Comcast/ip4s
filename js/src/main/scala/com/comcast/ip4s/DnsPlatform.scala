@@ -20,7 +20,7 @@ import cats.effect.kernel.Async
 import cats.syntax.all._
 
 import scala.scalajs.js
-import scala.scalajs.js.|
+import scala.scalajs.js._
 import scala.scalajs.js.annotation.JSImport
 
 import org.typelevel.scalaccompat.annotation._
