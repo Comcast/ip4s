@@ -16,7 +16,6 @@
 
 package com.comcast.ip4s
 
-import scala.util.Try
 import scala.util.hashing.MurmurHash3
 
 import cats.{Order, Show}
@@ -149,7 +148,8 @@ object Cidr {
       case CidrPattern(addrStr, prefixBitsStr) =>
         for {
           addr <- parseAddress(addrStr)
-          prefixBits <- Try(prefixBitsStr.toInt).toOption
+          maxPrefixBits = addr.fold(_ => 32, _ => 128)
+          prefixBits <- prefixBitsStr.toIntOption if prefixBits >= 0 && prefixBits <= maxPrefixBits
         } yield Cidr(addr, prefixBits)
       case _ => None
     }
