@@ -20,6 +20,7 @@ import scala.util.Try
 import scala.util.hashing.MurmurHash3
 
 import cats.{Order, Show}
+import com.comcast.ip4s.Cidr.Strict
 
 /** Classless Inter-Domain Routing address, which represents an IP address and its routing prefix.
   *
@@ -28,9 +29,16 @@ import cats.{Order, Show}
   * @param prefixBits
   *   number of leading 1s in the routing mask
   */
-final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) extends Product with Serializable {
+sealed class Cidr[+A <: IpAddress] protected (val address: A, val prefixBits: Int) extends Product with Serializable {
   def copy[AA >: A <: IpAddress](address: AA = this.address, prefixBits: Int = this.prefixBits): Cidr[AA] =
     Cidr[AA](address, prefixBits)
+
+  /** Returns a normalized cidr range, where the address is truncated to the prefix, so that the returned range
+    * is (and prints as) a spec-valid cidr range, with no bits outside the routing mask set.
+    *
+    * @return a normalized cidr range
+    */
+  def normalized: Strict[A] = Cidr.Strict(this)
 
   /** Returns the routing mask.
     *
@@ -117,6 +125,23 @@ final class Cidr[+A <: IpAddress] private (val address: A, val prefixBits: Int) 
 }
 
 object Cidr {
+
+  /** A normalized cidr range, of which the address is identical to the prefix.
+    *
+    * This means the address will never have any bits set outside the prefix. For example, a range
+    * such as 192.168.0.1/31 is not allowed.
+    */
+  final class Strict[+A <: IpAddress] private (override val prefix: A, override val prefixBits: Int)
+      extends Cidr[A](prefix, prefixBits) {
+    override def normalized: this.type = this
+  }
+
+  object Strict {
+    def apply[A <: IpAddress](cidr: Cidr[A]): Cidr.Strict[A] = cidr match {
+      case already: Strict[_] => already.asInstanceOf[Strict[A]]
+      case _                  => new Cidr.Strict(cidr.prefix, cidr.prefixBits)
+    }
+  }
 
   /** Constructs a CIDR from the supplied IP address and prefix bit count. Note if `prefixBits` is less than 0, the
     * built `Cidr` will have `prefixBits` set to 0. Similarly, if `prefixBits` is greater than the bit length of the
