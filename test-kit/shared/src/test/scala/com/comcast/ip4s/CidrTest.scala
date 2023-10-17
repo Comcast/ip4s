@@ -33,4 +33,12 @@ class CidrTest extends BaseTestSuite {
       assertEquals(Cidr.fromIpAndMask(ip, mask), Cidr(ip, prefixBits))
     }
   }
+
+  property("parsing from string: only masks with a valid length return a CIDR") {
+    forAll { (ip: IpAddress, prefixBits: Int) =>
+      val cidr = Cidr.fromString(s"$ip/$prefixBits")
+      val max = ip.fold(_ => 32, _ => 128)
+      assertEquals(cidr.isDefined, (prefixBits <= max && prefixBits >= 0))
+    }
+  }
 }
