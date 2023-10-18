@@ -39,7 +39,9 @@ sealed class Cidr[+A <: IpAddress] protected (val address: A, val prefixBits: In
     * @return a normalized cidr range
     *
     * @example {{{
-    * scala> Cidr(ipv4"10.11.12.13", 8).normalized
+    * scala> val raw = Cidr(ipv4"10.11.12.13", 8)
+    * raw: Cidr[Ipv4Address] = 10.11.12.13/8
+    * scala> raw.normalized
     * res0: Cidr.Strict[Ipv4Address] = 10.0.0.0/8
     * }}}
     */
