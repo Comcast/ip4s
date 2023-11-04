@@ -45,6 +45,10 @@ object Arbitraries {
   implicit def cidrArbitrary[A <: IpAddress](implicit arbIp: Arbitrary[A]): Arbitrary[Cidr[A]] =
     Arbitrary(cidrGenerator(arbIp.arbitrary))
 
+  implicit def cidrStrictArbitrary[A <: IpAddress](implicit arbIp: Arbitrary[A]): Arbitrary[Cidr.Strict[A]] = Arbitrary(
+    cidrGenerator(arbIp.arbitrary).map(_.normalized)
+  )
+
   val portGenerator: Gen[Port] = Gen.chooseNum(0, 65535).map(Port.fromInt(_).get)
 
   implicit val portArbitrary: Arbitrary[Port] = Arbitrary(portGenerator)
