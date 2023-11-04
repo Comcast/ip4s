@@ -138,8 +138,7 @@ object Cidr {
     * This means the address will never have any bits set outside the prefix. For example, a range
     * such as 192.168.0.1/31 is not allowed.
     */
-  final class Strict[+A <: IpAddress] private (address: A, prefixBits: Int)
-      extends Cidr[A](address, prefixBits) {
+  final class Strict[+A <: IpAddress] private (address: A, prefixBits: Int) extends Cidr[A](address, prefixBits) {
     override def normalized: this.type = this
     override def prefix = address
   }
