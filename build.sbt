@@ -25,6 +25,7 @@ ThisBuild / doctestTestFramework := DoctestTestFramework.ScalaCheck
 ThisBuild / initialCommands := "import com.comcast.ip4s._"
 
 ThisBuild / mimaBinaryIssueFilters ++= Seq(
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.IpAddress.toDefaultString"), // #553
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Ipv6Address.toInetAddress"),
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.Dns.*"), // sealed trait
   // Scala 3 (erroneously?) considered Multicast/SourceSpecificMulticast as sum types

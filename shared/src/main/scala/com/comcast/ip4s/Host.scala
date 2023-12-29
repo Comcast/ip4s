@@ -262,10 +262,23 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
   /** Gets the IP address before this address, with underflow from minimum value to the maximum value. */
   def previous: IpAddress
 
+  /** Returns the default/common representation of this address. */
+  protected[this] def toDefaultString: String
+
   /** Converts this address to a string form that is compatible for use in a URI per RFC3986 (namely, IPv6 addresses are
     * rendered in condensed form and surrounded by brackets).
     */
   def toUriString: String
+
+  /** Returns the default/common representation of this address. For IPv4
+    * addresses, returns the dotted decimal representation of the address. For
+    * IPv6 addresses, returns the condensed string representation of the array
+    * per RFC5952.
+    *
+    * This method returns the same result as [[`toUriString`]] except that IPv6
+    * addresses are not surrounded by brackets.
+    */
+  final override def toString: String = toDefaultString
 
   override def equals(other: Any): Boolean =
     other match {
@@ -316,10 +329,10 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
     v4(this).asInstanceOf[this.type]
 
   /** Returns the dotted decimal representation of this address. */
-  override def toString: String =
+  override protected[this] def toDefaultString: String =
     s"${bytes(0) & 0xff}.${bytes(1) & 0xff}.${bytes(2) & 0xff}.${bytes(3) & 0xff}"
 
-  override def toUriString: String = toString
+  override def toUriString: String = toDefaultString
 
   /** Gets the IPv4 address after this address, with overflow from `255.255.255.255` to `0.0.0.0`. */
   override def next: Ipv4Address = Ipv4Address.fromLong(toLong + 1)
@@ -484,7 +497,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
     v6(this).asInstanceOf[this.type]
 
   /** Returns the condensed string representation of the array per RFC5952. */
-  override def toString: String = {
+  override protected[this] def toDefaultString: String = {
     val fields: Array[Int] = new Array[Int](8)
     var condensing = false
     var condensedStart, maxCondensedStart = -1
@@ -572,7 +585,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
     prefix + v4.toString
   }
 
-  override def toUriString: String = s"[$toString]"
+  override def toUriString: String = s"[$toDefaultString]"
 
   /** Gets the IPv6 address after this address, with overflow from `ffff:ffff:....:ffff` to `::`. */
   override def next: Ipv6Address = Ipv6Address.fromBigInt(toBigInt + 1)
