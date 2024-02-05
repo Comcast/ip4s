@@ -131,4 +131,13 @@ class Ipv6AddressTest extends BaseTestSuite {
     assertEquals[Any, Any](addr.asIpv6, Some(addr))
     assertEquals[Any, Any](addr.asIpv4, Some(ip"0.15.0.15"))
   }
+
+  test("isPrivate") {
+    assert(!ipv6"fc00::".previous.isPrivate)
+    assert(ipv6"fc00::".isPrivate)
+    assert(ipv6"fe00::".previous.isPrivate)
+    assert(!ipv6"fe00::".isPrivate)
+    // mapped v4
+    assert(ipv6"::ffff:10.1.1.1".isPrivate)
+  }
 }

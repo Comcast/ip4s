@@ -67,4 +67,21 @@ class Ipv4AddressTest extends BaseTestSuite {
     assertEquals(Ipv4Address.fromString("0.0.0.0").map(_.previous), Ipv4Address.fromString("255.255.255.255"))
     forAll { (ip: Ipv4Address) => assertEquals(ip.previous, Ipv4Address.fromLong(ip.toLong - 1)) }
   }
+
+  test("isPrivate") {
+    assert(!ipv4"10.0.0.0".previous.isPrivate)
+    assert(ipv4"10.0.0.0".isPrivate)
+    assert(ipv4"10.255.255.255".isPrivate)
+    assert(!ipv4"10.255.255.255".next.isPrivate)
+
+    assert(!ipv4"172.16.0.0".previous.isPrivate)
+    assert(ipv4"172.16.0.0".isPrivate)
+    assert(ipv4"172.31.255.255".isPrivate)
+    assert(!ipv4"172.31.255.255".next.isPrivate)
+
+    assert(!ipv4"192.168.0.0".previous.isPrivate)
+    assert(ipv4"192.168.0.0".isPrivate)
+    assert(ipv4"192.168.255.255".isPrivate)
+    assert(!ipv4"192.168.255.255".next.isPrivate)
+  }
 }
