@@ -32,7 +32,10 @@ ThisBuild / mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.Multicast.ordinal"),
   ProblemFilters.exclude[MissingTypesProblem]("com.comcast.ip4s.Multicast$"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.comcast.ip4s.SourceSpecificMulticast.ordinal"),
-  ProblemFilters.exclude[MissingTypesProblem]("com.comcast.ip4s.SourceSpecificMulticast$")
+  ProblemFilters.exclude[MissingTypesProblem]("com.comcast.ip4s.SourceSpecificMulticast$"),
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.IpAddress.isPrivate"), // #562
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.IpAddress.isLoopback"),
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.IpAddress.isLinkLocal")
 )
 
 lazy val root = tlCrossRootProject.aggregate(core, testKit)

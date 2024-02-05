@@ -215,6 +215,15 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
   def asSourceSpecificMulticastLenient: Option[SourceSpecificMulticast[this.type]] =
     SourceSpecificMulticast.fromIpAddressLenient(this)
 
+  /** Returns true if this address is a loopback address. */
+  def isLoopback: Boolean
+
+  /** Returns true if this address is a link local address. */
+  def isLinkLocal: Boolean
+
+  /** Returns true if this address is in a private range. */
+  def isPrivate: Boolean
+
   /** Narrows this address to an Ipv4Address if that is the underlying type. */
   def asIpv4: Option[Ipv4Address] = collapseMappedV4.fold(Some(_), _ => None)
 
@@ -356,6 +365,17 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
   override def isSourceSpecificMulticast: Boolean =
     this >= Ipv4Address.SourceSpecificMulticastRangeStart && this <= Ipv4Address.SourceSpecificMulticastRangeEnd
 
+  override def isLoopback: Boolean =
+    Ipv4Address.Classes.Loopback.contains(this)
+
+  override def isLinkLocal: Boolean =
+    Ipv4Address.Classes.LinkLocal.contains(this)
+
+  override def isPrivate: Boolean =
+    Ipv4Address.Classes.Private.A.contains(this) ||
+      Ipv4Address.Classes.Private.B.contains(this) ||
+      Ipv4Address.Classes.Private.C.contains(this)
+
   /** Converts this V4 address to a compat V6 address, where the first 12 bytes are all zero and the last 4 bytes
     * contain the bytes of this V4 address.
     */
@@ -417,6 +437,44 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
   /** Last IP address in the IPv4 source specific multicast range. */
   val SourceSpecificMulticastRangeEnd: Ipv4Address =
     fromBytes(232, 255, 255, 255)
+
+  /** IPv4 address classes represented as CIDRs. */
+  object Classes {
+
+    /** Class A: 0.0.0.0 - 127.255.255.255 */
+    val A: Cidr[Ipv4Address] = Cidr(fromBytes(0, 0, 0, 0), 1)
+
+    /** Class B: 128.0.0.0 - 191.255.255.255 */
+    val B: Cidr[Ipv4Address] = Cidr(fromBytes(128, 0, 0, 0), 2)
+
+    /** Class C: 192.0.0.0 - 223.255.255.255 */
+    val C: Cidr[Ipv4Address] = Cidr(fromBytes(192, 0, 0, 0), 3)
+
+    /** Class D: 224.0.0.0 - 239.255.255.255 */
+    val D: Cidr[Ipv4Address] = Cidr(fromBytes(224, 0, 0, 0), 4)
+
+    /** Class E: 240.0.0.0 - 255.255.255.255 */
+    val E: Cidr[Ipv4Address] = Cidr(fromBytes(240, 0, 0, 0), 5)
+
+    /** Private address ranges. */
+    object Private {
+
+      /** Class A: 10.0.0.0 - 10.255.255.255 */
+      val A: Cidr[Ipv4Address] = Cidr(fromBytes(10, 0, 0, 0), 8)
+
+      /** Class B: 172.16.0.0 - 172.31.255.255 */
+      val B: Cidr[Ipv4Address] = Cidr(fromBytes(172, 16, 0, 0), 12)
+
+      /** Class A: 192.168.0.0 - 192.168.255.255 */
+      val C: Cidr[Ipv4Address] = Cidr(fromBytes(192, 168, 0, 0), 16)
+    }
+
+    /** Loopback: 127.0.0.0 - 127.255.255.255. */
+    val Loopback: Cidr[Ipv4Address] = Cidr(fromBytes(127, 0, 0, 0), 8)
+
+    /** Link local: 169.254.0.0 - 169.254.255.255. */
+    val LinkLocal: Cidr[Ipv4Address] = Cidr(fromBytes(169, 254, 0, 0), 16)
+  }
 
   /** Parses an IPv4 address from a dotted-decimal string, returning `None` if the string is not a valid IPv4 address.
     */
@@ -609,6 +667,15 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
   override def isSourceSpecificMulticast: Boolean =
     this >= Ipv6Address.SourceSpecificMulticastRangeStart && this <= Ipv6Address.SourceSpecificMulticastRangeEnd
 
+  override def isLoopback: Boolean =
+    this == Ipv6Address.Loopback || (isMappedV4 && collapseMappedV4.isLoopback)
+
+  override def isLinkLocal: Boolean =
+    Ipv6Address.LinkLocalBlock.contains(this) || (isMappedV4 && collapseMappedV4.isLinkLocal)
+
+  override def isPrivate: Boolean =
+    Ipv6Address.UniqueLocalBlock.contains(this) || (isMappedV4 && collapseMappedV4.isPrivate)
+
   /** Applies the supplied mask to this address.
     *
     * @example {{{
@@ -652,6 +719,17 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
     */
   val MappedV4Block: Cidr[Ipv6Address] =
     Cidr(Ipv6Address.fromBytes(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0), 96)
+
+  /** Alias for ::1. */
+  val Loopback: Ipv6Address = Ipv6Address.fromBytes(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
+
+  /** CIDR which defines the unique local address block. */
+  val UniqueLocalBlock: Cidr[Ipv6Address] =
+    Cidr(Ipv6Address.fromBytes(0xfc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 7)
+
+  /** CIDR which defines the linked scope unicast address block. */
+  val LinkLocalBlock: Cidr[Ipv6Address] =
+    Cidr(Ipv6Address.fromBytes(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10)
 
   /** Parses an IPv6 address from a string in RFC4291 notation, returning `None` if the string is not a valid IPv6
     * address.
