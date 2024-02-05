@@ -84,4 +84,17 @@ class Ipv4AddressTest extends BaseTestSuite {
     assert(ipv4"192.168.255.255".isPrivate)
     assert(!ipv4"192.168.255.255".next.isPrivate)
   }
+
+  test("isLoopback") {
+    assert(ipv4"127.0.0.1".isLoopback)
+    assert(ipv4"127.255.255.255".isLoopback)
+    assert(!ipv4"128.0.0.0".isLoopback)
+  }
+
+  test("isLinkLocal") {
+    assert(!ipv4"127.0.0.1".isLinkLocal)
+    assert(ipv4"169.254.0.0".isLinkLocal)
+    assert(ipv4"169.254.255.255".isLinkLocal)
+    assert(!ipv4"169.254.255.255".next.isLinkLocal)
+  }
 }
