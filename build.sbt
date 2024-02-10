@@ -1,6 +1,6 @@
 import com.typesafe.tools.mima.core._
 
-ThisBuild / tlBaseVersion := "3.4"
+ThisBuild / tlBaseVersion := "3.5"
 
 ThisBuild / organization := "com.comcast"
 ThisBuild / organizationName := "Comcast Cable Communications Management, LLC"
