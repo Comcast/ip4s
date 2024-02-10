@@ -63,7 +63,7 @@ The `ip` interpolator returns an `IpAddress`, the `ipv4` interpolator returns an
 
 ## IPv6 String Formats
 
-IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead, you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.fromString` and `IpAddress.fromString` can parse all of these formats.
+IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.fromString` and `IpAddress.fromString` can parse all of these formats.
 
 ```scala
 import com.comcast.ip4s._
@@ -98,11 +98,11 @@ When compiling for the JVM, the various IP address classes have a `toInetAddress
 
 ```scala
 val homeIA = ip"127.0.0.1".toInetAddress
-// homeIA: java.net.InetAddress = /127.0.0.1
+// homeIA: InetAddress = /127.0.0.1
 val home4IA = ipv4"127.0.0.1".toInetAddress
-// home4IA: java.net.Inet4Address = /127.0.0.1
+// home4IA: Inet4Address = /127.0.0.1
 val home6IA = ipv6"::1".toInetAddress
-// home6IA: java.net.InetAddress = /0:0:0:0:0:0:0:1
+// home6IA: InetAddress = /0:0:0:0:0:0:0:1
 ```
 
 # Multicast
@@ -133,16 +133,16 @@ To construct instances of `Multicast[A]` and `SourceSpecificMulticast[A]`, we ca
 
 ```scala
 val multicastIps = ips.flatMap(_.asMulticast)
-// multicastIps: List[com.comcast.ip4s.Multicast[IpAddress]] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
+// multicastIps: List[Multicast[IpAddress]] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
 val ssmIps = ips.flatMap(_.asSourceSpecificMulticast)
-// ssmIps: List[SourceSpecificMulticast.Strict[IpAddress]] = List(232.11.11.11, ff3b::11)
+// ssmIps: List[Strict[IpAddress]] = List(232.11.11.11, ff3b::11)
 ```
 
 It's common for source specific multicast to be used with group addresses outside the designated source specific multicast address range. To support such cases, use `asSourceSpecificMulticastLenient`:
 
 ```scala
 val lenient = ips.flatMap(_.asSourceSpecificMulticastLenient)
-// lenient: List[com.comcast.ip4s.SourceSpecificMulticast[IpAddress]] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
+// lenient: List[SourceSpecificMulticast[IpAddress]] = List(224.10.10.10, 232.11.11.11, ff00::10, ff3b::11)
 ```
 
 Additionally, the `SourceSpecificMulticast.Strict[A]` type provides the guarantee that the wrapped address is in the RFC defined source specific range.
@@ -172,17 +172,17 @@ case class AnySourceMulticastJoin[A <: IpAddress](group: Multicast[A]) extends M
 case class SourceSpecificMulticastJoin[A <: IpAddress](source: A, group: SourceSpecificMulticast[A]) extends MulticastJoin[A]
 ```
 
-`MulticastJoin` and its subtypes are parameterized by the address type in order to allow domain modelling that requires a V4, V6, or either. The `AnySourceMulticastJoin` and `SourceSpecificMulticastJoin` types are exposed, instead of being kept as an implementation detail (or data constructor), for a similar reason -- to allow modelling where a type or function wants a very specific type like `SourceSpecificMulticastJoin[Ipv6Address]` while supporting other scnenarios that want something much more general like a `MulticastJoin[IpAddress]`.
+`MulticastJoin` and its subtypes are parameterized by the address type in order to optionally constrain the join to V4 or V6 addresses. The `AnySourceMulticastJoin` and `SourceSpecificMulticastJoin` types are exposed, instead of being kept as an implementation detail (or data constructor), for a similar reason -- to allow modelling where a type or function wants a very specific type like `SourceSpecificMulticastJoin[Ipv6Address]` while supporting other scnenarios that want something much more general like a `MulticastJoin[IpAddress]`.
 
 To construct a `MulticastJoin`, we can use the `asm` and `ssm` methods in the `MulticastJoin` companion.
 
 ```scala
 val j1 = MulticastJoin.ssm(ipv4"10.11.12.13", ssmipv4"232.1.2.3")
-// j1: com.comcast.ip4s.MulticastJoin[Ipv4Address] = 10.11.12.13@232.1.2.3
+// j1: MulticastJoin[Ipv4Address] = 10.11.12.13@232.1.2.3
 val j2 = MulticastJoin.ssm(ipv4"10.11.12.13", ipv4"232.1.2.3".asSourceSpecificMulticast.get)
-// j2: com.comcast.ip4s.MulticastJoin[Ipv4Address] = 10.11.12.13@232.1.2.3
+// j2: MulticastJoin[Ipv4Address] = 10.11.12.13@232.1.2.3
 val j3 = MulticastJoin.asm(mipv6"ff3b::10")
-// j3: com.comcast.ip4s.MulticastJoin[Ipv6Address] = ff3b::10
+// j3: MulticastJoin[Ipv6Address] = ff3b::10
 ```
 
 # CIDR
@@ -251,7 +251,7 @@ A socket address is an IP address and a TCP/UDP port number. This is roughly mod
 case class SocketAddress[+A <: IpAddress](ip: A, port: Port)
 ```
 
-Like we saw with `CIDR` and `MulticastJoin`, `SocketAddress` is polymorphic in address type, allowing expression of contraints like a socket address with an IPv6 IP. `SocketAddress` can be converted to and from a string representation, where V6 addresses are surrounded by square brackets.
+Like we saw with `CIDR` and `MulticastJoin`, `SocketAddress` is polymorphic in address type, allowing expression of constraints like a socket address with an IPv6 IP. `SocketAddress` can be converted to and from a string representation, where V6 addresses are surrounded by square brackets.
 
 ```scala
 val s = SocketAddress(ipv4"127.0.0.1", port"5555")
@@ -268,7 +268,7 @@ On the JVM, a `SocketAddress` can be converted to a `java.net.InetSocketAddress`
 
 ```scala
 val u = t.toInetSocketAddress
-// u: java.net.InetSocketAddress = /[0:0:0:0:0:0:0:1]:5555
+// u: InetSocketAddress = /[0:0:0:0:0:0:0:1]:5555
 ```
 
 ## Multicast Socket Addresses
@@ -292,11 +292,11 @@ The `Hostname` type models an RFC1123 compliant hostname -- limited to 253 total
 val home = Hostname.fromString("localhost")
 // home: Option[Hostname] = Some(localhost)
 val ls = home.map(_.labels)
-// ls: Option[List[Hostname.Label]] = Some(List(localhost))
+// ls: Option[List[Label]] = Some(List(localhost))
 val comcast = host"comcast.com"
 // comcast: Hostname = comcast.com
 val cs = comcast.labels
-// cs: List[Hostname.Label] = List(comcast, com)
+// cs: List[Label] = List(comcast, com)
 ```
 
 ## Hostname Resolution

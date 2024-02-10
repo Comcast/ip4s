@@ -54,7 +54,7 @@ The `ip` interpolator returns an `IpAddress`, the `ipv4` interpolator returns an
 
 ## IPv6 String Formats
 
-IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead, you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.fromString` and `IpAddress.fromString` can parse all of these formats.
+IPv6 addresses have a number of special string formats. The default format (what's returned by `toString`) adheres to [RFC5952](https://tools.ietf.org/html/rfc5952) -- e.g., maximal use of `::` to condense string length. If instead you want a string that does not use `::` and expresses each hextet as 4 characters, call `.toUncondensedString`. Note that the `toString` method never outputs a mixed string consisting of both V6 hextets and a dotted decimal V4 address. For example, the address consisting of 12 0 bytes followed by 127, 0, 0, 1 is rendered as `::7f00:1` instead of `::127.0.0.1`. `Ipv6Address.fromString` and `IpAddress.fromString` can parse all of these formats.
 
 ```scala mdoc:reset:to-string
 import com.comcast.ip4s._
@@ -147,7 +147,7 @@ case class AnySourceMulticastJoin[A <: IpAddress](group: Multicast[A]) extends M
 case class SourceSpecificMulticastJoin[A <: IpAddress](source: A, group: SourceSpecificMulticast[A]) extends MulticastJoin[A]
 ```
 
-`MulticastJoin` and its subtypes are parameterized by the address type in order to allow domain modelling that requires a V4, V6, or either. The `AnySourceMulticastJoin` and `SourceSpecificMulticastJoin` types are exposed, instead of being kept as an implementation detail (or data constructor), for a similar reason -- to allow modelling where a type or function wants a very specific type like `SourceSpecificMulticastJoin[Ipv6Address]` while supporting other scnenarios that want something much more general like a `MulticastJoin[IpAddress]`.
+`MulticastJoin` and its subtypes are parameterized by the address type in order to optionally constrain the join to V4 or V6 addresses. The `AnySourceMulticastJoin` and `SourceSpecificMulticastJoin` types are exposed, instead of being kept as an implementation detail (or data constructor), for a similar reason -- to allow modelling where a type or function wants a very specific type like `SourceSpecificMulticastJoin[Ipv6Address]` while supporting other scnenarios that want something much more general like a `MulticastJoin[IpAddress]`.
 
 To construct a `MulticastJoin`, we can use the `asm` and `ssm` methods in the `MulticastJoin` companion.
 
@@ -207,7 +207,7 @@ A socket address is an IP address and a TCP/UDP port number. This is roughly mod
 case class SocketAddress[+A <: IpAddress](ip: A, port: Port)
 ```
 
-Like we saw with `CIDR` and `MulticastJoin`, `SocketAddress` is polymorphic in address type, allowing expression of contraints like a socket address with an IPv6 IP. `SocketAddress` can be converted to and from a string representation, where V6 addresses are surrounded by square brackets.
+Like we saw with `CIDR` and `MulticastJoin`, `SocketAddress` is polymorphic in address type, allowing expression of constraints like a socket address with an IPv6 IP. `SocketAddress` can be converted to and from a string representation, where V6 addresses are surrounded by square brackets.
 
 ```scala mdoc:nest:to-string
 val s = SocketAddress(ipv4"127.0.0.1", port"5555")
