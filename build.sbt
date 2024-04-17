@@ -49,7 +49,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.17.0",
+      "org.scalacheck" %%% "scalacheck" % "1.17.1",
       "org.scalameta" %%% "munit-scalacheck" % "1.0.0-M11" % Test,
       "org.typelevel" %%% "munit-cats-effect" % "2.0.0-M4" % Test
     )
@@ -83,7 +83,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.typelevel" %%% "literally" % "1.1.0",
       "org.typelevel" %%% "cats-core" % "2.10.0",
       "org.typelevel" %%% "cats-effect" % "3.5.4",
-      "org.scalacheck" %%% "scalacheck" % "1.17.0" % Test
+      "org.scalacheck" %%% "scalacheck" % "1.17.1" % Test
     )
   )
   .nativeSettings(
