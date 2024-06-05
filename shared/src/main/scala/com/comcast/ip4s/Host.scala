@@ -773,6 +773,7 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
       }
       idx += 1
     }
+
     if (result ne null) {
       result
     } else if (fields.isEmpty && (trimmed.isEmpty || trimmed != "::")) {
@@ -781,26 +782,34 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
       val bytes = new Array[Byte](16)
       idx = 0
       val prefixSize = prefix.size
-      var prefixIdx = prefixSize - 1
-      while (prefixIdx >= 0) {
-        val value = prefix(prefixIdx)
-        bytes(idx) = (value >> 8).toByte
-        bytes(idx + 1) = value.toByte
-        prefixIdx -= 1
-        idx += 2
-      }
       val suffixSize = suffix.size
-      val numCondensedZeroes = bytes.size - idx - (suffixSize * 2)
-      idx += numCondensedZeroes
-      var suffixIdx = suffixSize - 1
-      while (suffixIdx >= 0) {
-        val value = suffix(suffixIdx)
-        bytes(idx) = (value >> 8).toByte
-        bytes(idx + 1) = value.toByte
-        suffixIdx -= 1
-        idx += 2
+      val numCondensedZeroes = 8 - (prefixSize + suffixSize)
+
+      if (numCondensedZeroes < 0) {
+        None
+      } else {
+        var prefixIdx = prefixSize - 1
+        while (prefixIdx >= 0) {
+          val value = prefix(prefixIdx)
+          bytes(idx) = (value >> 8).toByte
+          bytes(idx + 1) = value.toByte
+          prefixIdx -= 1
+          idx += 2
+        }
+
+        idx += numCondensedZeroes * 2
+
+        var suffixIdx = suffixSize - 1
+        while (suffixIdx >= 0) {
+          val value = suffix(suffixIdx)
+          bytes(idx) = (value >> 8).toByte
+          bytes(idx + 1) = value.toByte
+          suffixIdx -= 1
+          idx += 2
+        }
+
+        Some(unsafeFromBytes(bytes))
       }
-      Some(unsafeFromBytes(bytes))
     }
   }
 
