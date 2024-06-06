@@ -35,6 +35,11 @@ class Ipv6AddressTest extends BaseTestSuite {
     assertEquals(Ipv6Address.fromString(" : "), None)
   }
 
+  test("parsing from string - does not parse invalid number of sections in ipv6") {
+    assertEquals(Ipv6Address.fromString("::1:1:1:1:1:1:2:1:3"), None)
+    assertEquals(Ipv6Address.fromString("1:1:1:1:1:1:2:1:3"), None)
+  }
+
   test("parsing from string - does parse ::") {
     assertEquals(Ipv6Address.fromString("::").isDefined, true)
     assertEquals(Ipv6Address.fromString(" :: ").isDefined, true)
@@ -150,4 +155,5 @@ class Ipv6AddressTest extends BaseTestSuite {
     assert(ipv6"fe80::1".isLinkLocal)
     assert(ipv6"::ffff:169.254.0.0".isLinkLocal)
   }
+
 }
