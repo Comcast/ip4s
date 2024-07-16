@@ -114,10 +114,9 @@ sealed class Cidr[+A <: IpAddress] protected (val address: A, val prefixBits: In
     a => a >= start && a <= end
   }
 
-  /**
-   * Returns an iterator over all addresses in the range described by this CIDR.
-   * @return
-   */
+  /** Returns an iterator over all addresses in the range described by this CIDR.
+    * @return
+    */
   def addresses: Iterator[IpAddress] = {
     val start: IpAddress = prefix
     val end: IpAddress = last
