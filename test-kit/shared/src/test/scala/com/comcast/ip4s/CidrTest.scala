@@ -41,4 +41,11 @@ class CidrTest extends BaseTestSuite {
       assertEquals(cidr.isDefined, (prefixBits <= max && prefixBits >= 0))
     }
   }
+
+  test("addresses should return iterator") {
+    val cidr = Cidr(ipv4"10.0.0.0", 8)
+    val addresses = cidr.addresses
+
+    assertEquals(addresses.size, 16777216)
+  }
 }
