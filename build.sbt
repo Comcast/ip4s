@@ -16,7 +16,7 @@ ThisBuild / developers ++= List(
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
-ThisBuild / crossScalaVersions := List("2.12.20", "2.13.14", "3.3.4")
+ThisBuild / crossScalaVersions := List("2.12.20", "2.13.15", "3.3.4")
 
 ThisBuild / tlVersionIntroduced := Map("3" -> "3.0.3")
 
@@ -55,7 +55,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     )
   )
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "33.3.0-jre" % "test"
+    libraryDependencies += "com.google.guava" % "guava" % "33.3.1-jre" % "test"
   )
   .dependsOn(core % "compile->compile")
 
