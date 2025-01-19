@@ -29,7 +29,7 @@ object Literals {
         case None    => Left("invalid IP address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[IpAddress] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[IpAddress] = apply(c)(args*)
   }
 
   object ipv4 extends Literally[Ipv4Address] {
@@ -40,7 +40,7 @@ object Literals {
         case None    => Left("invalid IPv4 address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv4Address] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv4Address] = apply(c)(args*)
   }
 
   object ipv6 extends Literally[Ipv6Address] {
@@ -51,7 +51,7 @@ object Literals {
         case None    => Left("invalid IPv6 address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv6Address] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Ipv6Address] = apply(c)(args*)
   }
 
   object mip extends Literally[Multicast[IpAddress]] {
@@ -62,7 +62,7 @@ object Literals {
         case None    => Left("invalid IP multicast address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[IpAddress]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[IpAddress]] = apply(c)(args*)
   }
 
   object mipv4 extends Literally[Multicast[Ipv4Address]] {
@@ -73,7 +73,7 @@ object Literals {
         case None    => Left("invalid IPv4 multicast address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[Ipv4Address]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[Ipv4Address]] = apply(c)(args*)
   }
 
   object mipv6 extends Literally[Multicast[Ipv6Address]] {
@@ -84,7 +84,7 @@ object Literals {
         case None    => Left("invalid IPv6 multicast address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[Ipv6Address]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Multicast[Ipv6Address]] = apply(c)(args*)
   }
 
   object ssmip extends Literally[SourceSpecificMulticast.Strict[IpAddress]] {
@@ -96,7 +96,7 @@ object Literals {
         case None => Left("invalid source specific IP multicast address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast.Strict[IpAddress]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast.Strict[IpAddress]] = apply(c)(args*)
   }
 
   object ssmipv4 extends Literally[SourceSpecificMulticast.Strict[Ipv4Address]] {
@@ -108,7 +108,7 @@ object Literals {
         case None => Left("invalid source specific IPv4 multicast address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast.Strict[Ipv4Address]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast.Strict[Ipv4Address]] = apply(c)(args*)
   }
 
   object ssmipv6 extends Literally[SourceSpecificMulticast.Strict[Ipv6Address]] {
@@ -120,7 +120,7 @@ object Literals {
         case None => Left("invalid source specific IPv6 multicast address")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast.Strict[Ipv6Address]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[SourceSpecificMulticast.Strict[Ipv6Address]] = apply(c)(args*)
   }
 
   object port extends Literally[Port] {
@@ -131,7 +131,7 @@ object Literals {
         case None    => Left("invalid port")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Port] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Port] = apply(c)(args*)
   }
 
   object hostname extends Literally[Hostname] {
@@ -142,7 +142,7 @@ object Literals {
         case None    => Left("invalid hostname")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Hostname] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Hostname] = apply(c)(args*)
   }
 
   object idn extends Literally[IDN] {
@@ -153,6 +153,6 @@ object Literals {
         case None    => Left("invalid IDN")
       }
     }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[IDN] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[IDN] = apply(c)(args*)
   }
 }
