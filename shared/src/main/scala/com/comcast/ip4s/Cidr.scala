@@ -128,10 +128,10 @@ sealed class Cidr[+A <: IpAddress] protected (val address: A, val prefixBits: In
   override def hashCode: Int = MurmurHash3.productHash(this, productPrefix.hashCode)
   override def equals(other: Any): Boolean =
     other match {
-      case that: Cidr[_] => address == that.address && prefixBits == that.prefixBits
+      case that: Cidr[?] => address == that.address && prefixBits == that.prefixBits
       case _             => false
     }
-  override def canEqual(other: Any): Boolean = other.isInstanceOf[Cidr[_]]
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[Cidr[?]]
   override def productArity: Int = 2
   override def productElement(n: Int): Any =
     n match {
@@ -155,7 +155,7 @@ object Cidr {
 
   object Strict {
     def apply[A <: IpAddress](cidr: Cidr[A]): Cidr.Strict[A] = cidr match {
-      case already: Strict[_] => already.asInstanceOf[Strict[A]]
+      case already: Strict[?] => already.asInstanceOf[Strict[A]]
       case _                  => new Cidr.Strict(cidr.prefix, cidr.prefixBits)
     }
   }
