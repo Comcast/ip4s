@@ -31,7 +31,7 @@ object Multicast {
   private case class DefaultMulticast[+A <: IpAddress](address: A) extends Multicast[A] {
     override def toString: String = address.toString
     override def equals(that: Any): Boolean = that match {
-      case m: Multicast[_] => address == m.address
+      case m: Multicast[?] => address == m.address
       case _               => false
     }
     override def hashCode: Int = address.hashCode
@@ -72,7 +72,7 @@ object SourceSpecificMulticast {
   private case class DefaultSourceSpecificMulticast[+A <: IpAddress](address: A) extends SourceSpecificMulticast[A] {
     override def toString: String = address.toString
     override def equals(that: Any): Boolean = that match {
-      case m: Multicast[_] => address == m.address
+      case m: Multicast[?] => address == m.address
       case _               => false
     }
     override def hashCode: Int = address.hashCode
