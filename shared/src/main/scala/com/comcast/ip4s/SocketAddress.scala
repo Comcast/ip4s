@@ -38,6 +38,9 @@ object SocketAddress extends SocketAddressCompanionPlatform {
   /** Alias for 0.0.0.0:0. */
   val Wildcard: SocketAddress[Host] = SocketAddress(Ipv4Address.Wildcard, Port.Wildcard)
 
+  /** Alias for 0.0.0.0:port. */
+  def port(port: Port): SocketAddress[Host] = SocketAddress(Ipv4Address.Wildcard, port)
+
   def fromString(value: String): Option[SocketAddress[Host]] =
     fromStringIp(value) orElse fromStringHostname(value) orElse fromStringIDN(value)
 
