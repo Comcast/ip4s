@@ -21,7 +21,7 @@ import cats.syntax.all._
 
 /** An IP address of the specified type and a port number. Used to describe the source or destination of a socket.
   */
-final case class SocketAddress[+A <: Host](host: A, port: Port) extends SocketAddressPlatform[A] {
+final case class SocketAddress[+A <: Host](host: A, port: Port) extends SocketAddressPlatform[A] with GenSocketAddress {
   override def toString: String =
     host match {
       case _: Ipv6Address => s"[$host]:$port"
@@ -34,6 +34,10 @@ final case class SocketAddress[+A <: Host](host: A, port: Port) extends SocketAd
 }
 
 object SocketAddress extends SocketAddressCompanionPlatform {
+
+  /** Alias for 0.0.0.0:0. */
+  val Wildcard: SocketAddress[Host] = SocketAddress(Ipv4Address.Wildcard, Port.Wildcard)
+
   def fromString(value: String): Option[SocketAddress[Host]] =
     fromStringIp(value) orElse fromStringHostname(value) orElse fromStringIDN(value)
 
