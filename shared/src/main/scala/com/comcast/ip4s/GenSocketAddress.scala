@@ -25,4 +25,4 @@ package com.comcast.ip4s
   * This trait is left open for extension, allowing other address types to be defined.
   * When using this trait, pattern match on the supported subtypes.
   */
-trait GenSocketAddress
+abstract class GenSocketAddress private[ip4s] ()
