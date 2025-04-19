@@ -196,6 +196,10 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
   /** Maps a type-preserving function across this IP address. */
   def transform(v4: Ipv4Address => Ipv4Address, v6: Ipv6Address => Ipv6Address): this.type
 
+  /** Returns true if this address is either 0.0.0.0 or ::. */
+  def isWildcard: Boolean =
+    fold(_ == Ipv4Address.Wildcard, _ == Ipv6Address.Wildcard)
+
   /** Returns true if this address is in the multicast range. */
   def isMulticast: Boolean
 
@@ -424,6 +428,9 @@ final class Ipv4Address private (protected val bytes: Array[Byte]) extends IpAdd
 }
 
 object Ipv4Address extends Ipv4AddressCompanionPlatform {
+
+  /** Wildcard IPv4 address - 0.0.0.0 */
+  val Wildcard: Ipv4Address = fromBytes(0, 0, 0, 0)
 
   /** First IP address in the IPv4 multicast range. */
   val MulticastRangeStart: Ipv4Address = fromBytes(224, 0, 0, 0)
@@ -698,6 +705,10 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
 }
 
 object Ipv6Address extends Ipv6AddressCompanionPlatform {
+
+  /** Wildcard IPv6 address - 0.0.0.0 */
+  val Wildcard: Ipv6Address =
+    fromBytes(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
   /** First IP address in the IPv6 multicast range. */
   val MulticastRangeStart: Ipv6Address =
