@@ -24,10 +24,6 @@ final case class UnixSocketAddress(path: String) extends GenSocketAddress with O
 }
 
 object UnixSocketAddress {
-
-  /** Alias for the address with an empty path. */
-  final val Wildcard: UnixSocketAddress = UnixSocketAddress("")
-
   implicit val order: Order[UnixSocketAddress] = Order.fromComparable[UnixSocketAddress]
   implicit val show: Show[UnixSocketAddress] = Show.fromToString[UnixSocketAddress]
 }
