@@ -42,6 +42,8 @@ object Port {
   final val MinValue = 0
   final val MaxValue = 65535
 
+  final val Wildcard: Port = new Port(0)
+
   def fromInt(value: Int): Option[Port] =
     if (value >= MinValue && value <= MaxValue) Some(new Port(value)) else None
 
