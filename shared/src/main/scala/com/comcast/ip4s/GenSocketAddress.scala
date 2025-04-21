@@ -28,11 +28,12 @@ package com.comcast.ip4s
 abstract class GenSocketAddress private[ip4s] () {
 
   /** Downcasts this address to a `SocketAddress[IpAddress]`.
-   *
-   * @throws UnsupportedOperationException if this address is not a `SocketAddress[IpAddress]`
-   */
+    *
+    * @throws UnsupportedOperationException if this address is not a `SocketAddress[IpAddress]`
+    */
   def asIpUnsafe: SocketAddress[IpAddress] = this match {
     case addr @ SocketAddress(_: IpAddress, _) => addr.asInstanceOf[SocketAddress[IpAddress]]
-    case other => throw new UnsupportedOperationException(s"asIpUnsafe only supported on SocketAddress[IpAddress]: $other")
+    case other =>
+      throw new UnsupportedOperationException(s"asIpUnsafe only supported on SocketAddress[IpAddress]: $other")
   }
 }
