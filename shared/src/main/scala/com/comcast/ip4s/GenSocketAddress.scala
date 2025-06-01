@@ -33,7 +33,7 @@ abstract class GenSocketAddress private[ip4s] () {
     */
   def asIpUnsafe: SocketAddress[IpAddress] = this match {
     case addr @ SocketAddress(_: IpAddress, _) => addr.asInstanceOf[SocketAddress[IpAddress]]
-    case other =>
+    case other                                 =>
       throw new UnsupportedOperationException(s"asIpUnsafe only supported on SocketAddress[IpAddress]: $other")
   }
 }
