@@ -141,7 +141,7 @@ object Hostname {
     value.size match {
       case 0            => None
       case i if i > 253 => None
-      case _ =>
+      case _            =>
         value match {
           case Pattern(_*) =>
             val labels = value
