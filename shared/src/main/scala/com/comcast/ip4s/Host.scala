@@ -760,7 +760,7 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
       val c = trimmed(idx)
 
       if ((c == ':' && idx > 0) || idx == trimmed.length - 1) {
-        val field = trimmed.substring(fieldStart, if (c == ':') then idx else idx + 1)
+        val field = trimmed.substring(fieldStart, if (c == ':') idx else idx + 1)
         if (field.size > 4) {
           result = None
         } else {
