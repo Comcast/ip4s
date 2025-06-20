@@ -556,7 +556,9 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
 }
 
 /** Representation of an IPv6 address that works on both the JVM and Scala.js. */
-final class Ipv6Address private (protected val bytes: Array[Byte], val scopeId: Option[String]) extends IpAddress with Ipv6AddressPlatform {
+final class Ipv6Address private (protected val bytes: Array[Byte], val scopeId: Option[String])
+    extends IpAddress
+    with Ipv6AddressPlatform {
   override def fold[A](v4: Ipv4Address => A, v6: Ipv6Address => A): A = v6(this)
   override def transform(v4: Ipv4Address => Ipv4Address, v6: Ipv6Address => Ipv6Address): this.type =
     v6(this).asInstanceOf[this.type]
@@ -722,7 +724,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte], val scopeId: 
   override def hashCode: Int = {
     val hash = java.util.Arrays.hashCode(bytes)
     scopeId match {
-      case None => hash
+      case None    => hash
       case Some(s) =>
         val h = MurmurHash3.mix(hash, s.##)
         MurmurHash3.finalizeHash(h, 2)
