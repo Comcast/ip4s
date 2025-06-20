@@ -17,7 +17,6 @@
 package com.comcast.ip4s
 
 import cats.effect.Async
-import cats.syntax.all.*
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
@@ -49,7 +48,7 @@ private[ip4s] trait NetworkInterfacesCompanionPlatform {
               case v6: Ipv6Address =>
                 if (ni.scopeid == 0) cidr
                 else Cidr(v6.withScopeId(ni.scopeid.toString), cidr.prefixBits)
-              case other => cidr
+              case _ => cidr
             }
           }.toList,
           nia.head.internal,
