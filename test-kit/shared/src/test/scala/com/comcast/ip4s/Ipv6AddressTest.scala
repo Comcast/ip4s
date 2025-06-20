@@ -160,4 +160,11 @@ class Ipv6AddressTest extends BaseTestSuite {
     assert(ipv6"::ffff:169.254.0.0".isLinkLocal)
   }
 
+  test("scope ids") {
+    assertEquals(ipv6"fe80::1".scopeId, None)
+    assert(ipv6"fe80::1%en0".isLinkLocal)
+    assertEquals(ipv6"fe80::1%en0".scopeId, Some("en0"))
+    assert(ipv6"fe80::1" != ipv6"fe80::1%en0")
+    assert(ipv6"fe80::1".## != ipv6"fe80::1%en0".##)
+  }
 }
