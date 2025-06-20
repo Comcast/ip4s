@@ -38,6 +38,10 @@ class Ipv6AddressTest extends BaseTestSuite {
   test("parsing from string - does not parse invalid number of sections in ipv6") {
     assertEquals(Ipv6Address.fromString("::1:1:1:1:1:1:2:1:3"), None)
     assertEquals(Ipv6Address.fromString("1:1:1:1:1:1:2:1:3"), None)
+    // https://github.com/Comcast/ip4s/issues/662
+    assertEquals(Ipv6Address.fromString("18ec:cb0e:5795:a7df:6c7d:902c:9bd4"), None)
+    assertEquals(Ipv6Address.fromString("18ec:cb0e"), None)
+    assertEquals(Ipv6Address.fromString("18ec:"), None)
   }
 
   test("parsing from string - does parse ::") {
