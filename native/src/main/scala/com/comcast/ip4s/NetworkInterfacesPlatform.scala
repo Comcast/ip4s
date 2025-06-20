@@ -17,18 +17,14 @@
 package com.comcast.ip4s
 
 import cats.effect.Async
-import cats.syntax.all.*
 
 private[ip4s] trait NetworkInterfacesCompanionPlatform {
 
   def forAsync[F[_]](implicit F: Async[F]): NetworkInterfaces[F] =
     new NetworkInterfaces.UnsealedNetworkInterfaces[F] {
-      def getAllInterfaces: F[List[NetworkInterface]] =
+      def getAll: F[Map[String, NetworkInterface]] =
         F.blocking {
           throw new UnsupportedOperationException("Not supported until cats-effect and ip4s support Scala Native 0.5")
         }
-
-      def getInterfaceByName(name: String): F[Option[NetworkInterface]] =
-        getAllInterfaces.map(_.collectFirst { case ni if ni.name == name => ni })
     }
 }
