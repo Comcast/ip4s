@@ -754,40 +754,47 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
     var suffix: List[Int] = Nil
     val trimmed = value.trim()
     var result: Option[Ipv6Address] = null
-    val fields =
-      if (trimmed.contains(':')) trimmed.split(':')
-      else Array.empty[String]
-    // if (trimmed.nonEmpty) trimmed.split(':') else Array.empty[String]
     var idx = 0
-    while (idx < fields.size && (result eq null)) {
-      val field = fields(idx)
-      if (field.isEmpty) {
-        if (beforeCondenser) {
-          beforeCondenser = false
-          if (idx + 1 < fields.size && fields(idx + 1).isEmpty) idx += 1
-        } else {
+    var fieldStart = 0
+    while (idx < trimmed.length && (result eq null)) {
+      val c = trimmed(idx)
+
+      if ((c == ':' && idx > 0) || idx == trimmed.length - 1) {
+        val field = trimmed.substring(fieldStart, if (c == ':') idx else idx + 1)
+        if (field.size > 4) {
           result = None
-        }
-      } else {
-        try {
-          if (field.size > 4) {
-            result = None
-          } else {
+        } else {
+          try {
             val fieldValue = Integer.parseInt(field, 16)
             if (beforeCondenser) prefix = fieldValue :: prefix
             else suffix = fieldValue :: suffix
+          } catch {
+            case _: NumberFormatException =>
+              result = None
           }
-        } catch {
-          case _: NumberFormatException =>
-            result = None
         }
       }
+
+      if (c == ':') {
+        if (idx == trimmed.length - 1) {
+          // String terminated in a single colon
+          result = None
+        } else if (trimmed(idx + 1) == ':') {
+          beforeCondenser = false
+          idx += 1
+        }
+        fieldStart = idx + 1
+      }
+
       idx += 1
     }
 
+    // If after traversing all fields, there was no condenser, then fail unless there are exactly 8 fields
+    if (beforeCondenser && (prefix.size + suffix.size) != 8) result = None
+
     if (result ne null) {
       result
-    } else if (fields.isEmpty && (trimmed.isEmpty || trimmed != "::")) {
+    } else if (prefix.isEmpty && suffix.isEmpty && (trimmed.isEmpty || trimmed != "::")) {
       None
     } else {
       val bytes = new Array[Byte](16)
