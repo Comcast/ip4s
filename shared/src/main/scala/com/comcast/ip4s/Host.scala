@@ -556,7 +556,9 @@ object Ipv4Address extends Ipv4AddressCompanionPlatform {
 }
 
 /** Representation of an IPv6 address that works on both the JVM and Scala.js. */
-final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAddress with Ipv6AddressPlatform {
+final class Ipv6Address private (protected val bytes: Array[Byte], val scopeId: Option[String])
+    extends IpAddress
+    with Ipv6AddressPlatform {
   override def fold[A](v4: Ipv4Address => A, v6: Ipv6Address => A): A = v6(this)
   override def transform(v4: Ipv4Address => Ipv4Address, v6: Ipv6Address => Ipv6Address): this.type =
     v6(this).asInstanceOf[this.type]
@@ -602,6 +604,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
         if (idx < 8 && idx != maxCondensedStart) str.append(":")
       }
     }
+    scopeId.foreach(sid => str.append("%").append(sid))
     str.toString
   }
 
@@ -617,6 +620,7 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
       idx += 2
       if (idx < 15) str.append(":")
     }
+    scopeId.foreach(sid => str.append("%").append(sid))
     str.toString
   }
 
@@ -702,6 +706,30 @@ final class Ipv6Address private (protected val bytes: Array[Byte]) extends IpAdd
     */
   def maskedLast(mask: Ipv6Address): Ipv6Address =
     Ipv6Address.fromBigInt(toBigInt & mask.toBigInt | ~mask.toBigInt)
+
+  /** Returns a new address with the supplied scope id. */
+  def withScopeId(scopeId: String): Ipv6Address =
+    new Ipv6Address(bytes, Some(scopeId))
+
+  /** Returns a new address with the scope id, if defined, removed. */
+  def withoutScopeId: Ipv6Address =
+    new Ipv6Address(bytes, None)
+
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: Ipv6Address => java.util.Arrays.equals(bytes, that.bytes) && scopeId == that.scopeId
+      case _                 => false
+    }
+
+  override def hashCode: Int = {
+    val hash = java.util.Arrays.hashCode(bytes)
+    scopeId match {
+      case None    => hash
+      case Some(s) =>
+        val h = MurmurHash3.mix(hash, s.##)
+        MurmurHash3.finalizeHash(h, 2)
+    }
+  }
 }
 
 object Ipv6Address extends Ipv6AddressCompanionPlatform {
@@ -745,8 +773,17 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
   /** Parses an IPv6 address from a string in RFC4291 notation, returning `None` if the string is not a valid IPv6
     * address.
     */
-  def fromString(value: String): Option[Ipv6Address] =
-    fromNonMixedString(value) orElse fromMixedString(value)
+  def fromString(value: String): Option[Ipv6Address] = {
+    val scopeSeparator = value.indexOf('%')
+    if (scopeSeparator < 0) {
+      fromNonMixedString(value) orElse fromMixedString(value)
+    } else {
+      val addrPart = value.substring(0, scopeSeparator)
+      val scopePart = value.substring(scopeSeparator + 1)
+      val addr = fromNonMixedString(addrPart) orElse fromMixedString(addrPart)
+      addr.map(_.withScopeId(scopePart))
+    }
+  }
 
   private def fromNonMixedString(value: String): Option[Ipv6Address] = {
     var prefix: List[Int] = Nil
@@ -858,7 +895,7 @@ object Ipv6Address extends Ipv6AddressCompanionPlatform {
     else None
 
   private def unsafeFromBytes(bytes: Array[Byte]): Ipv6Address =
-    new Ipv6Address(bytes)
+    new Ipv6Address(bytes, None)
 
   /** Constructs an address from the specified 16 bytes.
     *
