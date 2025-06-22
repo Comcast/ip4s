@@ -16,21 +16,4 @@
 
 package com.comcast.ip4s
 
-import cats.effect.Async
-import java.net.NetworkInterface as JNetworkInterface
-
-import CollectionCompat.*
-
-private[ip4s] trait NetworkInterfacesCompanionPlatform {
-
-  def forAsync[F[_]](implicit F: Async[F]): NetworkInterfaces[F] =
-    new NetworkInterfaces.UnsealedNetworkInterfaces[F] {
-      def getAll: F[Map[String, NetworkInterface]] =
-        F.blocking {
-          collection.immutable.ListMap.empty[String, NetworkInterface] ++
-            JNetworkInterface.getNetworkInterfaces.asScala.toList.map(jni =>
-              jni.getName -> NetworkInterface.fromJava(jni)
-            )
-        }
-    }
-}
+private[ip4s] trait NetworkInterfaceCompanionPlatform

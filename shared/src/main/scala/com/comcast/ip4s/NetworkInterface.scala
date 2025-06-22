@@ -43,7 +43,7 @@ sealed trait NetworkInterface {
   def isUp: Boolean
 }
 
-object NetworkInterface {
+object NetworkInterface extends NetworkInterfaceCompanionPlatform {
 
   def apply(
       name: String,

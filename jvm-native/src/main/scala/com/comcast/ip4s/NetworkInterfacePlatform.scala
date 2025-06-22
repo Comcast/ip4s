@@ -16,21 +16,22 @@
 
 package com.comcast.ip4s
 
-import cats.effect.Async
-import java.net.NetworkInterface as JNetworkInterface
+import java.net.{InterfaceAddress as JInterfaceAddress, NetworkInterface as JNetworkInterface}
 
 import CollectionCompat.*
 
-private[ip4s] trait NetworkInterfacesCompanionPlatform {
+private[ip4s] trait NetworkInterfaceCompanionPlatform {
 
-  def forAsync[F[_]](implicit F: Async[F]): NetworkInterfaces[F] =
-    new NetworkInterfaces.UnsealedNetworkInterfaces[F] {
-      def getAll: F[Map[String, NetworkInterface]] =
-        F.blocking {
-          collection.immutable.ListMap.empty[String, NetworkInterface] ++
-            JNetworkInterface.getNetworkInterfaces.asScala.toList.map(jni =>
-              jni.getName -> NetworkInterface.fromJava(jni)
-            )
-        }
-    }
+  def fromJava(jni: JNetworkInterface): NetworkInterface =
+    NetworkInterface(
+      jni.getName,
+      jni.getDisplayName,
+      Option(jni.getHardwareAddress).flatMap(MacAddress.fromBytes),
+      jni.getInterfaceAddresses.asScala.toList.map(fromJavaInterfaceAddress),
+      jni.isLoopback,
+      jni.isUp
+    )
+
+  private def fromJavaInterfaceAddress(ifa: JInterfaceAddress): Cidr[IpAddress] =
+    Cidr(IpAddress.fromInetAddress(ifa.getAddress), ifa.getNetworkPrefixLength.toInt)
 }
