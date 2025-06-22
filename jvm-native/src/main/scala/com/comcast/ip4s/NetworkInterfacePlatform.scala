@@ -18,7 +18,7 @@ package com.comcast.ip4s
 
 import java.net.{InterfaceAddress as JInterfaceAddress, NetworkInterface as JNetworkInterface}
 
-import CollectionCompat.*
+import Ip4sCollectionCompat.*
 
 private[ip4s] trait NetworkInterfaceCompanionPlatform {
 

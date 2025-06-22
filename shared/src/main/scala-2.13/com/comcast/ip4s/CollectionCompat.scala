@@ -18,7 +18,7 @@ package com.comcast.ip4s
 
 import scala.jdk.CollectionConverters._
 
-private[ip4s] object CollectionCompat {
+private[ip4s] object Ip4sCollectionCompat {
   implicit class JIterableOps[A](private val self: java.lang.Iterable[A]) extends AnyVal {
     def asScala: Iterable[A] = IterableHasAsScala(self).asScala
   }
