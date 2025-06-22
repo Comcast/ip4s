@@ -19,7 +19,7 @@ package com.comcast.ip4s
 import cats.effect.Async
 import java.net.NetworkInterface as JNetworkInterface
 
-import CollectionCompat.*
+import Ip4sCollectionCompat.*
 
 private[ip4s] trait NetworkInterfacesCompanionPlatform {
 
