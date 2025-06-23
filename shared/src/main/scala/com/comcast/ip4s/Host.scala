@@ -196,6 +196,14 @@ sealed abstract class IpAddress extends IpAddressPlatform with Host with Seriali
   /** Maps a type-preserving function across this IP address. */
   def transform(v4: Ipv4Address => Ipv4Address, v6: Ipv6Address => Ipv6Address): this.type
 
+  /** Returns true if this address is an IPv4 address. */
+  def isV4: Boolean =
+    fold(_ => true, _ => false)
+
+  /** Returns true if this address is an IPv6 address. */
+  def isV6: Boolean =
+    fold(_ => false, _ => true)
+
   /** Returns true if this address is either 0.0.0.0 or ::. */
   def isWildcard: Boolean =
     fold(_ == Ipv4Address.Wildcard, _ == Ipv6Address.Wildcard)

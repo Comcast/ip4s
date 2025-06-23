@@ -21,7 +21,7 @@ import cats.effect.Async
 private[ip4s] trait NetworkInterfacesCompanionPlatform {
 
   def forAsync[F[_]](implicit F: Async[F]): NetworkInterfaces[F] =
-    new NetworkInterfaces.UnsealedNetworkInterfaces[F] {
+    new NetworkInterfaces.AsyncNetworkInterfaces[F] {
       def getAll: F[Map[String, NetworkInterface]] =
         F.blocking {
           throw new UnsupportedOperationException("Not supported until cats-effect and ip4s support Scala Native 0.5")

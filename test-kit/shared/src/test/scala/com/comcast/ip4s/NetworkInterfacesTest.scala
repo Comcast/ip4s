@@ -17,6 +17,7 @@
 package com.comcast.ip4s
 
 import cats.effect.IO
+import cats.syntax.all.*
 import munit.CatsEffectSuite
 
 class NetworkInterfacesTest extends CatsEffectSuite {
@@ -25,6 +26,43 @@ class NetworkInterfacesTest extends CatsEffectSuite {
     assume(!TestPlatform.isNative) // TODO Remove after upgrading to SN 0.5
     NetworkInterfaces[IO].getAll.map { nis =>
       assert(nis.nonEmpty)
+    }
+  }
+
+  test("getByName") {
+    assume(!TestPlatform.isNative) // TODO Remove after upgrading to SN 0.5
+    NetworkInterfaces[IO].getAll.flatMap { nis =>
+      nis.values.toList.traverse { ni =>
+        NetworkInterfaces[IO].getByName(ni.name).map { nni =>
+          assertEquals(nni, Some(ni))
+        }
+      }
+    }
+  }
+
+  test("getByAddress") {
+    assume(!TestPlatform.isNative) // TODO Remove after upgrading to SN 0.5
+    NetworkInterfaces[IO].getAll.flatMap { nis =>
+      nis.values.toList.traverse { ni =>
+        ni.addresses.traverse { cidr =>
+          NetworkInterfaces[IO].getByAddress(cidr.address).map { nni =>
+            assertEquals(nni, Some(ni))
+          }
+        }
+      }
+    }
+  }
+
+  test("getByMacAddress") {
+    assume(!TestPlatform.isNative) // TODO Remove after upgrading to SN 0.5
+    NetworkInterfaces[IO].getAll.flatMap { nis =>
+      nis.values.toList.traverse { ni =>
+        ni.macAddress.traverse { mac =>
+          NetworkInterfaces[IO].getByMacAddress(mac).map { nni =>
+            assert(nni.contains(ni))
+          }
+        }
+      }
     }
   }
 }

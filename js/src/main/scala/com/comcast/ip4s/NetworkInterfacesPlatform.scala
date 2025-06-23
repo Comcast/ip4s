@@ -24,7 +24,7 @@ import scala.scalajs.js.annotation.JSImport
 private[ip4s] trait NetworkInterfacesCompanionPlatform {
 
   def forAsync[F[_]](implicit F: Async[F]): NetworkInterfaces[F] =
-    new NetworkInterfaces.UnsealedNetworkInterfaces[F] {
+    new NetworkInterfaces.AsyncNetworkInterfaces[F] {
 
       def getAll: F[Map[String, NetworkInterface]] =
         F.blocking {
