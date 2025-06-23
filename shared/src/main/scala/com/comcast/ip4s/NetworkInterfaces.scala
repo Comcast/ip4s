@@ -16,12 +16,12 @@
 
 package com.comcast.ip4s
 
-import cats.effect.{Async, IO}
+import cats.effect.{IO, Sync}
 import cats.syntax.all.*
 
 /** Capability for an effect `F[_]` which can query for local network interfaces.
   *
-  * An instance is available for any effect which has an `Async` instance.
+  * An instance is available for any effect which has a `Sync` instance.
   */
 sealed trait NetworkInterfaces[F[_]] {
 
@@ -39,7 +39,7 @@ sealed trait NetworkInterfaces[F[_]] {
 }
 
 object NetworkInterfaces extends NetworkInterfacesCompanionPlatform {
-  private[ip4s] abstract class AsyncNetworkInterfaces[F[_]: Async] extends NetworkInterfaces[F] {
+  private[ip4s] abstract class SyncNetworkInterfaces[F[_]: Sync] extends NetworkInterfaces[F] {
     def getByName(name: String): F[Option[NetworkInterface]] =
       getAll.map(_.get(name))
 
@@ -56,5 +56,5 @@ object NetworkInterfaces extends NetworkInterfacesCompanionPlatform {
 
   def apply[F[_]](implicit F: NetworkInterfaces[F]): F.type = F
 
-  implicit def forIO: NetworkInterfaces[IO] = forAsync[IO]
+  implicit def forIO: NetworkInterfaces[IO] = forSync[IO]
 }

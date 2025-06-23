@@ -16,12 +16,12 @@
 
 package com.comcast.ip4s
 
-import cats.effect.Async
+import cats.effect.Sync
 
 private[ip4s] trait NetworkInterfacesCompanionPlatform {
 
-  def forAsync[F[_]](implicit F: Async[F]): NetworkInterfaces[F] =
-    new NetworkInterfaces.AsyncNetworkInterfaces[F] {
+  def forSync[F[_]](implicit F: Sync[F]): NetworkInterfaces[F] =
+    new NetworkInterfaces.SyncNetworkInterfaces[F] {
       def getAll: F[Map[String, NetworkInterface]] =
         F.blocking {
           throw new UnsupportedOperationException("Not supported until cats-effect and ip4s support Scala Native 0.5")

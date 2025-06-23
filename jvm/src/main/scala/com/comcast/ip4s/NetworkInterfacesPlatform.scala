@@ -16,15 +16,15 @@
 
 package com.comcast.ip4s
 
-import cats.effect.Async
+import cats.effect.Sync
 import java.net.NetworkInterface as JNetworkInterface
 
 import Ip4sCollectionCompat.*
 
 private[ip4s] trait NetworkInterfacesCompanionPlatform {
 
-  def forAsync[F[_]](implicit F: Async[F]): NetworkInterfaces[F] =
-    new NetworkInterfaces.AsyncNetworkInterfaces[F] {
+  def forSync[F[_]](implicit F: Sync[F]): NetworkInterfaces[F] =
+    new NetworkInterfaces.SyncNetworkInterfaces[F] {
       def getAll: F[Map[String, NetworkInterface]] =
         F.blocking {
           collection.immutable.ListMap.empty[String, NetworkInterface] ++
