@@ -28,8 +28,11 @@ private[ip4s] trait IpAddressCompanionPlatform {
 
   /** Converts the supplied `InetAddress` to an `IpAddress`. */
   def fromInetAddress(address: InetAddress): IpAddress =
-    IpAddress.fromBytes(address.getAddress).get
-
+    address match {
+      case v4: Inet4Address => Ipv4Address.fromInet4Address(v4)
+      case v6: Inet6Address => Ipv6Address.fromInet6Address(v6)
+      case _                => throw new UnsupportedOperationException(s"unsupported address type: $address")
+    }
 }
 
 private[ip4s] trait Ipv4AddressPlatform extends IpAddressPlatform {
@@ -56,6 +59,10 @@ private[ip4s] trait Ipv6AddressPlatform extends IpAddressPlatform {
 private[ip4s] trait Ipv6AddressCompanionPlatform {
 
   /** Converts the supplied `Inet6Address` to an `Ipv6Address`. */
-  def fromInet6Address(address: Inet6Address): Ipv6Address =
-    Ipv6Address.fromBytes(address.getAddress).get
+  def fromInet6Address(address: Inet6Address): Ipv6Address = {
+    val scopeId = address.getScopeId
+    val unscoped = Ipv6Address.fromBytes(address.getAddress).get
+    if (scopeId == 0) unscoped
+    else unscoped.withScopeId(scopeId.toString)
+  }
 }
