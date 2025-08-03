@@ -48,9 +48,9 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(mimaPreviousArtifacts := Set.empty)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalacheck" %%% "scalacheck" % "1.17.1",
-      "org.scalameta" %%% "munit-scalacheck" % "1.0.0-M11" % Test,
-      "org.typelevel" %%% "munit-cats-effect" % "2.1.0" % Test
+      "org.scalacheck" %%% "scalacheck" % "1.18.1",
+      "org.scalameta" %%% "munit-scalacheck" % "1.1.0" % Test,
+      "org.typelevel" %%% "munit-cats-effect" % "2.2.0-RC1" % Test
     )
   )
   .jvmSettings(
@@ -81,15 +81,15 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .settings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "literally" % "1.1.0",
-      "org.typelevel" %%% "cats-core" % "2.10.0",
-      "org.typelevel" %%% "cats-effect" % "3.6.2",
-      "org.scalacheck" %%% "scalacheck" % "1.17.1" % Test
+      "org.typelevel" %%% "literally" % "1.2.0",
+      "org.typelevel" %%% "cats-core" % "2.13.0",
+      "org.typelevel" %%% "cats-effect" % "3.7.0-RC1",
+      "org.scalacheck" %%% "scalacheck" % "1.18.1" % Test
     )
   )
   .nativeSettings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "idna4s-core" % "0.0.1"
+      "org.typelevel" %%% "idna4s-core" % "0.1.0"
     )
   )
 
@@ -128,5 +128,5 @@ lazy val commonSettings = Seq(
 )
 
 lazy val commonNativeSettings = Seq(
-  tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "3.1.4").toMap
+  tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "3.8.0").toMap
 )
