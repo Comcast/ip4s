@@ -23,14 +23,12 @@ import munit.CatsEffectSuite
 class NetworkInterfacesTest extends CatsEffectSuite {
 
   test("getAll") {
-    assume(!TestPlatform.isNative) // TODO Remove after upgrading to SN 0.5
     NetworkInterfaces[IO].getAll.map { nis =>
       assert(nis.nonEmpty)
     }
   }
 
   test("getByName") {
-    assume(!TestPlatform.isNative) // TODO Remove after upgrading to SN 0.5
     NetworkInterfaces[IO].getAll.flatMap { nis =>
       nis.values.toList.traverse { ni =>
         NetworkInterfaces[IO].getByName(ni.name).map { nni =>
@@ -41,7 +39,6 @@ class NetworkInterfacesTest extends CatsEffectSuite {
   }
 
   test("getByAddress") {
-    assume(!TestPlatform.isNative) // TODO Remove after upgrading to SN 0.5
     NetworkInterfaces[IO].getAll.flatMap { nis =>
       nis.values.toList.traverse { ni =>
         ni.addresses.traverse { cidr =>
@@ -54,7 +51,6 @@ class NetworkInterfacesTest extends CatsEffectSuite {
   }
 
   test("getByMacAddress") {
-    assume(!TestPlatform.isNative) // TODO Remove after upgrading to SN 0.5
     NetworkInterfaces[IO].getAll.flatMap { nis =>
       nis.values.toList.traverse { ni =>
         ni.macAddress.traverse { mac =>
