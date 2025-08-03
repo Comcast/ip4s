@@ -117,7 +117,7 @@ lazy val docs = project
     mdocIn := baseDirectory.value / "src",
     mdocOut := baseDirectory.value / "../docs",
     githubWorkflowArtifactUpload := false,
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.6.2"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.6.3"
   )
 
 lazy val commonSettings = Seq(
