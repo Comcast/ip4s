@@ -54,7 +54,7 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     )
   )
   .jvmSettings(
-    libraryDependencies += "com.google.guava" % "guava" % "33.4.8-jre" % "test"
+    libraryDependencies += "com.google.guava" % "guava" % "33.5.0-jre" % "test"
   )
   .dependsOn(core % "compile->compile")
 
