@@ -4,6 +4,6 @@ addSbtPlugin("org.scala-native" % "sbt-scala-native" % "0.5.8")
 addSbtPlugin("org.portable-scala" % "sbt-scala-native-crossproject" % "1.3.2")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.21.1")
 addSbtPlugin("io.github.sbt-doctest" % "sbt-doctest" % "0.12.2")
-addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.7.2")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.8.0")
 
 libraryDependencySchemes += "com.lihaoyi" %% "geny" % VersionScheme.Always
