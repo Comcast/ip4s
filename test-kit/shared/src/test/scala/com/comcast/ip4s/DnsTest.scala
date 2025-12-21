@@ -53,10 +53,13 @@ class DnsTest extends CatsEffectSuite {
     (Dns[IO].resolve(host"not.example.com") >>
       IO.raiseError(new AssertionError("Did not raise `UnknownHostException`"))).recover {
       case ex: UnknownHostException =>
-        ex.printStackTrace()
-        assert(
-          ex.getMessage == "not.example.com: Name or service not known" || ex.getMessage == "not.example.com: nodename nor servname provided, or not known"
+        val msg = ex.getMessage
+        val expected = List(
+          "not.example.com: Name or service not known",
+          "not.example.com: nodename nor servname provided, or not known",
+          "not.example.com: No address associated with hostname"
         )
+        assert(expected.contains(msg), msg)
     }
   }
 
