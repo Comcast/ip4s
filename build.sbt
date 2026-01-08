@@ -87,6 +87,11 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.scalacheck" %%% "scalacheck" % "1.19.0" % Test
     )
   )
+  .jsSettings(
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "idna4s-core" % "0.1.0"
+    )
+  )
   .nativeSettings(
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "idna4s-core" % "0.1.0"
@@ -101,7 +106,6 @@ lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    Compile / npmDependencies += "punycode" -> "2.1.1",
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
 
