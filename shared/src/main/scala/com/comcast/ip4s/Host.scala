@@ -19,6 +19,9 @@ package com.comcast.ip4s
 import cats.{Applicative, ApplicativeThrow, Order, Show}
 import cats.syntax.all._
 
+import org.typelevel.idna4s.core.bootstring.Bootstring
+import org.typelevel.idna4s.core.bootstring.BootstringParams.PunycodeParams
+
 import scala.util.hashing.MurmurHash3
 
 // annoying bincompat shim
@@ -1010,7 +1013,7 @@ final class IDN private (val labels: List[IDN.Label], val hostname: Hostname, ov
     }
 }
 
-object IDN extends IDNCompanionPlatform {
+object IDN {
 
   /** Label component of an IDN. */
   final class Label private[IDN] (override val toString: String) extends Serializable with Ordered[Label] {
@@ -1024,6 +1027,7 @@ object IDN extends IDNCompanionPlatform {
   }
 
   private val DotPattern = "[\\.\u002e\u3002\uff0e\uff61]"
+  private val DotPatternR = DotPattern.r.pattern
 
   /** Constructs a `IDN` from a string. */
   def fromString(value: String): Option[IDN] =
@@ -1047,6 +1051,27 @@ object IDN extends IDNCompanionPlatform {
       hostname.labels.map(l => new Label(toUnicode(l.toString)))
     new IDN(labels, hostname, labels.toList.mkString("."))
   }
+
+  private[ip4s] def toAscii(value: String): Option[String] =
+    DotPatternR
+      .split(value, -1)
+      .toList
+      .traverse { label =>
+        if (label.forall(_ < 128)) Some(label)
+        else Bootstring.encodeRaw(PunycodeParams)(label).toOption.map("xn--" + _)
+      }
+      .map(_.mkString("."))
+
+  private[ip4s] def toUnicode(value: String): String =
+    DotPatternR
+      .split(value, -1)
+      .toList
+      .traverse { label =>
+        if (label.startsWith("xn--")) Bootstring.decodeRaw(PunycodeParams)(label.substring(4, label.length))
+        else Right(label)
+      }
+      .map(_.mkString("."))
+      .fold(e => throw new IllegalArgumentException(e), identity[String](_))
 
   implicit val show: Show[IDN] = Show.fromToString[IDN]
 }

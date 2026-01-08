@@ -87,17 +87,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.typelevel" %%% "literally" % "1.2.0",
       "org.typelevel" %%% "cats-core" % "2.13.0",
       "org.typelevel" %%% "cats-effect" % "3.7.0-RC1",
+      "org.typelevel" %%% "idna4s-core" % "0.1.0",
       "org.scalacheck" %%% "scalacheck" % "1.19.0" % Test
-    )
-  )
-  .jsSettings(
-    libraryDependencies ++= Seq(
-      "org.typelevel" %%% "idna4s-core" % "0.1.0"
-    )
-  )
-  .nativeSettings(
-    libraryDependencies ++= Seq(
-      "org.typelevel" %%% "idna4s-core" % "0.1.0"
     )
   )
 
