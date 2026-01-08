@@ -37,7 +37,9 @@ ThisBuild / mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.IpAddress.isLinkLocal"),
   // Removed JS-specifc Punycode bindings
   ProblemFilters.exclude[MissingClassProblem]("com.comcast.ip4s.Punycode"),
-  ProblemFilters.exclude[MissingClassProblem]("com.comcast.ip4s.Punycode$")
+  ProblemFilters.exclude[MissingClassProblem]("com.comcast.ip4s.Punycode$"),
+  ProblemFilters.exclude[MissingTypesProblem]("com.comcast.ip4s.IDN$"),
+  ProblemFilters.exclude[MissingClassProblem]("com.comcast.ip4s.IDNCompanionPlatform")
 )
 
 lazy val root = tlCrossRootProject.aggregate(core, testKit)
