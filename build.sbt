@@ -34,7 +34,12 @@ ThisBuild / mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[MissingTypesProblem]("com.comcast.ip4s.SourceSpecificMulticast$"),
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.IpAddress.isPrivate"), // #562
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.IpAddress.isLoopback"),
-  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.IpAddress.isLinkLocal")
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.comcast.ip4s.IpAddress.isLinkLocal"),
+  // Removed JS-specifc Punycode bindings
+  ProblemFilters.exclude[MissingClassProblem]("com.comcast.ip4s.Punycode"),
+  ProblemFilters.exclude[MissingClassProblem]("com.comcast.ip4s.Punycode$"),
+  ProblemFilters.exclude[MissingTypesProblem]("com.comcast.ip4s.IDN$"),
+  ProblemFilters.exclude[MissingClassProblem]("com.comcast.ip4s.IDNCompanionPlatform")
 )
 
 lazy val root = tlCrossRootProject.aggregate(core, testKit)
@@ -84,12 +89,8 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.typelevel" %%% "literally" % "1.2.0",
       "org.typelevel" %%% "cats-core" % "2.13.0",
       "org.typelevel" %%% "cats-effect" % "3.7.0-RC1",
+      "org.typelevel" %%% "idna4s-core" % "0.1.0",
       "org.scalacheck" %%% "scalacheck" % "1.19.0" % Test
-    )
-  )
-  .nativeSettings(
-    libraryDependencies ++= Seq(
-      "org.typelevel" %%% "idna4s-core" % "0.1.0"
     )
   )
 
@@ -101,7 +102,6 @@ lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
   .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
-    Compile / npmDependencies += "punycode" -> "2.1.1",
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
 
