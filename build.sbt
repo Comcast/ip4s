@@ -66,7 +66,9 @@ lazy val testKit = crossProject(JVMPlatform, JSPlatform, NativePlatform)
 lazy val testKitJVM = testKit.jvm
 lazy val testKitJS = testKit.js
   .disablePlugins(DoctestPlugin)
-  .enablePlugins(ScalaJSBundlerPlugin)
+  .settings(
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
+  )
 lazy val testKitNative = testKit.js
   .disablePlugins(DoctestPlugin)
   .settings(commonNativeSettings)
@@ -100,7 +102,6 @@ lazy val coreJVM = core.jvm.settings(
 
 lazy val coreJS = core.js
   .disablePlugins(DoctestPlugin)
-  .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
