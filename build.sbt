@@ -90,7 +90,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "literally" % "1.2.0",
       "org.typelevel" %%% "cats-core" % "2.13.0",
-      "org.typelevel" %%% "cats-effect" % "3.7.0",
+      "org.typelevel" %%% "cats-effect" % "3.7.1",
       "org.typelevel" %%% "idna4s-core" % "1.0.0",
       "org.scalacheck" %%% "scalacheck" % "1.19.0" % Test
     )
@@ -118,7 +118,7 @@ lazy val docs = project
     mdocIn := baseDirectory.value / "src",
     mdocOut := baseDirectory.value / "../docs",
     githubWorkflowArtifactUpload := false,
-    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.7.0"
+    libraryDependencies += "org.typelevel" %%% "cats-effect" % "3.7.1"
   )
 
 lazy val commonSettings = Seq(
